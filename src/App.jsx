@@ -235,8 +235,22 @@ function Acceso() {
   );
 }
 
+const AMBITOS = [
+  { id: "anden", nombre: "Estaciones" },
+  { id: "conduccion", nombre: "Vías" },
+  { id: "mantenimiento", nombre: "Mantenimiento" },
+  { id: "oficinas", nombre: "Oficinas y técnicos" },
+  { id: "cambios", nombre: "Cambios" },
+  { id: "mercadillo", nombre: "Mercadillo" },
+  { id: "sindicatos", nombre: "Sindicatos" },
+  { id: "general", nombre: "General / Café" },
+];
+
 function ClubProvisional({ sesion }) {
   const [perfil, setPerfil] = useState(null);
+  const [hilos, setHilos] = useState([]);
+  const [cargandoHilos, setCargandoHilos] = useState(true);
+  const [formAbierto, setFormAbierto] = useState(false);
 
   useEffect(() => {
     supabase
@@ -245,35 +259,171 @@ function ClubProvisional({ sesion }) {
       .eq("id", sesion.user.id)
       .single()
       .then(({ data }) => setPerfil(data));
+    cargarHilos();
   }, [sesion]);
 
+  function cargarHilos() {
+    setCargandoHilos(true);
+    supabase
+      .from("hilos")
+      .select("*, perfiles(nombre, apellido, nickname)")
+      .order("creado_en", { ascending: false })
+      .then(({ data, error }) => {
+        if (!error) setHilos(data || []);
+        setCargandoHilos(false);
+      });
+  }
+
   return (
-    <div style={{ background: "#F3F6F9" }} className="min-h-screen p-6">
-      <div style={{ background: C.white }} className="max-w-md mx-auto rounded-2xl shadow p-6 text-center space-y-3">
-        <ShieldCheck size={32} style={{ color: C.blue }} className="mx-auto" />
-        <h1 className="text-lg font-bold" style={{ color: C.ink }}>
-          ¡Conectado de verdad!
-        </h1>
-        <p className="text-sm" style={{ color: C.mute }}>
-          Sesión iniciada como <strong>{sesion.user.email}</strong>
-        </p>
-        {perfil && (
-          <p className="text-sm" style={{ color: C.ink }}>
-            Perfil: {perfil.nombre} {perfil.apellido} — {perfil.cargo} (rol: {perfil.rol})
-          </p>
-        )}
-        <p className="text-xs" style={{ color: C.mute }}>
-          Aquí es donde iremos montando el resto del club (foro, calendario,
-          biblioteca...) conectado a la base de datos real.
-        </p>
+    <div style={{ background: "#F3F6F9" }} className="min-h-screen">
+      <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center justify-between">
+        <div>
+          <p className="text-white font-bold text-sm">Underground</p>
+          {perfil && (
+            <p className="text-xs" style={{ color: "#BFD9EE" }}>
+              {perfil.nombre} {perfil.apellido} · {perfil.cargo}
+            </p>
+          )}
+        </div>
         <button
           onClick={() => supabase.auth.signOut()}
-          style={{ background: C.red }}
-          className="text-white text-sm font-semibold px-4 py-2 rounded-lg"
+          style={{ borderColor: "rgba(255,255,255,0.35)" }}
+          className="text-white text-xs font-semibold border rounded-full px-3 py-1.5"
         >
           Cerrar sesión
         </button>
       </div>
+
+      <div className="max-w-2xl mx-auto p-4 space-y-4">
+        <button
+          onClick={() => setFormAbierto((v) => !v)}
+          style={{ background: C.blue }}
+          className="w-full text-white font-semibold py-2.5 rounded-lg text-sm"
+        >
+          {formAbierto ? "Cancelar" : "+ Crear nuevo tema"}
+        </button>
+
+        {formAbierto && <FormularioNuevoTema sesion={sesion} onCreado={() => { setFormAbierto(false); cargarHilos(); }} />}
+
+        {cargandoHilos && <p className="text-sm text-center" style={{ color: C.mute }}>Cargando temas...</p>}
+
+        {!cargandoHilos && hilos.length === 0 && (
+          <p className="text-sm text-center py-8" style={{ color: C.mute }}>
+            Todavía no hay ningún tema. ¡Sé el primero en publicar!
+          </p>
+        )}
+
+        <div className="space-y-2">
+          {hilos.map((h) => (
+            <div key={h.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
+              <p className="text-xs font-semibold" style={{ color: C.blue }}>
+                {AMBITOS.find((a) => a.id === h.ambito)?.nombre || h.ambito}
+              </p>
+              <p className="text-sm font-semibold" style={{ color: C.ink }}>
+                {h.titulo}
+              </p>
+              <p className="text-xs mt-1" style={{ color: C.mute }}>
+                {h.perfiles?.nickname || `${h.perfiles?.nombre || ""} ${h.perfiles?.apellido || ""}`} ·{" "}
+                {new Date(h.creado_en).toLocaleString("es-ES")}
+              </p>
+              {h.texto && (
+                <p className="text-sm mt-2" style={{ color: C.ink }}>
+                  {h.texto}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FormularioNuevoTema({ sesion, onCreado }) {
+  const [ambito, setAmbito] = useState("general");
+  const [titulo, setTitulo] = useState("");
+  const [texto, setTexto] = useState("");
+  const [error, setError] = useState("");
+  const [enviando, setEnviando] = useState(false);
+
+  async function publicar() {
+    if (!titulo.trim()) {
+      setError("Ponle un título al tema.");
+      return;
+    }
+    setError("");
+    setEnviando(true);
+    const { error } = await supabase.from("hilos").insert({
+      ambito,
+      titulo: titulo.trim(),
+      texto: texto.trim(),
+      autor_id: sesion.user.id,
+    });
+    setEnviando(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setTitulo("");
+    setTexto("");
+    onCreado();
+  }
+
+  return (
+    <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
+      {error && (
+        <p className="text-xs rounded-lg p-2" style={{ background: "#FCEBEA", color: C.red }}>
+          {error}
+        </p>
+      )}
+      <div>
+        <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+          Categoría
+        </label>
+        <select
+          value={ambito}
+          onChange={(e) => setAmbito(e.target.value)}
+          className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+          style={{ borderColor: C.line, color: C.ink }}
+        >
+          {AMBITOS.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+          Título
+        </label>
+        <input
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+          className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+          style={{ borderColor: C.line, color: C.ink }}
+        />
+      </div>
+      <div>
+        <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+          Mensaje (opcional)
+        </label>
+        <textarea
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          rows={3}
+          className="w-full rounded-lg border px-3 py-2 text-sm outline-none resize-none"
+          style={{ borderColor: C.line, color: C.ink }}
+        />
+      </div>
+      <button
+        onClick={publicar}
+        disabled={enviando}
+        style={{ background: enviando ? "#B9C6D2" : C.red }}
+        className="w-full text-white font-semibold py-2.5 rounded-lg text-sm"
+      >
+        {enviando ? "Publicando..." : "Publicar tema"}
+      </button>
     </div>
   );
 }
