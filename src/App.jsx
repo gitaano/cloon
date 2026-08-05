@@ -76,51 +76,43 @@ function Acceso() {
     if (error) setMensaje({ tipo: "error", texto: "Email o contraseña incorrectos." });
   }
 
-  async function registrar() {
-    setMensaje(null);
-    if (!regNombre || !regApellido || !regDne || !regCargo || !regEmail || !regPass) {
-      setMensaje({ tipo: "error", texto: "Rellena todos los campos." });
-      return;
-    }
-    if (regPass.length < 6) {
-      setMensaje({ tipo: "error", texto: "La contraseña debe tener al menos 6 caracteres." });
-      return;
-    }
-    setCargando(true);
+ async function registrar() {
+  setMensaje(null);
+  if (!regNombre || !regApellido || !regDne || !regCargo || !regEmail || !regPass) {
+    setMensaje({ tipo: "error", texto: "Rellena todos los campos." });
+    return;
+  }
+  if (regPass.length < 6) {
+    setMensaje({ tipo: "error", texto: "La contraseña debe tener al menos 6 caracteres." });
+    return;
+  }
+  setCargando(true);
 
-    const { data, error } = await supabase.auth.signUp({
-      email: regEmail,
-      password: regPass,
-    });
-
-    if (error) {
-      setCargando(false);
-      setMensaje({ tipo: "error", texto: error.message });
-      return;
-    }
-
-    if (data.user) {
-      const { error: errorPerfil } = await supabase.from("perfiles").insert({
-        id: data.user.id,
+  const { error } = await supabase.auth.signUp({
+    email: regEmail,
+    password: regPass,
+    options: {
+      data: {
         nombre: regNombre,
         apellido: regApellido,
         dne: regDne,
         cargo: regCargo,
-        rol: "socio",
-      });
-      if (errorPerfil) {
-        setCargando(false);
-        setMensaje({ tipo: "error", texto: "Cuenta creada, pero hubo un error guardando tu perfil: " + errorPerfil.message });
-        return;
-      }
-    }
+      },
+    },
+  });
 
-    setCargando(false);
-    setMensaje({
-      tipo: "ok",
-      texto: "¡Cuenta creada! Revisa tu correo para confirmar la dirección antes de entrar.",
-    });
+  setCargando(false);
+
+  if (error) {
+    setMensaje({ tipo: "error", texto: error.message });
+    return;
   }
+
+  setMensaje({
+    tipo: "ok",
+    texto: "¡Cuenta creada! Revisa tu correo para confirmar la dirección antes de entrar.",
+  });
+}
 
   async function recuperar() {
     setMensaje(null);
