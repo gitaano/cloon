@@ -3,15 +3,27 @@ import { supabase } from "./supabaseClient";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck } from "lucide-react";
 
 const C = {
-  blueDarker: "#02284D",
+  blue: "#0060A9",
   blueDark: "#003D73",
-  blue: "#0B63B0",
+  blueDarker: "#02284D",
   red: "#E30613",
-  ink: "#1C2733",
-  mute: "#6B7A8D",
-  line: "#E2E7EC",
   white: "#FFFFFF",
+  bg: "#F3F6F9",
+  ink: "#152A3D",
+  mute: "#5C7185",
+  line: "#DCE4EC",
 };
+
+function LogoUnderground({ size = 40 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" fill={C.red} />
+      <circle cx="50" cy="50" r="46" fill="none" stroke={C.white} strokeWidth="6" />
+      <circle cx="50" cy="50" r="30" fill={C.white} />
+      <circle cx="50" cy="50" r="21" fill={C.blue} />
+    </svg>
+  );
+}
 
 export default function App() {
   const [sesion, setSesion] = useState(null);
@@ -80,7 +92,10 @@ function NuevaContrasena({ onListo }) {
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <h1 style={{ color: C.white }} className="text-2xl font-bold">
+          <div className="mx-auto w-fit drop-shadow-lg">
+            <LogoUnderground size={72} />
+          </div>
+          <h1 style={{ color: C.white }} className="text-2xl font-bold mt-4">
             Nueva contraseña
           </h1>
           <p style={{ color: "#BFD9EE" }} className="text-sm mt-1">
@@ -210,11 +225,28 @@ function Acceso() {
   return (
     <div
       style={{ background: `linear-gradient(160deg, ${C.blueDarker}, ${C.blue})` }}
-      className="min-h-screen w-full flex items-center justify-center p-4"
+      className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden"
     >
-      <div className="w-full max-w-md">
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          width: 520,
+          height: 520,
+          background: C.red,
+          transform: "rotate(45deg)",
+          top: -220,
+          right: -220,
+          opacity: 0.15,
+          borderRadius: 24,
+        }}
+      />
+      <div className="relative w-full max-w-md">
         <div className="text-center mb-6">
-          <h1 style={{ color: C.white }} className="text-2xl font-bold">
+          <div className="mx-auto w-fit drop-shadow-lg">
+            <LogoUnderground size={88} />
+          </div>
+          <h1 style={{ color: C.white }} className="text-2xl font-bold mt-4">
             Underground
           </h1>
           <p style={{ color: "#BFD9EE" }} className="text-sm mt-1">
@@ -272,7 +304,25 @@ function Acceso() {
                 <Campo label="Apellido" value={regApellido} onChange={setRegApellido} placeholder="Ej: Ruiz" />
               </div>
               <Campo label="DNE (nº de trabajador)" value={regDne} onChange={setRegDne} placeholder="Ej: 004521" />
-              <Campo label="Puesto / categoría" value={regCargo} onChange={setRegCargo} placeholder="Ej: Jefe/a de Sector" />
+              <div>
+                <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                  Puesto / categoría
+                </label>
+                <select
+                  value={regCargo}
+                  onChange={(e) => setRegCargo(e.target.value)}
+                  className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
+                  style={{ borderColor: C.line, color: C.ink }}
+                >
+                  <option value="">Selecciona...</option>
+                  <option>Jefe/a de Sector</option>
+                  <option>Maquinista de Tracción Eléctrica</option>
+                  <option>Mantenimiento (Vía / Instalaciones / Material Móvil)</option>
+                  <option>Técnico/a administrativo</option>
+                  <option>Técnico/a informático</option>
+                  <option>Otro</option>
+                </select>
+              </div>
               <Campo label="Correo electrónico" type="email" value={regEmail} onChange={setRegEmail} placeholder="tucorreo@ejemplo.com" />
               <CampoPass verPass={verPass} setVerPass={setVerPass} value={regPass} onChange={setRegPass} />
               <p className="text-xs rounded-lg p-2.5 flex gap-2" style={{ background: "#EAF2F9", color: C.blueDark }}>
