@@ -16,14 +16,18 @@ const C = {
 export default function App() {
   const [sesion, setSesion] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [recuperandoPass, setRecuperandoPass] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSesion(data.session);
       setCargando(false);
     });
-    const { data: listener } = supabase.auth.onAuthStateChange((_evento, nuevaSesion) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((evento, nuevaSesion) => {
       setSesion(nuevaSesion);
+      if (evento === "PASSWORD_RECOVERY") {
+        setRecuperandoPass(true);
+      }
     });
     return () => listener.subscription.unsubscribe();
   }, []);
@@ -36,11 +40,81 @@ export default function App() {
     );
   }
 
+  if (recuperandoPass) {
+    return <NuevaContrasena onListo={() => setRecuperandoPass(false)} />;
+  }
+
   if (!sesion) {
     return <Acceso />;
   }
 
   return <ClubProvisional sesion={sesion} />;
+}
+
+function NuevaContrasena({ onListo }) {
+  const [pass, setPass] = useState("");
+  const [verPass, setVerPass] = useState(false);
+  const [cargando, setCargando] = useState(false);
+  const [mensaje, setMensaje] = useState(null);
+
+  async function guardar() {
+    setMensaje(null);
+    if (pass.length < 6) {
+      setMensaje({ tipo: "error", texto: "La contraseña debe tener al menos 6 caracteres." });
+      return;
+    }
+    setCargando(true);
+    const { error } = await supabase.auth.updateUser({ password: pass });
+    setCargando(false);
+    if (error) {
+      setMensaje({ tipo: "error", texto: error.message });
+      return;
+    }
+    setMensaje({ tipo: "ok", texto: "¡Contraseña actualizada! Ya puedes continuar." });
+  }
+
+  return (
+    <div
+      style={{ background: `linear-gradient(160deg, ${C.blueDarker}, ${C.blue})` }}
+      className="min-h-screen w-full flex items-center justify-center p-4"
+    >
+      <div className="w-full max-w-md">
+        <div className="text-center mb-6">
+          <h1 style={{ color: C.white }} className="text-2xl font-bold">
+            Nueva contraseña
+          </h1>
+          <p style={{ color: "#BFD9EE" }} className="text-sm mt-1">
+            Elige una contraseña nueva para tu cuenta
+          </p>
+        </div>
+        <div style={{ background: C.white }} className="rounded-2xl shadow-2xl p-6 space-y-4">
+          {mensaje && (
+            <p
+              className="text-xs rounded-lg p-2.5"
+              style={{
+                background: mensaje.tipo === "error" ? "#FCEBEA" : "#E7F7EE",
+                color: mensaje.tipo === "error" ? C.red : "#15803D",
+              }}
+            >
+              {mensaje.texto}
+            </p>
+          )}
+          {mensaje?.tipo === "ok" ? (
+            <BotonPrincipal onClick={onListo} cargando={false}>
+              Continuar
+            </BotonPrincipal>
+          ) : (
+            <>
+              <CampoPass verPass={verPass} setVerPass={setVerPass} value={pass} onChange={setPass} />
+              <BotonPrincipal onClick={guardar} cargando={cargando}>
+                Guardar contraseña
+              </BotonPrincipal>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function Acceso() {
