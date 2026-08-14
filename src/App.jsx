@@ -76,43 +76,43 @@ function Acceso() {
     if (error) setMensaje({ tipo: "error", texto: "Email o contraseña incorrectos." });
   }
 
- async function registrar() {
-  setMensaje(null);
-  if (!regNombre || !regApellido || !regDne || !regCargo || !regEmail || !regPass) {
-    setMensaje({ tipo: "error", texto: "Rellena todos los campos." });
-    return;
-  }
-  if (regPass.length < 6) {
-    setMensaje({ tipo: "error", texto: "La contraseña debe tener al menos 6 caracteres." });
-    return;
-  }
-  setCargando(true);
+  async function registrar() {
+    setMensaje(null);
+    if (!regNombre || !regApellido || !regDne || !regCargo || !regEmail || !regPass) {
+      setMensaje({ tipo: "error", texto: "Rellena todos los campos." });
+      return;
+    }
+    if (regPass.length < 6) {
+      setMensaje({ tipo: "error", texto: "La contraseña debe tener al menos 6 caracteres." });
+      return;
+    }
+    setCargando(true);
 
-  const { error } = await supabase.auth.signUp({
-    email: regEmail,
-    password: regPass,
-    options: {
-      data: {
-        nombre: regNombre,
-        apellido: regApellido,
-        dne: regDne,
-        cargo: regCargo,
+    const { error } = await supabase.auth.signUp({
+      email: regEmail,
+      password: regPass,
+      options: {
+        data: {
+          nombre: regNombre,
+          apellido: regApellido,
+          dne: regDne,
+          cargo: regCargo,
+        },
       },
-    },
-  });
+    });
 
-  setCargando(false);
+    setCargando(false);
 
-  if (error) {
-    setMensaje({ tipo: "error", texto: error.message });
-    return;
+    if (error) {
+      setMensaje({ tipo: "error", texto: error.message });
+      return;
+    }
+
+    setMensaje({
+      tipo: "ok",
+      texto: "¡Cuenta creada! Revisa tu correo para confirmar la dirección antes de entrar.",
+    });
   }
-
-  setMensaje({
-    tipo: "ok",
-    texto: "¡Cuenta creada! Revisa tu correo para confirmar la dirección antes de entrar.",
-  });
-}
 
   async function recuperar() {
     setMensaje(null);
@@ -258,7 +258,7 @@ function ClubProvisional({ sesion }) {
     setCargandoHilos(true);
     supabase
       .from("hilos")
-      .select("*, perfiles(nombre, apellido, nickname)")
+      .select("*, perfiles(nombre, apellido)")
       .order("creado_en", { ascending: false })
       .then(({ data, error }) => {
         if (!error) setHilos(data || []);
@@ -315,7 +315,7 @@ function ClubProvisional({ sesion }) {
                 {h.titulo}
               </p>
               <p className="text-xs mt-1" style={{ color: C.mute }}>
-                {h.perfiles?.nickname || `${h.perfiles?.nombre || ""} ${h.perfiles?.apellido || ""}`} ·{" "}
+                {`${h.perfiles?.nombre || ""} ${h.perfiles?.apellido || ""}`} ·{" "}
                 {new Date(h.creado_en).toLocaleString("es-ES")}
               </p>
               {h.texto && (
@@ -323,6 +323,7 @@ function ClubProvisional({ sesion }) {
                   {h.texto}
                 </p>
               )}
+              <Respuestas hiloId={h.id} sesion={sesion} />
             </div>
           ))}
         </div>
@@ -416,6 +417,105 @@ function FormularioNuevoTema({ sesion, onCreado }) {
       >
         {enviando ? "Publicando..." : "Publicar tema"}
       </button>
+    </div>
+  );
+}
+
+function Respuestas({ hiloId, sesion }) {
+  const [respuestas, setRespuestas] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [texto, setTexto] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    cargar();
+  }, [hiloId]);
+
+  function cargar() {
+    setCargando(true);
+    supabase
+      .from("respuestas")
+      .select("*, perfiles(nombre, apellido)")
+      .eq("hilo_id", hiloId)
+      .order("creado_en", { ascending: true })
+      .then(({ data, error }) => {
+        if (!error) setRespuestas(data || []);
+        setCargando(false);
+      });
+  }
+
+  async function enviar() {
+    if (!texto.trim()) return;
+    setError("");
+    setEnviando(true);
+    const { error } = await supabase.from("respuestas").insert({
+      hilo_id: hiloId,
+      autor_id: sesion.user.id,
+      texto: texto.trim(),
+    });
+    setEnviando(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setTexto("");
+    cargar();
+  }
+
+  return (
+    <div className="mt-3 pt-3 border-t" style={{ borderColor: C.line }}>
+      {error && (
+        <p className="text-xs rounded-lg p-2 mb-2" style={{ background: "#FCEBEA", color: C.red }}>
+          {error}
+        </p>
+      )}
+
+      {cargando && (
+        <p className="text-xs" style={{ color: C.mute }}>
+          Cargando respuestas...
+        </p>
+      )}
+
+      {!cargando && respuestas.length === 0 && (
+        <p className="text-xs" style={{ color: C.mute }}>
+          Sin respuestas todavía.
+        </p>
+      )}
+
+      <div className="space-y-2 mb-2">
+        {respuestas.map((r) => (
+          <div key={r.id} style={{ background: "#F3F6F9" }} className="rounded-lg p-2">
+            <p className="text-xs font-semibold" style={{ color: C.ink }}>
+              {`${r.perfiles?.nombre || ""} ${r.perfiles?.apellido || ""}`}{" "}
+              <span className="font-normal" style={{ color: C.mute }}>
+                · {new Date(r.creado_en).toLocaleString("es-ES")}
+              </span>
+            </p>
+            <p className="text-sm mt-0.5" style={{ color: C.ink }}>
+              {r.texto}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-2">
+        <input
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          placeholder="Escribe una respuesta..."
+          className="flex-1 rounded-lg border px-3 py-2 text-xs outline-none"
+          style={{ borderColor: C.line, color: C.ink }}
+        />
+        <button
+          onClick={enviar}
+          disabled={enviando}
+          style={{ background: enviando ? "#B9C6D2" : C.blue }}
+          className="text-white text-xs font-semibold rounded-lg px-4"
+        >
+          {enviando ? "..." : "Enviar"}
+        </button>
+      </div>
     </div>
   );
 }
