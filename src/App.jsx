@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -352,14 +352,14 @@ function Acceso() {
 }
 
 const AMBITOS = [
-  { id: "anden", nombre: "Estaciones" },
-  { id: "conduccion", nombre: "Vías" },
-  { id: "mantenimiento", nombre: "Mantenimiento" },
-  { id: "oficinas", nombre: "Oficinas y técnicos" },
-  { id: "cambios", nombre: "Cambios" },
-  { id: "mercadillo", nombre: "Mercadillo" },
-  { id: "sindicatos", nombre: "Sindicatos" },
-  { id: "general", nombre: "General / Café" },
+  { id: "anden", nombre: "Estaciones", icon: Users },
+  { id: "conduccion", nombre: "Vías", icon: TrainFront },
+  { id: "mantenimiento", nombre: "Mantenimiento", icon: Wrench },
+  { id: "oficinas", nombre: "Oficinas y técnicos", icon: Monitor },
+  { id: "cambios", nombre: "Cambios", icon: Repeat },
+  { id: "mercadillo", nombre: "Mercadillo", icon: ShoppingBag },
+  { id: "sindicatos", nombre: "Sindicatos", icon: Handshake },
+  { id: "general", nombre: "General / Café", icon: MessageSquare },
 ];
 
 const LINEAS_METRO = [
@@ -406,6 +406,7 @@ function ClubProvisional({ sesion }) {
   const [cargandoHilos, setCargandoHilos] = useState(true);
   const [formAbierto, setFormAbierto] = useState(false);
   const [vista, setVista] = useState("foro");
+  const [ambitoActivo, setAmbitoActivo] = useState("todos");
 
   useEffect(() => {
     cargarPerfil();
@@ -516,6 +517,40 @@ function ClubProvisional({ sesion }) {
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          <button
+            onClick={() => setAmbitoActivo("todos")}
+            style={{
+              background: ambitoActivo === "todos" ? C.blue : C.white,
+              borderColor: C.line,
+              color: ambitoActivo === "todos" ? C.white : C.ink,
+            }}
+            className="shrink-0 flex items-center gap-1.5 border rounded-full px-3 py-1.5 text-xs font-semibold"
+          >
+            <MessageSquare size={14} />
+            Todo el club
+          </button>
+          {AMBITOS.map((a) => {
+            const Icono = a.icon;
+            const activo = ambitoActivo === a.id;
+            return (
+              <button
+                key={a.id}
+                onClick={() => setAmbitoActivo(a.id)}
+                style={{
+                  background: activo ? C.blue : C.white,
+                  borderColor: C.line,
+                  color: activo ? C.white : C.ink,
+                }}
+                className="shrink-0 flex items-center gap-1.5 border rounded-full px-3 py-1.5 text-xs font-semibold"
+              >
+                <Icono size={14} />
+                {a.nombre}
+              </button>
+            );
+          })}
+        </div>
+
         <button
           onClick={() => setFormAbierto((v) => !v)}
           style={{ background: C.blue }}
@@ -535,10 +570,19 @@ function ClubProvisional({ sesion }) {
         )}
 
         <div className="space-y-2">
-          {hilos.map((h) => (
+          {hilos.filter((h) => ambitoActivo === "todos" || h.ambito === ambitoActivo).map((h) => (
             <div key={h.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
-              <p className="text-xs font-semibold" style={{ color: C.blue }}>
-                {AMBITOS.find((a) => a.id === h.ambito)?.nombre || h.ambito}
+              <p className="text-xs font-semibold flex items-center gap-1" style={{ color: C.blue }}>
+                {(() => {
+                  const ambInfo = AMBITOS.find((a) => a.id === h.ambito);
+                  const IconoAmb = ambInfo ? ambInfo.icon : MessageSquare;
+                  return (
+                    <>
+                      <IconoAmb size={13} />
+                      {ambInfo ? ambInfo.nombre : h.ambito}
+                    </>
+                  );
+                })()}
               </p>
               <p className="text-sm font-semibold" style={{ color: C.ink }}>
                 {h.titulo}
