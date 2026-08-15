@@ -362,32 +362,58 @@ const AMBITOS = [
   { id: "general", nombre: "General / Café" },
 ];
 
+function nombrePublico(p) {
+  if (!p) return "";
+  if (p.nickname) return p.nickname;
+  if (p.mostrar_nombre_real) return `${p.nombre || ""} ${p.apellido || ""}`.trim();
+  return "Socio";
+}
+
 function ClubProvisional({ sesion }) {
   const [perfil, setPerfil] = useState(null);
   const [hilos, setHilos] = useState([]);
   const [cargandoHilos, setCargandoHilos] = useState(true);
   const [formAbierto, setFormAbierto] = useState(false);
+  const [vista, setVista] = useState("foro");
 
   useEffect(() => {
+    cargarPerfil();
+    cargarHilos();
+  }, [sesion]);
+
+  function cargarPerfil() {
     supabase
       .from("perfiles")
       .select("*")
       .eq("id", sesion.user.id)
       .single()
       .then(({ data }) => setPerfil(data));
-    cargarHilos();
-  }, [sesion]);
+  }
 
   function cargarHilos() {
     setCargandoHilos(true);
     supabase
       .from("hilos")
-      .select("*, perfiles(nombre, apellido)")
+      .select("*, perfiles(nombre, apellido, nickname, mostrar_nombre_real)")
       .order("creado_en", { ascending: false })
       .then(({ data, error }) => {
         if (!error) setHilos(data || []);
         setCargandoHilos(false);
       });
+  }
+
+  if (vista === "perfil") {
+    return (
+      <MiPerfil
+        sesion={sesion}
+        perfil={perfil}
+        onVolver={() => setVista("foro")}
+        onActualizado={(p) => {
+          setPerfil(p);
+          cargarHilos();
+        }}
+      />
+    );
   }
 
   return (
@@ -397,17 +423,26 @@ function ClubProvisional({ sesion }) {
           <p className="text-white font-bold text-sm">Underground</p>
           {perfil && (
             <p className="text-xs" style={{ color: "#BFD9EE" }}>
-              {perfil.nombre} {perfil.apellido} · {perfil.cargo}
+              {nombrePublico(perfil)} · {perfil.cargo}
             </p>
           )}
         </div>
-        <button
-          onClick={() => supabase.auth.signOut()}
-          style={{ borderColor: "rgba(255,255,255,0.35)" }}
-          className="text-white text-xs font-semibold border rounded-full px-3 py-1.5"
-        >
-          Cerrar sesión
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setVista("perfil")}
+            style={{ borderColor: "rgba(255,255,255,0.35)" }}
+            className="text-white text-xs font-semibold border rounded-full px-3 py-1.5"
+          >
+            Mi perfil
+          </button>
+          <button
+            onClick={() => supabase.auth.signOut()}
+            style={{ borderColor: "rgba(255,255,255,0.35)" }}
+            className="text-white text-xs font-semibold border rounded-full px-3 py-1.5"
+          >
+            Cerrar sesión
+          </button>
+        </div>
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">
@@ -439,7 +474,7 @@ function ClubProvisional({ sesion }) {
                 {h.titulo}
               </p>
               <p className="text-xs mt-1" style={{ color: C.mute }}>
-                {`${h.perfiles?.nombre || ""} ${h.perfiles?.apellido || ""}`} ·{" "}
+                {nombrePublico(h.perfiles)} ·{" "}
                 {new Date(h.creado_en).toLocaleString("es-ES")}
               </p>
               {h.texto && (
@@ -453,6 +488,196 @@ function ClubProvisional({ sesion }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
+  const [nickname, setNickname] = useState("");
+  const [cargo, setCargo] = useState("");
+  const [intereses, setIntereses] = useState("");
+  const [mostrarNombreReal, setMostrarNombreReal] = useState(false);
+  const [mostrarDne, setMostrarDne] = useState(false);
+  const [mostrarCargo, setMostrarCargo] = useState(true);
+  const [mostrarIntereses, setMostrarIntereses] = useState(true);
+  const [permiteSeguir, setPermiteSeguir] = useState(true);
+  const [notificarComentarios, setNotificarComentarios] = useState(true);
+  const [mostrarSeguidores, setMostrarSeguidores] = useState(true);
+  const [cargando, setCargando] = useState(false);
+  const [mensaje, setMensaje] = useState(null);
+
+  useEffect(() => {
+    if (!perfil) return;
+    setNickname(perfil.nickname || "");
+    setCargo(perfil.cargo || "");
+    setIntereses(perfil.intereses || "");
+    setMostrarNombreReal(!!perfil.mostrar_nombre_real);
+    setMostrarDne(!!perfil.mostrar_dne);
+    setMostrarCargo(perfil.mostrar_cargo !== false);
+    setMostrarIntereses(perfil.mostrar_intereses !== false);
+    setPermiteSeguir(perfil.permite_seguir !== false);
+    setNotificarComentarios(perfil.notificar_comentarios !== false);
+    setMostrarSeguidores(perfil.mostrar_seguidores !== false);
+  }, [perfil]);
+
+  async function guardar() {
+    setMensaje(null);
+    setCargando(true);
+    const { data, error } = await supabase
+      .from("perfiles")
+      .update({
+        nickname: nickname.trim() || null,
+        cargo,
+        intereses: intereses.trim(),
+        mostrar_nombre_real: mostrarNombreReal,
+        mostrar_dne: mostrarDne,
+        mostrar_cargo: mostrarCargo,
+        mostrar_intereses: mostrarIntereses,
+        permite_seguir: permiteSeguir,
+        notificar_comentarios: notificarComentarios,
+        mostrar_seguidores: mostrarSeguidores,
+      })
+      .eq("id", sesion.user.id)
+      .select()
+      .single();
+    setCargando(false);
+    if (error) {
+      setMensaje({ tipo: "error", texto: error.message });
+      return;
+    }
+    setMensaje({ tipo: "ok", texto: "Perfil actualizado." });
+    onActualizado(data);
+  }
+
+  if (!perfil) {
+    return (
+      <div style={{ background: "#F3F6F9" }} className="min-h-screen flex items-center justify-center">
+        <p className="text-sm" style={{ color: C.mute }}>Cargando perfil...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: "#F3F6F9" }} className="min-h-screen">
+      <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
+        <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
+          <ArrowLeft size={14} /> Volver
+        </button>
+        <p className="text-white font-bold text-sm">Mi perfil</p>
+      </div>
+
+      <div className="max-w-2xl mx-auto p-4 space-y-4">
+        <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
+          <div className="flex items-center gap-3 mb-1">
+            <div
+              style={{ background: C.blue }}
+              className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0"
+            >
+              {(perfil.nickname || perfil.nombre || "?").slice(0, 1).toUpperCase()}
+            </div>
+            <div>
+              <p className="text-sm font-semibold" style={{ color: C.ink }}>
+                {perfil.nombre} {perfil.apellido}
+              </p>
+              <p className="text-xs" style={{ color: C.mute }}>DNE: {perfil.dne}</p>
+            </div>
+          </div>
+          <p className="text-xs rounded-lg p-2.5" style={{ background: "#EAF2F9", color: C.blueDark }}>
+            Tu nombre real y tu DNE solo los ve el equipo de administración, salvo que actives
+            aquí que se muestren.
+          </p>
+
+          {mensaje && (
+            <p
+              className="text-xs rounded-lg p-2.5"
+              style={{
+                background: mensaje.tipo === "error" ? "#FCEBEA" : "#E7F7EE",
+                color: mensaje.tipo === "error" ? C.red : "#15803D",
+              }}
+            >
+              {mensaje.texto}
+            </p>
+          )}
+
+          <div>
+            <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+              Nick (como te verán los demás)
+            </label>
+            <input
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="Ej: SectorNorte84"
+              className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+              style={{ borderColor: C.line, color: C.ink }}
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+              Puesto / categoría
+            </label>
+            <select
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+              className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+              style={{ borderColor: C.line, color: C.ink }}
+            >
+              <option value="">Selecciona...</option>
+              <option>Jefe/a de Sector</option>
+              <option>Maquinista de Tracción Eléctrica</option>
+              <option>Mantenimiento (Vía / Instalaciones / Material Móvil)</option>
+              <option>Técnico/a administrativo</option>
+              <option>Técnico/a informático</option>
+              <option>Otro</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+              Sobre ti (opcional)
+            </label>
+            <textarea
+              value={intereses}
+              onChange={(e) => setIntereses(e.target.value)}
+              rows={2}
+              placeholder="Ej: aficionado al ciclismo, madrugador..."
+              className="w-full rounded-lg border px-3 py-2 text-sm outline-none resize-none"
+              style={{ borderColor: C.line, color: C.ink }}
+            />
+          </div>
+        </div>
+
+        <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-1">
+          <p className="text-xs font-semibold mb-2" style={{ color: C.ink }}>
+            Qué ven los demás socios de ti
+          </p>
+          <CasillaPerfil label="Mostrar mi nombre real (en vez de solo el nick)" checked={mostrarNombreReal} onChange={setMostrarNombreReal} />
+          <CasillaPerfil label="Mostrar mi DNE" checked={mostrarDne} onChange={setMostrarDne} />
+          <CasillaPerfil label="Mostrar mi puesto / categoría" checked={mostrarCargo} onChange={setMostrarCargo} />
+          <CasillaPerfil label="Mostrar lo que he escrito en 'Sobre ti'" checked={mostrarIntereses} onChange={setMostrarIntereses} />
+          <CasillaPerfil label="Mostrar mi lista de seguidores" checked={mostrarSeguidores} onChange={setMostrarSeguidores} />
+          <CasillaPerfil label="Permitir que otros socios me sigan" checked={permiteSeguir} onChange={setPermiteSeguir} />
+          <CasillaPerfil label="Notificarme cuando respondan a mis temas" checked={notificarComentarios} onChange={setNotificarComentarios} />
+        </div>
+
+        <BotonPrincipal onClick={guardar} cargando={cargando}>
+          Guardar cambios
+        </BotonPrincipal>
+      </div>
+    </div>
+  );
+}
+
+function CasillaPerfil({ label, checked, onChange }) {
+  return (
+    <label className="flex items-center gap-2 text-sm py-1.5" style={{ color: C.ink }}>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="w-4 h-4"
+      />
+      {label}
+    </label>
   );
 }
 
@@ -560,7 +785,7 @@ function Respuestas({ hiloId, sesion }) {
     setCargando(true);
     supabase
       .from("respuestas")
-      .select("*, perfiles(nombre, apellido)")
+      .select("*, perfiles(nombre, apellido, nickname, mostrar_nombre_real)")
       .eq("hilo_id", hiloId)
       .order("creado_en", { ascending: true })
       .then(({ data, error }) => {
@@ -611,7 +836,7 @@ function Respuestas({ hiloId, sesion }) {
         {respuestas.map((r) => (
           <div key={r.id} style={{ background: "#F3F6F9" }} className="rounded-lg p-2">
             <p className="text-xs font-semibold" style={{ color: C.ink }}>
-              {`${r.perfiles?.nombre || ""} ${r.perfiles?.apellido || ""}`}{" "}
+              {nombrePublico(r.perfiles)}{" "}
               <span className="font-normal" style={{ color: C.mute }}>
                 · {new Date(r.creado_en).toLocaleString("es-ES")}
               </span>
