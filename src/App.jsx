@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -427,10 +427,49 @@ function ClubProvisional({ sesion }) {
       .from("hilos")
       .select("*, perfiles(nombre, apellido, nickname, mostrar_nombre_real)")
       .order("creado_en", { ascending: false })
-      .then(({ data, error }) => {
-        if (!error) setHilos(data || []);
+      .then(async ({ data, error }) => {
+        if (error || !data) {
+          setCargandoHilos(false);
+          return;
+        }
+        const ids = data.map((h) => h.id);
+        const { data: reacciones } = await supabase
+          .from("reacciones")
+          .select("hilo_id, usuario_id, tipo")
+          .in("hilo_id", ids.length ? ids : ["00000000-0000-0000-0000-000000000000"]);
+        const conReacciones = data.map((h) => {
+          const deEsteHilo = (reacciones || []).filter((r) => r.hilo_id === h.id);
+          const conteo = { meGusta: 0, meDaIgual: 0, meCabrea: 0 };
+          let miVoto = null;
+          deEsteHilo.forEach((r) => {
+            conteo[r.tipo] = (conteo[r.tipo] || 0) + 1;
+            if (r.usuario_id === sesion.user.id) miVoto = r.tipo;
+          });
+          return { ...h, reacciones: conteo, miVoto };
+        });
+        setHilos(conReacciones);
         setCargandoHilos(false);
       });
+  }
+
+  async function votar(hiloId, tipoVoto) {
+    const hilo = hilos.find((h) => h.id === hiloId);
+    const yaVotado = hilo && hilo.miVoto === tipoVoto;
+    if (yaVotado) {
+      await supabase
+        .from("reacciones")
+        .delete()
+        .eq("hilo_id", hiloId)
+        .eq("usuario_id", sesion.user.id);
+    } else {
+      await supabase
+        .from("reacciones")
+        .upsert(
+          { hilo_id: hiloId, usuario_id: sesion.user.id, tipo: tipoVoto },
+          { onConflict: "hilo_id,usuario_id" }
+        );
+    }
+    cargarHilos();
   }
 
   if (vista === "perfil") {
@@ -513,6 +552,32 @@ function ClubProvisional({ sesion }) {
                   {h.texto}
                 </p>
               )}
+              <div className="flex items-center gap-4 mt-3 pt-3 border-t" style={{ borderColor: C.line }}>
+                <BotonReaccion
+                  icon={ThumbsUp}
+                  color="#22C55E"
+                  activo={h.miVoto === "meGusta"}
+                  cantidad={h.reacciones ? h.reacciones.meGusta : 0}
+                  onClick={() => votar(h.id, "meGusta")}
+                  label="Me gusta"
+                />
+                <BotonReaccion
+                  icon={Meh}
+                  color="#EAB308"
+                  activo={h.miVoto === "meDaIgual"}
+                  cantidad={h.reacciones ? h.reacciones.meDaIgual : 0}
+                  onClick={() => votar(h.id, "meDaIgual")}
+                  label="Me da igual"
+                />
+                <BotonReaccion
+                  icon={Angry}
+                  color={C.red}
+                  activo={h.miVoto === "meCabrea"}
+                  cantidad={h.reacciones ? h.reacciones.meCabrea : 0}
+                  onClick={() => votar(h.id, "meCabrea")}
+                  label="Me cabrea"
+                />
+              </div>
               <Respuestas hiloId={h.id} sesion={sesion} />
             </div>
           ))}
@@ -1072,6 +1137,21 @@ function Respuestas({ hiloId, sesion }) {
         </button>
       </div>
     </div>
+  );
+}
+
+function BotonReaccion({ icon: Icon, color, activo, cantidad, onClick, label }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className="flex flex-col items-center gap-0.5"
+    >
+      <Icon size={17} style={{ color: activo ? color : C.mute }} strokeWidth={activo ? 2.5 : 2} />
+      <span className="text-xs font-semibold" style={{ color: activo ? color : C.mute }}>
+        {cantidad}
+      </span>
+    </button>
   );
 }
 
