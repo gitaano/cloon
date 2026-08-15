@@ -502,6 +502,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [permiteSeguir, setPermiteSeguir] = useState(true);
   const [notificarComentarios, setNotificarComentarios] = useState(true);
   const [mostrarSeguidores, setMostrarSeguidores] = useState(true);
+  const [mostrarPreview, setMostrarPreview] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState(null);
 
@@ -657,11 +658,77 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
           <CasillaPerfil label="Mostrar mi lista de seguidores" checked={mostrarSeguidores} onChange={setMostrarSeguidores} />
           <CasillaPerfil label="Permitir que otros socios me sigan" checked={permiteSeguir} onChange={setPermiteSeguir} />
           <CasillaPerfil label="Notificarme cuando respondan a mis temas" checked={notificarComentarios} onChange={setNotificarComentarios} />
+
+        <button
+          onClick={() => setMostrarPreview((v) => !v)}
+          style={{ borderColor: C.blue, color: C.blue }}
+          className="w-full border-2 font-semibold py-2.5 rounded-lg text-sm bg-white"
+        >
+          {mostrarPreview ? "Ocultar" : "Ver mi tarjeta como la ven otros"}
+        </button>
+
+        {mostrarPreview && (
+          <TarjetaSocioPreview
+            perfilPreview={{
+              nombre: perfil.nombre,
+              apellido: perfil.apellido,
+              dne: perfil.dne,
+              nickname,
+              cargo,
+              intereses,
+              mostrar_nombre_real: mostrarNombreReal,
+              mostrar_dne: mostrarDne,
+              mostrar_cargo: mostrarCargo,
+              mostrar_intereses: mostrarIntereses,
+            }}
+          />
+        )}
         </div>
 
         <BotonPrincipal onClick={guardar} cargando={cargando}>
           Guardar cambios
         </BotonPrincipal>
+      </div>
+    </div>
+  );
+}
+
+function TarjetaSocioPreview({ perfilPreview }) {
+  const p = perfilPreview;
+  return (
+    <div style={{ background: C.blueDarker }} className="rounded-xl p-4">
+      <p className="text-xs font-semibold mb-3" style={{ color: "#BFD9EE" }}>
+        Así te ven los demás socios:
+      </p>
+      <div style={{ background: C.white }} className="rounded-xl p-4">
+        <div className="flex items-center gap-3">
+          <div
+            style={{ background: C.blue }}
+            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0"
+          >
+            {(nombrePublico(p) || "?").slice(0, 1).toUpperCase()}
+          </div>
+          <div>
+            <p className="text-sm font-semibold" style={{ color: C.ink }}>
+              {nombrePublico(p)}
+            </p>
+            {p.mostrar_cargo && p.cargo && (
+              <p className="text-xs" style={{ color: C.mute }}>
+                {p.cargo}
+              </p>
+            )}
+          </div>
+        </div>
+        {p.mostrar_dne && p.dne && (
+          <p className="text-xs mt-2" style={{ color: C.mute }}>
+            DNE: {p.dne}
+          </p>
+        )}
+        {p.mostrar_intereses && p.intereses && (
+          <p className="text-sm mt-2" style={{ color: C.ink }}>
+            {p.intereses}
+          </p>
+        )}
       </div>
     </div>
   );
