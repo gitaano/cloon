@@ -362,6 +362,37 @@ const AMBITOS = [
   { id: "general", nombre: "General / Café" },
 ];
 
+const LINEAS_METRO = [
+  { id: "L1", nombre: "Línea 1" },
+  { id: "L2", nombre: "Línea 2" },
+  { id: "L3", nombre: "Línea 3" },
+  { id: "L4", nombre: "Línea 4" },
+  { id: "L5", nombre: "Línea 5" },
+  { id: "L6", nombre: "Línea 6 (Circular)" },
+  { id: "L7", nombre: "Línea 7" },
+  { id: "L8", nombre: "Línea 8" },
+  { id: "L9", nombre: "Línea 9" },
+  { id: "L10", nombre: "Línea 10" },
+  { id: "L11", nombre: "Línea 11" },
+  { id: "L12", nombre: "Línea 12 (MetroSur)" },
+  { id: "R", nombre: "Ramal" },
+];
+
+const INDICADORES_CALENDARIO = [
+  { id: "libranza", nombre: "Libranza" },
+  { id: "pap", nombre: "PAP remunerado" },
+  { id: "pap_no_remunerado", nombre: "PAP no remunerado" },
+  { id: "rj", nombre: "Reducción jornada" },
+  { id: "baja", nombre: "Baja" },
+  { id: "vacaciones", nombre: "Vacaciones" },
+  { id: "trabajo_permuta", nombre: "Trabajo por permuta" },
+  { id: "descanso_permuta", nombre: "Descanso por permuta" },
+  { id: "compensa", nombre: "Compensa" },
+  { id: "desplazamiento", nombre: "Desplazamiento" },
+  { id: "horasExtra", nombre: "Horas extra" },
+  { id: "reconocimientoMedico", nombre: "Reconoc. médico" },
+];
+
 function nombrePublico(p) {
   if (!p) return "";
   if (p.nickname) return p.nickname;
@@ -507,6 +538,8 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [mensaje, setMensaje] = useState(null);
   const [fotoUrl, setFotoUrl] = useState("");
   const [subiendoFoto, setSubiendoFoto] = useState(false);
+  const [lineaPreferente, setLineaPreferente] = useState("");
+  const [indicadoresCalendario, setIndicadoresCalendario] = useState(INDICADORES_CALENDARIO.map((i) => i.id));
 
   useEffect(() => {
     if (!perfil) return;
@@ -521,7 +554,15 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
     setNotificarComentarios(perfil.notificar_comentarios !== false);
     setMostrarSeguidores(perfil.mostrar_seguidores !== false);
     setFotoUrl(perfil.foto_url || "");
+    setLineaPreferente(perfil.linea_preferente || "");
+    setIndicadoresCalendario(perfil.indicadores_calendario || INDICADORES_CALENDARIO.map((i) => i.id));
   }, [perfil]);
+
+  function toggleIndicador(id) {
+    setIndicadoresCalendario((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  }
 
   async function guardar() {
     setMensaje(null);
@@ -539,6 +580,8 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
         permite_seguir: permiteSeguir,
         notificar_comentarios: notificarComentarios,
         mostrar_seguidores: mostrarSeguidores,
+        linea_preferente: lineaPreferente,
+        indicadores_calendario: indicadoresCalendario,
       })
       .eq("id", sesion.user.id)
       .select()
@@ -706,6 +749,45 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
           <CasillaPerfil label="Mostrar mi lista de seguidores" checked={mostrarSeguidores} onChange={setMostrarSeguidores} />
           <CasillaPerfil label="Permitir que otros socios me sigan" checked={permiteSeguir} onChange={setPermiteSeguir} />
           <CasillaPerfil label="Notificarme cuando respondan a mis temas" checked={notificarComentarios} onChange={setNotificarComentarios} />
+
+        <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
+          <p className="text-xs font-semibold" style={{ color: C.ink }}>
+            Preferencias del futuro calendario
+          </p>
+          <div>
+            <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+              Línea preferente
+            </label>
+            <select
+              value={lineaPreferente}
+              onChange={(e) => setLineaPreferente(e.target.value)}
+              className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+              style={{ borderColor: C.line, color: C.ink }}
+            >
+              <option value="">Sin preferencia</option>
+              {LINEAS_METRO.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <p className="text-xs font-semibold mb-1" style={{ color: C.ink }}>
+              Qué apartados quiero ver marcados
+            </p>
+            <div className="grid grid-cols-2 gap-x-3">
+              {INDICADORES_CALENDARIO.map((ind) => (
+                <CasillaPerfil
+                  key={ind.id}
+                  label={ind.nombre}
+                  checked={indicadoresCalendario.includes(ind.id)}
+                  onChange={() => toggleIndicador(ind.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
 
         <button
           onClick={() => setMostrarPreview((v) => !v)}
