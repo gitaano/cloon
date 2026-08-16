@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, X } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -362,6 +362,63 @@ const AMBITOS = [
   { id: "general", nombre: "General / Café", icon: MessageSquare },
 ];
 
+const LINEAS_METRO_ESTACIONES = {
+  L1: { nombre: "Línea 1", estaciones: ["Pinar de Chamartín", "Bambú", "Chamartín", "Plaza de Castilla", "Valdeacederas", "Tetuán", "Estrecho", "Alvarado", "Cuatro Caminos", "Ríos Rosas", "Iglesia", "Bilbao", "Tribunal", "Gran Vía", "Sol", "Tirso de Molina", "Antón Martín", "Estación del Arte", "Atocha Renfe", "Menéndez Pelayo", "Pacífico", "Puente de Vallecas", "Nueva Numancia", "Portazgo", "Buenos Aires", "Alto del Arenal", "Miguel Hernández", "Sierra de Guadalupe", "Villa de Vallecas", "Congosto", "La Gavia", "Las Suertes", "Valdecarros"] },
+  L2: { nombre: "Línea 2", estaciones: ["Las Rosas", "Avenida de Guadalajara", "Alsacia", "La Almudena", "La Elipa", "Ventas", "Manuel Becerra", "Goya", "Príncipe de Vergara", "Retiro", "Banco de España", "Sevilla", "Sol", "Ópera", "Santo Domingo", "Noviciado", "San Bernardo", "Quevedo", "Canal", "Cuatro Caminos"] },
+  L3: { nombre: "Línea 3", estaciones: ["Moncloa", "Argüelles", "Ventura Rodríguez", "Plaza de España", "Callao", "Sol", "Lavapiés", "Embajadores", "Palos de la Frontera", "Delicias", "Legazpi", "Almendrales", "Hospital 12 de Octubre", "San Fermín-Orcasur", "Ciudad de los Ángeles", "Villaverde Bajo-Cruce", "San Cristóbal", "Villaverde Alto", "El Casar"] },
+  L4: { nombre: "Línea 4", estaciones: ["Argüelles", "San Bernardo", "Bilbao", "Alonso Martínez", "Colón", "Serrano", "Velázquez", "Goya", "Lista", "Diego de León", "Avenida de América", "Prosperidad", "Alfonso XIII", "Avenida de la Paz", "Arturo Soria", "Esperanza", "Canillas", "Mar de Cristal", "San Lorenzo", "Parque de Santa María", "Hortaleza", "Manoteras", "Pinar de Chamartín"] },
+  L5: { nombre: "Línea 5", estaciones: ["Alameda de Osuna", "El Capricho", "Canillejas", "Torre Arias", "Suanzes", "Ciudad Lineal", "Pueblo Nuevo", "Quintana", "El Carmen", "Ventas", "Diego de León", "Núñez de Balboa", "Rubén Darío", "Alonso Martínez", "Chueca", "Gran Vía", "Callao", "Ópera", "La Latina", "Puerta de Toledo", "Acacias", "Pirámides", "Marqués de Vadillo", "Urgel", "Oporto", "Vista Alegre", "Carabanchel", "Eugenia de Montijo", "Aluche", "Empalme", "Campamento", "Casa de Campo"] },
+  L6: { nombre: "Línea 6 (Circular)", estaciones: ["Laguna", "Carpetana", "Oporto", "Opañel", "Plaza Elíptica", "Usera", "Legazpi", "Arganzuela-Planetario", "Méndez Álvaro", "Pacífico", "Conde de Casal", "Sainz de Baranda", "O'Donnell", "Manuel Becerra", "Diego de León", "Avenida de América", "República Argentina", "Nuevos Ministerios", "Cuatro Caminos", "Guzmán el Bueno", "Metropolitano", "Ciudad Universitaria", "Moncloa", "Argüelles", "Príncipe Pío", "Puerta del Ángel", "Alto de Extremadura", "Lucero"] },
+  L7: { nombre: "Línea 7", estaciones: ["Hospital del Henares", "Henares", "Jarama", "San Fernando", "La Rambla", "Coslada Central", "Barrio del Puerto", "Estadio Metropolitano", "Las Musas", "San Blas", "Simancas", "García Noblejas", "Ascao", "Pueblo Nuevo", "Barrio de la Concepción", "Parque de las Avenidas", "Cartagena", "Avenida de América", "Gregorio Marañón", "Alonso Cano", "Canal", "Islas Filipinas", "Guzmán el Bueno", "Francos Rodríguez", "Valdezarza", "Antonio Machado", "Peñagrande", "Avenida de la Ilustración", "Lacoma", "Pitis"] },
+  L8: { nombre: "Línea 8", estaciones: ["Nuevos Ministerios", "Colombia", "Pinar del Rey", "Mar de Cristal", "Campo de las Naciones", "Aeropuerto T1-T2-T3", "Barajas", "Aeropuerto T4"] },
+  L9: { nombre: "Línea 9", estaciones: ["Paco de Lucía", "Mirasierra", "Herrera Oria", "Barrio del Pilar", "Ventilla", "Plaza de Castilla", "Duque de Pastrana", "Pío XII", "Colombia", "Concha Espina", "Cruz del Rayo", "Avenida de América", "Núñez de Balboa", "Príncipe de Vergara", "Ibiza", "Sainz de Baranda", "Estrella", "Vinateros", "Artilleros", "Pavones", "Valdebernardo", "Vicálvaro", "San Cipriano", "Puerta de Arganda", "Rivas Urbanizaciones", "Rivas Futura", "Rivas Vaciamadrid", "La Poveda", "Arganda del Rey"] },
+  L10: { nombre: "Línea 10", estaciones: ["Hospital Infanta Sofía", "Reyes Católicos", "Baunatal", "Manuel de Falla", "Marqués de la Valdavia", "La Moraleja", "La Granja", "Ronda de la Comunicación", "Las Tablas", "Montecarmelo", "Tres Olivos", "Fuencarral", "Begoña", "Chamartín", "Plaza de Castilla", "Cuzco", "Santiago Bernabéu", "Nuevos Ministerios", "Gregorio Marañón", "Alonso Martínez", "Tribunal", "Plaza de España", "Príncipe Pío", "Lago", "Batán", "Casa de Campo", "Colonia Jardín", "Aviación Española", "Cuatro Vientos", "Joaquín Vilumbrales", "Puerta del Sur"] },
+  L11: { nombre: "Línea 11", estaciones: ["Plaza Elíptica", "Abrantes", "Pan Bendito", "San Francisco", "Carabanchel Alto", "La Peseta", "La Fortuna"] },
+  L12: { nombre: "Línea 12 (MetroSur)", estaciones: ["Puerta del Sur", "Parque Lisboa", "Alcorcón Central", "Parque Oeste", "Universidad Rey Juan Carlos", "Móstoles Central", "Pradillo", "Hospital de Móstoles", "Manuela Malasaña", "Loranca", "Hospital de Fuenlabrada", "Parque Europa", "Fuenlabrada Central", "Parque de los Estados", "Arroyo Culebro", "Conservatorio", "Alonso de Mendoza", "Getafe Central", "Juan de la Cierva", "El Casar", "Los Espartales", "El Bercial", "El Carrascal", "Julián Besteiro", "Casa del Reloj", "Hospital Severo Ochoa", "Leganés Central", "San Nicasio", "Puerta del Sur"] },
+  R: { nombre: "Ramal", estaciones: ["Ópera", "Príncipe Pío"] },
+};
+
+const TURNOS = {
+  sector: [
+    { id: "M", nombre: "M" },
+    { id: "T", nombre: "T" },
+    { id: "S", nombre: "S" },
+    { id: "P", nombre: "P" },
+  ],
+  maquinista: [
+    { id: "M0530", nombre: "M0530" },
+    { id: "M0550", nombre: "M0550" },
+    { id: "M0600", nombre: "M0600" },
+    { id: "M0615", nombre: "M0615" },
+    { id: "M0630", nombre: "M0630" },
+    { id: "M0645", nombre: "M0645" },
+    { id: "M0700", nombre: "M0700" },
+    { id: "M0715", nombre: "M0715" },
+    { id: "P0730", nombre: "P0730" },
+    { id: "T1245", nombre: "T1245" },
+    { id: "T1300", nombre: "T1300" },
+    { id: "T1315", nombre: "T1315" },
+    { id: "T1320", nombre: "T1320" },
+    { id: "T1330", nombre: "T1330" },
+    { id: "T1345", nombre: "T1345" },
+    { id: "T1400", nombre: "T1400" },
+    { id: "T1415", nombre: "T1415" },
+    { id: "T1430", nombre: "T1430" },
+    { id: "T1500", nombre: "T1500" },
+    { id: "T1530", nombre: "T1530" },
+    { id: "T1600", nombre: "T1600" },
+    { id: "S1700", nombre: "S1700" },
+    { id: "S1730", nombre: "S1730" },
+    { id: "S1745", nombre: "S1745" },
+    { id: "S1830", nombre: "S1830" },
+    { id: "S1845", nombre: "S1845" },
+    { id: "N2230", nombre: "N2230" },
+    { id: "D0600", nombre: "D0600" },
+    { id: "D0630", nombre: "D0630" },
+    { id: "RVA", nombre: "RVA" },
+  ],
+};
+
 const LINEAS_METRO = [
   { id: "L1", nombre: "Línea 1" },
   { id: "L2", nombre: "Línea 2" },
@@ -407,6 +464,9 @@ function ClubProvisional({ sesion }) {
   const [formAbierto, setFormAbierto] = useState(false);
   const [vista, setVista] = useState("foro");
   const [ambitoActivo, setAmbitoActivo] = useState("todos");
+  const [cambiosCategoria, setCambiosCategoria] = useState("");
+  const [cambiosTipo, setCambiosTipo] = useState("");
+  const [modalCambioAbierto, setModalCambioAbierto] = useState(false);
 
   useEffect(() => {
     cargarPerfil();
@@ -473,6 +533,23 @@ function ClubProvisional({ sesion }) {
     cargarHilos();
   }
 
+  async function crearCambio({ ambito, titulo, texto, categoria, tipo, etiquetaCambio }) {
+    const { error } = await supabase.from("hilos").insert({
+      ambito,
+      titulo,
+      texto,
+      categoria,
+      tipo,
+      etiqueta_cambio: etiquetaCambio,
+      autor_id: sesion.user.id,
+    });
+    if (!error) {
+      setModalCambioAbierto(false);
+      setAmbitoActivo("cambios");
+      cargarHilos();
+    }
+  }
+
   if (vista === "perfil") {
     return (
       <MiPerfil
@@ -527,15 +604,36 @@ function ClubProvisional({ sesion }) {
             icon={MessageSquare}
             nombre="Todo el club"
           />
-          {AMBITOS.map((a) => (
-            <BotonAmbito
-              key={a.id}
-              activo={ambitoActivo === a.id}
-              onClick={() => setAmbitoActivo(a.id)}
-              icon={a.icon}
-              nombre={a.nombre}
-            />
-          ))}
+          {AMBITOS.map((a) =>
+            a.id === "cambios" ? (
+              <CambiosSelector
+                key={a.id}
+                activo={ambitoActivo === "cambios"}
+                categoria={cambiosCategoria}
+                tipo={cambiosTipo}
+                onAbrir={() => setAmbitoActivo("cambios")}
+                onCategoria={(v) => {
+                  setCambiosCategoria(v);
+                  setCambiosTipo("");
+                  setAmbitoActivo("cambios");
+                }}
+                onTipo={(v) => {
+                  setCambiosTipo(v);
+                  setAmbitoActivo("cambios");
+                }}
+                onContinuar={() => setModalCambioAbierto(true)}
+                onVerCambios={() => setAmbitoActivo("cambios")}
+              />
+            ) : (
+              <BotonAmbito
+                key={a.id}
+                activo={ambitoActivo === a.id}
+                onClick={() => setAmbitoActivo(a.id)}
+                icon={a.icon}
+                nombre={a.nombre}
+              />
+            )
+          )}
         </aside>
 
         <div className="flex-1 min-w-0 space-y-4">
@@ -548,6 +646,15 @@ function ClubProvisional({ sesion }) {
         </button>
 
         {formAbierto && <FormularioNuevoTema sesion={sesion} onCreado={() => { setFormAbierto(false); cargarHilos(); }} />}
+
+        {modalCambioAbierto && (
+          <ModalOfertaCambio
+            categoria={cambiosCategoria}
+            tipo={cambiosTipo}
+            onCerrar={() => setModalCambioAbierto(false)}
+            onCrear={crearCambio}
+          />
+        )}
 
         {cargandoHilos && <p className="text-sm text-center" style={{ color: C.mute }}>Cargando temas...</p>}
 
@@ -572,6 +679,11 @@ function ClubProvisional({ sesion }) {
                   );
                 })()}
               </p>
+              {h.etiqueta_cambio && (
+                <p className="text-xs font-bold" style={{ color: C.blueDark }}>
+                  {h.etiqueta_cambio}
+                </p>
+              )}
               <p className="text-sm font-semibold" style={{ color: C.ink }}>
                 {h.titulo}
               </p>
@@ -1200,6 +1312,597 @@ function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre }) {
         {nombre}
       </p>
     </button>
+  );
+}
+
+function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
+  const turnos = TURNOS[categoria] || [];
+  const esServicio = tipo === "servicio";
+  const esDiaLibre = tipo === "dia_libre";
+  const esVacaciones = tipo === "vacaciones";
+
+  const [diaOfrecido, setDiaOfrecido] = useState("");
+  const [turnoOfrecido, setTurnoOfrecido] = useState("");
+  const [turnosDeseados, setTurnosDeseados] = useState([]);
+  const [lineasPreferidas, setLineasPreferidas] = useState([]);
+  const [lineaEstacionConcreta, setLineaEstacionConcreta] = useState("");
+  const [estacionConcreta, setEstacionConcreta] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+
+  const [diaLibreQuiero, setDiaLibreQuiero] = useState("");
+  const [diasLibreOfrezco, setDiasLibreOfrezco] = useState([]);
+  const [nuevoDiaOfrecido, setNuevoDiaOfrecido] = useState("");
+
+  const [vacTengoInicio, setVacTengoInicio] = useState("");
+  const [vacTengoFin, setVacTengoFin] = useState("");
+  const [vacQuieroInicio, setVacQuieroInicio] = useState("");
+  const [vacQuieroFin, setVacQuieroFin] = useState("");
+  const [vacTemporada, setVacTemporada] = useState("");
+  const [vacModo, setVacModo] = useState("");
+
+  const minStr = (() => {
+    const m = new Date();
+    m.setDate(m.getDate() + 1);
+    return `${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, "0")}-${String(m.getDate()).padStart(2, "0")}`;
+  })();
+
+  function elegirDiaOfrecido(v) {
+    setDiaOfrecido(v < minStr ? minStr : v);
+  }
+
+  function anadirDiaOfrecido() {
+    if (!nuevoDiaOfrecido) return;
+    if (!diasLibreOfrezco.includes(nuevoDiaOfrecido)) {
+      setDiasLibreOfrezco((prev) => [...prev, nuevoDiaOfrecido].sort());
+    }
+    setNuevoDiaOfrecido("");
+  }
+
+  function quitarDiaOfrecido(dia) {
+    setDiasLibreOfrezco((prev) => prev.filter((d) => d !== dia));
+  }
+
+  function alternarTurnoDeseado(idTurno) {
+    setTurnosDeseados((prev) =>
+      prev.includes(idTurno) ? prev.filter((t) => t !== idTurno) : [...prev, idTurno]
+    );
+  }
+
+  function alternarLineaPreferida(idLinea) {
+    setLineasPreferidas((prev) =>
+      prev.includes(idLinea) ? prev.filter((l) => l !== idLinea) : [...prev, idLinea]
+    );
+  }
+
+  const ambosDias = esVacaciones
+    ? vacTengoInicio &&
+      vacTengoFin &&
+      vacQuieroInicio &&
+      vacQuieroFin &&
+      vacTemporada &&
+      (vacTemporada !== "ambas" || vacModo)
+    : esServicio
+    ? diaOfrecido &&
+      turnoOfrecido &&
+      (turnosDeseados.length > 0 ||
+        lineasPreferidas.length > 0 ||
+        (lineaEstacionConcreta && estacionConcreta))
+    : diaLibreQuiero && diasLibreOfrezco.length > 0;
+
+  const nombreCategoria = categoria === "sector" ? "Jefe/a de Sector" : "Maquinista";
+  const nombreCategoriaCorta = categoria === "sector" ? "J.Sector" : "Maquinista";
+  const tituloTipo = esServicio ? "servicio" : esDiaLibre ? "día libre" : "vacaciones";
+  const tituloTipoCorta = esServicio ? "Servicio" : esDiaLibre ? "Día Libre" : "Vacaciones";
+
+  function formatearFecha(f) {
+    if (!f) return "";
+    const [a, m, d] = f.split("-");
+    return `${d}/${m}/${a}`;
+  }
+
+  function publicarOferta() {
+    let titulo = "";
+    const lineasTexto = [];
+
+    if (esServicio) {
+      const nombreTurnoTenido = turnos.find((t) => t.id === turnoOfrecido)?.nombre || turnoOfrecido;
+      titulo = `Cambio día ${formatearFecha(diaOfrecido)} el turno ${turnoOfrecido} por:`;
+
+      if (turnosDeseados.length > 0) {
+        const nombres = turnosDeseados
+          .map((id) => turnos.find((t) => t.id === id)?.nombre || id)
+          .join(", ");
+        lineasTexto.push(`Turnos que me valdrían: ${nombres}`);
+      }
+      if (lineasPreferidas.length > 0) {
+        const nombres = lineasPreferidas.map((id) => LINEAS_METRO_ESTACIONES[id].nombre).join(", ");
+        lineasTexto.push(`Líneas de preferencia: ${nombres}`);
+      }
+      if (lineaEstacionConcreta && estacionConcreta) {
+        lineasTexto.push(
+          `Estación en concreto: ${estacionConcreta} (${LINEAS_METRO_ESTACIONES[lineaEstacionConcreta].nombre})`
+        );
+      }
+      lineasTexto.unshift(`Tengo: ${nombreTurnoTenido}, día ${formatearFecha(diaOfrecido)}`);
+    } else if (esDiaLibre) {
+      const diasFormateados = diasLibreOfrezco.map(formatearFecha).join(", ");
+      titulo = `Cambio día libre: necesito librar el ${formatearFecha(diaLibreQuiero)}, ofrezco a cambio ${diasFormateados}`;
+      lineasTexto.push(`Día que necesito librar: ${formatearFecha(diaLibreQuiero)}`);
+      lineasTexto.push(`Día(s) que ofrezco a cambio: ${diasFormateados}`);
+    } else {
+      const nombreTemporada =
+        vacTemporada === "verano" ? "Verano" : vacTemporada === "invierno" ? "Invierno" : "Verano e invierno";
+      titulo = `Cambio de vacaciones (${nombreTemporada}): ${formatearFecha(vacTengoInicio)} - ${formatearFecha(vacTengoFin)} por ${formatearFecha(vacQuieroInicio)} - ${formatearFecha(vacQuieroFin)}`;
+      lineasTexto.push(`Temporada: ${nombreTemporada}`);
+      if (vacTemporada === "ambas") {
+        lineasTexto.push(vacModo === "pack" ? "Se cambian las dos juntas, en pack" : "Se pueden cambiar por separado");
+      }
+      lineasTexto.push(`Periodo que tengo: del ${formatearFecha(vacTengoInicio)} al ${formatearFecha(vacTengoFin)}`);
+      lineasTexto.push(`Periodo que quiero: del ${formatearFecha(vacQuieroInicio)} al ${formatearFecha(vacQuieroFin)}`);
+    }
+
+    if (descripcion.trim()) lineasTexto.push("", descripcion.trim());
+
+    onCrear({
+      ambito: "cambios",
+      titulo,
+      texto: lineasTexto.join("\n"),
+      categoria,
+      tipo,
+      etiquetaCambio: `${nombreCategoriaCorta} | ${tituloTipoCorta}`,
+    });
+    onCerrar();
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center z-30 p-0 sm:p-4">
+      <div
+        style={{ background: C.white, maxHeight: "88vh" }}
+        className="w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col"
+      >
+        <div style={{ background: C.blueDark }} className="p-4 rounded-t-2xl flex items-center justify-between shrink-0">
+          <div className="text-white">
+            <p className="font-bold text-sm">Ofertar cambio de {tituloTipo}</p>
+            <p className="text-xs opacity-80">{nombreCategoria}</p>
+          </div>
+          <button onClick={onCerrar} className="text-white">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-4 space-y-4 overflow-y-auto">
+          {esServicio && (
+          <div>
+            <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+              Día del cambio
+            </label>
+            <input
+              type="date"
+              min={minStr}
+              value={diaOfrecido}
+              onChange={(e) => elegirDiaOfrecido(e.target.value)}
+              className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+              style={{ borderColor: C.line, color: C.ink }}
+            />
+          </div>
+          )}
+
+          {esDiaLibre && (
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                  Día que quieres/necesitas librar
+                </label>
+                <input
+                  type="date"
+                  min={minStr}
+                  value={diaLibreQuiero}
+                  onChange={(e) => setDiaLibreQuiero(e.target.value < minStr ? minStr : e.target.value)}
+                  className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: C.line, color: C.ink }}
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                  Día(s) que ofreces a cambio
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    min={minStr}
+                    value={nuevoDiaOfrecido}
+                    onChange={(e) => setNuevoDiaOfrecido(e.target.value < minStr ? minStr : e.target.value)}
+                    className="flex-1 rounded-lg border px-3 py-2 text-sm outline-none"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  />
+                  <button
+                    onClick={anadirDiaOfrecido}
+                    disabled={!nuevoDiaOfrecido}
+                    style={{ background: nuevoDiaOfrecido ? C.blue : "#B9C6D2" }}
+                    className="text-white text-sm font-semibold px-4 rounded-lg shrink-0"
+                  >
+                    Añadir
+                  </button>
+                </div>
+
+                {diasLibreOfrezco.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {diasLibreOfrezco.map((d) => (
+                      <span
+                        key={d}
+                        style={{ background: "#EAF2F9", color: C.blueDark }}
+                        className="text-xs font-semibold px-2.5 py-1.5 rounded-full flex items-center gap-1.5"
+                      >
+                        {formatearFecha(d)}
+                        <button onClick={() => quitarDiaOfrecido(d)} aria-label="Quitar día">
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {esVacaciones && (
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-semibold mb-1.5" style={{ color: C.ink }}>
+                  Periodo que tienes
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="date"
+                    min={minStr}
+                    value={vacTengoInicio}
+                    onChange={(e) => setVacTengoInicio(e.target.value < minStr ? minStr : e.target.value)}
+                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  />
+                  <input
+                    type="date"
+                    min={vacTengoInicio || minStr}
+                    value={vacTengoFin}
+                    onChange={(e) => setVacTengoFin(e.target.value < minStr ? minStr : e.target.value)}
+                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold mb-1.5" style={{ color: C.ink }}>
+                  Periodo que quieres
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="date"
+                    min={minStr}
+                    value={vacQuieroInicio}
+                    onChange={(e) => setVacQuieroInicio(e.target.value < minStr ? minStr : e.target.value)}
+                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  />
+                  <input
+                    type="date"
+                    min={vacQuieroInicio || minStr}
+                    value={vacQuieroFin}
+                    onChange={(e) => setVacQuieroFin(e.target.value < minStr ? minStr : e.target.value)}
+                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                  ¿Verano o invierno?
+                </label>
+                <select
+                  value={vacTemporada}
+                  onChange={(e) => {
+                    setVacTemporada(e.target.value);
+                    setVacModo("");
+                  }}
+                  className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: C.line, color: C.ink }}
+                >
+                  <option value="">Selecciona...</option>
+                  <option value="verano">Verano</option>
+                  <option value="invierno">Invierno</option>
+                  <option value="ambas">Las dos</option>
+                </select>
+              </div>
+
+              {vacTemporada === "ambas" && (
+                <div>
+                  <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                    ¿Cambias las dos en pack o por separado?
+                  </label>
+                  <select
+                    value={vacModo}
+                    onChange={(e) => setVacModo(e.target.value)}
+                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  >
+                    <option value="">Selecciona...</option>
+                    <option value="pack">En pack (las dos juntas)</option>
+                    <option value="separado">Por separado (vale una sola)</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          )}
+
+          {esServicio && diaOfrecido && (
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                Turno que tienes ese día
+              </label>
+              <select
+                value={turnoOfrecido}
+                onChange={(e) => setTurnoOfrecido(e.target.value)}
+                className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                style={{ borderColor: C.line, color: C.ink }}
+              >
+                <option value="">Selecciona...</option>
+                {turnos.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {esServicio && turnoOfrecido && (
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                Turno(s) que te valdrían ese mismo día
+              </label>
+              <div className="space-y-1.5">
+                {turnos.map((t) => (
+                  <label
+                    key={t.id}
+                    className="flex items-center gap-2 text-sm rounded-lg border px-3 py-2"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={turnosDeseados.includes(t.id)}
+                      onChange={() => alternarTurnoDeseado(t.id)}
+                      className="w-4 h-4"
+                    />
+                    {t.nombre}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {esServicio && turnoOfrecido && (
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                Línea(s) de preferencia (opcional)
+              </label>
+              <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                {Object.entries(LINEAS_METRO_ESTACIONES).map(([id, l]) => (
+                  <label
+                    key={id}
+                    className="flex items-center gap-2 text-sm rounded-lg border px-3 py-2"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={lineasPreferidas.includes(id)}
+                      onChange={() => alternarLineaPreferida(id)}
+                      className="w-4 h-4"
+                    />
+                    {l.nombre}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {esServicio && turnoOfrecido && (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                  ¿Alguna estación en concreto? (opcional)
+                </label>
+                <select
+                  value={lineaEstacionConcreta}
+                  onChange={(e) => {
+                    setLineaEstacionConcreta(e.target.value);
+                    setEstacionConcreta("");
+                  }}
+                  className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: C.line, color: C.ink }}
+                >
+                  <option value="">Selecciona una línea...</option>
+                  {Object.entries(LINEAS_METRO_ESTACIONES).map(([id, l]) => (
+                    <option key={id} value={id}>
+                      {l.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {lineaEstacionConcreta && (
+                <div>
+                  <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                    Estación
+                  </label>
+                  <select
+                    value={estacionConcreta}
+                    onChange={(e) => setEstacionConcreta(e.target.value)}
+                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  >
+                    <option value="">Selecciona...</option>
+                    {LINEAS_METRO_ESTACIONES[lineaEstacionConcreta].estaciones.map((est) => (
+                      <option key={est} value={est}>
+                        {est}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          )}
+
+          {ambosDias && (
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                Cuéntanos más (opcional)
+              </label>
+              <textarea
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+                placeholder="Ej: prefiero mañanas por temas familiares, línea 6 mejor que otras..."
+                rows={3}
+                className="w-full rounded-lg border px-3 py-2 text-sm outline-none resize-none"
+                style={{ borderColor: C.line, color: C.ink }}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 border-t shrink-0" style={{ borderColor: C.line }}>
+          <button
+            disabled={!ambosDias}
+            onClick={publicarOferta}
+            style={{ background: ambosDias ? C.blue : "#B9C6D2" }}
+            className="w-full text-white font-semibold py-2.5 rounded-lg text-sm"
+          >
+            Publicar oferta
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo, onContinuar, onVerCambios }) {
+  const [abierto, setAbierto] = useState(false);
+  const [accion, setAccion] = useState("");
+
+  const CATEGORIAS = [
+    { id: "sector", nombre: "Jefe/a de Sector" },
+    { id: "maquinista", nombre: "Maquinista" },
+  ];
+  const TIPOS = [
+    { id: "servicio", nombre: "Servicio" },
+    { id: "dia_libre", nombre: "Día libre" },
+    { id: "vacaciones", nombre: "Vacaciones" },
+  ];
+
+  return (
+    <div>
+      <button
+        onClick={() => {
+          setAbierto(!abierto);
+          onAbrir();
+        }}
+        className="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
+        style={{ background: activo ? "#EAF2F9" : "transparent" }}
+      >
+        <Repeat size={17} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold truncate" style={{ color: activo ? C.blueDark : C.ink }}>
+            Cambios
+          </p>
+        </div>
+        <ChevronRight
+          size={13}
+          className="shrink-0"
+          style={{ color: C.mute, transform: abierto ? "rotate(90deg)" : "none" }}
+        />
+      </button>
+
+      {abierto && (
+        <div className="pl-8 pr-2 pb-2 pt-1 space-y-2">
+          <div>
+            <p className="text-xs font-semibold mb-1" style={{ color: C.mute }}>
+              ¿Qué quieres hacer?
+            </p>
+            <select
+              value={accion}
+              onChange={(e) => {
+                const v = e.target.value;
+                setAccion(v);
+                if (v === "ver") onVerCambios();
+              }}
+              className="w-full rounded-lg border px-2.5 py-1.5 text-xs outline-none"
+              style={{ borderColor: C.line, color: C.ink }}
+            >
+              <option value="">Selecciona...</option>
+              <option value="ver">Ver cambios</option>
+              <option value="solicitar">Solicitar cambio</option>
+            </select>
+          </div>
+
+          {accion === "solicitar" && (
+            <>
+              <div>
+                <p className="text-xs font-semibold mb-1" style={{ color: C.mute }}>
+                  1. Elige tu categoría
+                </p>
+                <select
+                  value={categoria}
+                  onChange={(e) => onCategoria(e.target.value)}
+                  className="w-full rounded-lg border px-2.5 py-1.5 text-xs outline-none"
+                  style={{ borderColor: C.line, color: C.ink }}
+                >
+                  <option value="">Selecciona...</option>
+                  {CATEGORIAS.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {categoria && (
+                <div>
+                  <p className="text-xs font-semibold mb-1" style={{ color: C.mute }}>
+                    2. ¿Qué quieres ofertar?
+                  </p>
+                  <select
+                    value={tipo}
+                    onChange={(e) => onTipo(e.target.value)}
+                    className="w-full rounded-lg border px-2.5 py-1.5 text-xs outline-none"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  >
+                    <option value="">Selecciona...</option>
+                    {TIPOS.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {categoria && tipo && (
+                <div className="flex justify-center pt-1">
+                  <button
+                    onClick={onContinuar}
+                    style={{ background: C.blue }}
+                    className="text-white text-xs font-semibold px-5 py-2 rounded-lg"
+                  >
+                    Continuar
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
