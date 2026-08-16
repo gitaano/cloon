@@ -516,41 +516,29 @@ function ClubProvisional({ sesion }) {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto p-4 space-y-4">
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          <button
+      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-4 p-4">
+        <aside className="space-y-1 lg:w-56 lg:shrink-0">
+          <p className="text-xs font-bold uppercase tracking-wide px-2 mb-2" style={{ color: C.mute }}>
+            Ámbitos de trabajo
+          </p>
+          <BotonAmbito
+            activo={ambitoActivo === "todos"}
             onClick={() => setAmbitoActivo("todos")}
-            style={{
-              background: ambitoActivo === "todos" ? C.blue : C.white,
-              borderColor: C.line,
-              color: ambitoActivo === "todos" ? C.white : C.ink,
-            }}
-            className="shrink-0 flex items-center gap-1.5 border rounded-full px-3 py-1.5 text-xs font-semibold"
-          >
-            <MessageSquare size={14} />
-            Todo el club
-          </button>
-          {AMBITOS.map((a) => {
-            const Icono = a.icon;
-            const activo = ambitoActivo === a.id;
-            return (
-              <button
-                key={a.id}
-                onClick={() => setAmbitoActivo(a.id)}
-                style={{
-                  background: activo ? C.blue : C.white,
-                  borderColor: C.line,
-                  color: activo ? C.white : C.ink,
-                }}
-                className="shrink-0 flex items-center gap-1.5 border rounded-full px-3 py-1.5 text-xs font-semibold"
-              >
-                <Icono size={14} />
-                {a.nombre}
-              </button>
-            );
-          })}
-        </div>
+            icon={MessageSquare}
+            nombre="Todo el club"
+          />
+          {AMBITOS.map((a) => (
+            <BotonAmbito
+              key={a.id}
+              activo={ambitoActivo === a.id}
+              onClick={() => setAmbitoActivo(a.id)}
+              icon={a.icon}
+              nombre={a.nombre}
+            />
+          ))}
+        </aside>
 
+        <div className="flex-1 min-w-0 space-y-4">
         <button
           onClick={() => setFormAbierto((v) => !v)}
           style={{ background: C.blue }}
@@ -625,6 +613,7 @@ function ClubProvisional({ sesion }) {
               <Respuestas hiloId={h.id} sesion={sesion} />
             </div>
           ))}
+        </div>
         </div>
       </div>
     </div>
@@ -1195,6 +1184,21 @@ function BotonReaccion({ icon: Icon, color, activo, cantidad, onClick, label }) 
       <span className="text-xs font-semibold" style={{ color: activo ? color : C.mute }}>
         {cantidad}
       </span>
+    </button>
+  );
+}
+
+function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre }) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
+      style={{ background: activo ? "#EAF2F9" : "transparent" }}
+    >
+      <Icon size={17} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
+      <p className="text-sm font-semibold truncate" style={{ color: activo ? C.blueDark : C.ink }}>
+        {nombre}
+      </p>
     </button>
   );
 }
