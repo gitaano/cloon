@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, X } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, X, Ban, Contact, Settings } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -564,6 +564,10 @@ function ClubProvisional({ sesion }) {
     );
   }
 
+  if (vista === "admin") {
+    return <PanelAdmin sesion={sesion} perfil={perfil} onVolver={() => setVista("foro")} />;
+  }
+
   return (
     <div style={{ background: "#F3F6F9" }} className="min-h-screen">
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center justify-between">
@@ -583,6 +587,16 @@ function ClubProvisional({ sesion }) {
           >
             Mi perfil
           </button>
+          {perfil && (perfil.rol === "admin" || perfil.rol === "dev") && (
+            <button
+              onClick={() => setVista("admin")}
+              style={{ borderColor: "rgba(255,255,255,0.35)" }}
+              className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
+            >
+              <Settings size={13} />
+              Panel admin
+            </button>
+          )}
           <button
             onClick={() => supabase.auth.signOut()}
             style={{ borderColor: "rgba(255,255,255,0.35)" }}
@@ -1900,6 +1914,297 @@ function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo
               )}
             </>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PanelAdmin({ sesion, perfil, onVolver }) {
+  const [tab, setTab] = useState("usuarios");
+  const [usuarios, setUsuarios] = useState([]);
+  const [reportes, setReportes] = useState([]);
+  const [solicitudesBaneo, setSolicitudesBaneo] = useState([]);
+  const [baneadosIds, setBaneadosIds] = useState(new Set());
+  const [cargando, setCargando] = useState(true);
+  const [mensaje, setMensaje] = useState(null);
+  const [baneandoId, setBaneandoId] = useState(null);
+  const [motivoBaneo, setMotivoBaneo] = useState("");
+
+  const esDev = perfil?.rol === "dev";
+
+  useEffect(() => {
+    cargarTodo();
+  }, []);
+
+  async function cargarTodo() {
+    setCargando(true);
+    const [{ data: perfilesData }, { data: reportesData }, { data: solicitudesData }, { data: baneosData }] = await Promise.all([
+      supabase.from("perfiles").select("*").order("creado_en", { ascending: true }),
+      supabase.from("reportes").select("*, hilos(titulo)").eq("resuelto", false).order("creado_en", { ascending: false }),
+      supabase.from("solicitudes_baneo").select("*").eq("resuelto", false).order("creado_en", { ascending: false }),
+      supabase.from("baneos").select("usuario_id").eq("activo", true),
+    ]);
+    setUsuarios(perfilesData || []);
+    setReportes(reportesData || []);
+    setSolicitudesBaneo(solicitudesData || []);
+    setBaneadosIds(new Set((baneosData || []).map((b) => b.usuario_id)));
+    setCargando(false);
+  }
+
+  async function cambiarRol(usuarioId, nuevoRol) {
+    const { error } = await supabase.from("perfiles").update({ rol: nuevoRol }).eq("id", usuarioId);
+    if (!error) cargarTodo();
+    else setMensaje({ tipo: "error", texto: error.message });
+  }
+
+  async function confirmarBaneo() {
+    if (!motivoBaneo.trim()) return;
+    const { error } = await supabase.from("baneos").insert({
+      usuario_id: baneandoId,
+      motivo: motivoBaneo.trim(),
+      baneado_por_id: sesion.user.id,
+      activo: true,
+    });
+    if (!error) {
+      setBaneandoId(null);
+      setMotivoBaneo("");
+      cargarTodo();
+    } else {
+      setMensaje({ tipo: "error", texto: error.message });
+    }
+  }
+
+  async function desbanear(usuarioId) {
+    const { error } = await supabase
+      .from("baneos")
+      .update({ activo: false })
+      .eq("usuario_id", usuarioId)
+      .eq("activo", true);
+    if (!error) cargarTodo();
+  }
+
+  async function resolverReporte(id) {
+    const { error } = await supabase.from("reportes").update({ resuelto: true }).eq("id", id);
+    if (!error) cargarTodo();
+  }
+
+  async function resolverSolicitudBaneo(id) {
+    const { error } = await supabase.from("solicitudes_baneo").update({ resuelto: true }).eq("id", id);
+    if (!error) cargarTodo();
+  }
+
+  const TABS = [
+    { id: "usuarios", nombre: "Usuarios", icon: Contact, badge: 0 },
+    { id: "reportes", nombre: "Reportes", icon: ShieldCheck, badge: reportes.length },
+    { id: "baneos", nombre: "Peticiones de baneo", icon: Ban, badge: solicitudesBaneo.length },
+  ];
+
+  return (
+    <div style={{ background: C.bg }} className="min-h-screen">
+      <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
+        <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
+          <ArrowLeft size={14} /> Volver
+        </button>
+        <p className="text-white font-bold text-sm">Panel de administración</p>
+      </div>
+
+      <div className="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row gap-4">
+        <aside className="flex sm:flex-col gap-1 overflow-x-auto sm:w-48 sm:shrink-0">
+          {TABS.map((tb) => {
+            const Icono = tb.icon;
+            const activo = tab === tb.id;
+            return (
+              <button
+                key={tb.id}
+                onClick={() => setTab(tb.id)}
+                style={{ background: activo ? "#EAF2F9" : "transparent" }}
+                className="shrink-0 text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
+              >
+                <Icono size={17} style={{ color: activo ? C.blue : C.mute }} />
+                <span className="text-sm font-semibold whitespace-nowrap" style={{ color: activo ? C.blueDark : C.ink }}>
+                  {tb.nombre}
+                </span>
+                {!!tb.badge && (
+                  <span style={{ background: C.red }} className="text-xs text-white rounded-full px-1.5 py-0.5 font-bold leading-none ml-auto">
+                    {tb.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </aside>
+
+        <div className="flex-1 min-w-0 space-y-3">
+          {mensaje && (
+            <p className="text-xs rounded-lg p-2.5" style={{ background: "#FCEBEA", color: C.red }}>
+              {mensaje.texto}
+            </p>
+          )}
+
+          {cargando && (
+            <p className="text-sm" style={{ color: C.mute }}>
+              Cargando...
+            </p>
+          )}
+
+          {!cargando && tab === "usuarios" && (
+            <div className="space-y-2">
+              {usuarios.map((u) => (
+                <div
+                  key={u.id}
+                  style={{ background: C.white, borderColor: C.line }}
+                  className="rounded-xl border p-3 flex flex-wrap items-center gap-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold" style={{ color: C.ink }}>
+                      {u.nombre} {u.apellido}{" "}
+                      {baneadosIds.has(u.id) && (
+                        <span className="text-xs font-bold" style={{ color: C.red }}>
+                          (baneado)
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xs" style={{ color: C.mute }}>
+                      DNE: {u.dne} · {u.cargo}
+                    </p>
+                  </div>
+                  {esDev ? (
+                    <select
+                      value={u.rol || "socio"}
+                      onChange={(e) => cambiarRol(u.id, e.target.value)}
+                      className="rounded-lg border px-2 py-1.5 text-xs outline-none"
+                      style={{ borderColor: C.line, color: C.ink }}
+                    >
+                      <option value="socio">Socio</option>
+                      <option value="admin">Admin</option>
+                      <option value="dev">Dev</option>
+                    </select>
+                  ) : (
+                    <span className="text-xs font-semibold" style={{ color: C.mute }}>
+                      {u.rol || "socio"}
+                    </span>
+                  )}
+                  {baneadosIds.has(u.id) ? (
+                    <button
+                      onClick={() => desbanear(u.id)}
+                      style={{ borderColor: C.line, color: C.ink }}
+                      className="text-xs font-semibold border rounded-lg px-2.5 py-1.5"
+                    >
+                      Desbanear
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setBaneandoId(u.id)}
+                      style={{ borderColor: C.red, color: C.red }}
+                      className="text-xs font-semibold border rounded-lg px-2.5 py-1.5"
+                    >
+                      Banear
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!cargando && tab === "reportes" && (
+            <div className="space-y-2">
+              {reportes.length === 0 && (
+                <p className="text-sm" style={{ color: C.mute }}>
+                  No hay reportes pendientes.
+                </p>
+              )}
+              {reportes.map((r) => (
+                <div
+                  key={r.id}
+                  style={{ background: C.white, borderColor: C.line }}
+                  className="rounded-xl border p-3 space-y-1.5"
+                >
+                  <p className="text-sm font-semibold" style={{ color: C.ink }}>
+                    {r.hilos?.titulo || "Tema eliminado"}
+                  </p>
+                  <p className="text-xs" style={{ color: C.mute }}>
+                    {r.motivo}
+                  </p>
+                  <button
+                    onClick={() => resolverReporte(r.id)}
+                    style={{ background: C.blue }}
+                    className="text-white text-xs font-semibold px-3 py-1.5 rounded-lg"
+                  >
+                    Marcar resuelto
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!cargando && tab === "baneos" && (
+            <div className="space-y-2">
+              {solicitudesBaneo.length === 0 && (
+                <p className="text-sm" style={{ color: C.mute }}>
+                  No hay peticiones pendientes.
+                </p>
+              )}
+              {solicitudesBaneo.map((s) => (
+                <div
+                  key={s.id}
+                  style={{ background: C.white, borderColor: C.line }}
+                  className="rounded-xl border p-3 space-y-1.5"
+                >
+                  <p className="text-sm font-semibold" style={{ color: C.ink }}>
+                    {s.tipo}: {s.objetivo}
+                  </p>
+                  <p className="text-xs" style={{ color: C.mute }}>
+                    {s.motivo}
+                  </p>
+                  <button
+                    onClick={() => resolverSolicitudBaneo(s.id)}
+                    style={{ background: C.blue }}
+                    className="text-white text-xs font-semibold px-3 py-1.5 rounded-lg"
+                  >
+                    Marcar resuelto
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {baneandoId && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-30 p-4">
+          <div style={{ background: C.white }} className="w-full max-w-sm rounded-2xl p-4 space-y-3">
+            <p className="font-bold text-sm" style={{ color: C.ink }}>
+              Motivo del baneo
+            </p>
+            <textarea
+              value={motivoBaneo}
+              onChange={(e) => setMotivoBaneo(e.target.value)}
+              rows={3}
+              className="w-full rounded-lg border px-3 py-2 text-sm outline-none resize-none"
+              style={{ borderColor: C.line, color: C.ink }}
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setBaneandoId(null);
+                  setMotivoBaneo("");
+                }}
+                style={{ borderColor: C.line, color: C.ink }}
+                className="flex-1 border text-sm font-semibold py-2 rounded-lg"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmarBaneo}
+                disabled={!motivoBaneo.trim()}
+                style={{ background: motivoBaneo.trim() ? C.red : "#B9C6D2" }}
+                className="flex-1 text-white text-sm font-semibold py-2 rounded-lg"
+              >
+                Banear
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
