@@ -2492,6 +2492,28 @@ function CalendarioTurnos({
     return fecha < hoyStr ? "#D9DEE3" : C.white;
   }
 
+  function resumenDia(r, estadoDia) {
+    if (!r && !estadoDia) return "";
+    const partes = [];
+    if (estadoDia) {
+      const info = INDICADORES_CALENDARIO.find((i) => i.id === estadoDia);
+      partes.push(info ? info.nombre : estadoDia);
+    }
+    if (r?.turno) partes.push(`Turno ${r.turno}`);
+    if (r?.estado === "baja" && r.baja_inicio) {
+      partes.push(
+        `Desde ${r.baja_inicio}` + (r.baja_abierta ? " (sigue de baja)" : r.baja_fin ? ` hasta ${r.baja_fin}` : "")
+      );
+    }
+    if (r?.estado === "vacaciones" && r.vacaciones_inicio && r.vacaciones_fin) {
+      partes.push(`Del ${r.vacaciones_inicio} al ${r.vacaciones_fin}`);
+    }
+    if (r?.desplazamiento) partes.push("Desplazamiento");
+    if (r?.reconocimiento_medico) partes.push("Reconocimiento médico");
+    if (r?.notas) partes.push(r.notas);
+    return partes.join(" · ");
+  }
+
   const ABREV_ESTADO = {
     libranza: "L", pap: "PR", pap_no_remunerado: "PN", rj: "RJ", baja: "B",
     vacaciones: "V", trabajo_permuta: "TP", descanso_permuta: "DP", compensa: "CP",
@@ -2555,6 +2577,7 @@ function CalendarioTurnos({
               <button
                 key={i}
                 onClick={() => setDiaSeleccionado(fecha)}
+                title={resumenDia(r, estadoDia)}
                 className="aspect-square rounded-lg flex flex-col items-center justify-center text-xs relative border"
                 style={{
                   background: seleccionado ? C.blue : fondo,
@@ -2617,6 +2640,10 @@ function CalendarioTurnos({
         <EditorDia
           fecha={diaSeleccionado}
           registro={registros[diaSeleccionado]}
+          resumen={resumenDia(
+            registros[diaSeleccionado],
+            estadoEfectivo(diaSeleccionado, registros[diaSeleccionado])
+          )}
           categoriaTurnos={categoriaTurnos}
           indicadoresVisibles={IV}
           onGuardar={onGuardar}
@@ -2641,7 +2668,7 @@ function LeyendaCalendario({ color, borde, texto }) {
   );
 }
 
-function EditorDia({ fecha, registro, categoriaTurnos, indicadoresVisibles, onGuardar, onCerrar }) {
+function EditorDia({ fecha, registro, resumen, categoriaTurnos, indicadoresVisibles, onGuardar, onCerrar }) {
   const turnosDisponibles = TURNOS[categoriaTurnos] || [];
   const [estado, setEstado] = useState(registro?.estado || "");
   const [turno, setTurno] = useState(registro?.turno || "");
@@ -2686,6 +2713,18 @@ function EditorDia({ fecha, registro, categoriaTurnos, indicadoresVisibles, onGu
       <p className="text-sm font-bold" style={{ color: C.ink }}>
         {fecha}
       </p>
+
+      {resumen && (
+        <div style={{ background: "#F3F6F9" }} className="rounded-lg p-3">
+          <p className="text-xs font-semibold mb-1" style={{ color: C.mute }}>
+            Lo que tienes registrado ese día
+          </p>
+          <p className="text-sm" style={{ color: C.ink }}>
+            {resumen}
+          </p>
+        </div>
+      )}
+
       <div>
         <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
           Estado del día
