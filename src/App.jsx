@@ -2270,7 +2270,9 @@ function VistaCalendario({ sesion, perfil, onVolver }) {
     if (indicadoresVisibles[ind.id] === undefined) indicadoresVisibles[ind.id] = false;
   });
 
-  const categoriaTurnos = (perfil?.cargo || "").toLowerCase().includes("maquinista") ? "maquinista" : "sector";
+  const [categoriaTurnos, setCategoriaTurnos] = useState(
+    (perfil?.cargo || "").toLowerCase().includes("maquinista") ? "maquinista" : "sector"
+  );
 
   return (
     <div style={{ background: "#F3F6F9" }} className="min-h-screen">
@@ -2296,6 +2298,7 @@ function VistaCalendario({ sesion, perfil, onVolver }) {
             setDiaSeleccionado={setDiaSeleccionado}
             onGuardar={guardarRegistroDia}
             categoriaTurnos={categoriaTurnos}
+            setCategoriaTurnos={setCategoriaTurnos}
             indicadoresVisibles={indicadoresVisibles}
           />
         )}
@@ -2314,6 +2317,7 @@ function CalendarioTurnos({
   setDiaSeleccionado,
   onGuardar,
   categoriaTurnos,
+  setCategoriaTurnos,
   indicadoresVisibles,
 }) {
   const NOMBRES_MES = [
@@ -2403,6 +2407,36 @@ function CalendarioTurnos({
 
   return (
     <div className="space-y-4">
+      <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
+        <p className="text-xs font-semibold mb-1.5" style={{ color: C.ink }}>
+          Mi categoría
+        </p>
+        <div className="flex gap-2 mb-1">
+          <button
+            onClick={() => setCategoriaTurnos("sector")}
+            style={{
+              background: categoriaTurnos === "sector" ? C.blue : C.white,
+              borderColor: C.line,
+              color: categoriaTurnos === "sector" ? C.white : C.ink,
+            }}
+            className="flex-1 border rounded-lg py-2 text-xs font-semibold"
+          >
+            Jefe/a de Sector
+          </button>
+          <button
+            onClick={() => setCategoriaTurnos("maquinista")}
+            style={{
+              background: categoriaTurnos === "maquinista" ? C.blue : C.white,
+              borderColor: C.line,
+              color: categoriaTurnos === "maquinista" ? C.white : C.ink,
+            }}
+            className="flex-1 border rounded-lg py-2 text-xs font-semibold"
+          >
+            Maquinista
+          </button>
+        </div>
+      </div>
+
       <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => cambiarMes(-1)} style={{ color: C.blueDark }} className="p-1.5">
@@ -2528,7 +2562,6 @@ function EditorDia({ fecha, registro, categoriaTurnos, indicadoresVisibles, onGu
   const [estado, setEstado] = useState(registro?.estado || "");
   const [turno, setTurno] = useState(registro?.turno || "");
   const [desplazamiento, setDesplazamiento] = useState(!!registro?.desplazamiento);
-  const [horasExtra, setHorasExtra] = useState(!!registro?.horas_extra);
   const [reconocimientoMedico, setReconocimientoMedico] = useState(!!registro?.reconocimiento_medico);
   const [notas, setNotas] = useState(registro?.notas || "");
   const [bajaInicio, setBajaInicio] = useState(registro?.baja_inicio || "");
@@ -2544,7 +2577,6 @@ function EditorDia({ fecha, registro, categoriaTurnos, indicadoresVisibles, onGu
       estado: estado || null,
       turno: turno || null,
       desplazamiento,
-      horas_extra: horasExtra,
       reconocimiento_medico: reconocimientoMedico,
       notas: notas.trim() || null,
       baja_inicio: estado === "baja" ? bajaInicio || null : null,
@@ -2558,7 +2590,7 @@ function EditorDia({ fecha, registro, categoriaTurnos, indicadoresVisibles, onGu
 
   function borrar() {
     onGuardar(fecha, {
-      estado: null, turno: null, desplazamiento: false, horas_extra: false, reconocimiento_medico: false,
+      estado: null, turno: null, desplazamiento: false, reconocimiento_medico: false,
       notas: null, baja_inicio: null, baja_fin: null, baja_abierta: false,
       vacaciones_inicio: null, vacaciones_fin: null,
     });
@@ -2683,12 +2715,7 @@ function EditorDia({ fecha, registro, categoriaTurnos, indicadoresVisibles, onGu
             Desplazamiento ese día
           </label>
         )}
-        {visible("horasExtra") && (
-          <label className="flex items-center gap-2 text-sm" style={{ color: C.ink }}>
-            <input type="checkbox" checked={horasExtra} onChange={(e) => setHorasExtra(e.target.checked)} className="w-4 h-4" />
-            Horas extra
-          </label>
-        )}
+
         {visible("reconocimientoMedico") && (
           <label className="flex items-center gap-2 text-sm" style={{ color: C.ink }}>
             <input
