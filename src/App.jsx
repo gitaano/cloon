@@ -2737,7 +2737,7 @@ function EditorDia({ fecha, registro, resumen, categoriaTurnos, indicadoresVisib
         >
           <option value="">Trabajado / normal</option>
           {INDICADORES_CALENDARIO.filter(
-            (ind) => visible(ind.id) && ind.id !== "desplazamiento" && ind.id !== "horasExtra" && ind.id !== "reconocimientoMedico"
+            (ind) => ind.id !== "desplazamiento" && ind.id !== "horasExtra" && ind.id !== "reconocimientoMedico"
           ).map((ind) => (
             <option key={ind.id} value={ind.id}>
               {ind.nombre}
