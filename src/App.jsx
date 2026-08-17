@@ -417,7 +417,26 @@ const TURNOS = {
     { id: "D0630", nombre: "D0630" },
     { id: "RVA", nombre: "RVA" },
   ],
+  tecnico: [
+    { id: "M", nombre: "M" },
+    { id: "T", nombre: "T" },
+    { id: "S", nombre: "S" },
+    { id: "P", nombre: "P" },
+  ],
+  mantenimiento: [
+    { id: "M", nombre: "M" },
+    { id: "T", nombre: "T" },
+    { id: "S", nombre: "S" },
+    { id: "P", nombre: "P" },
+  ],
 };
+
+const CATEGORIAS_TURNO = [
+  { id: "sector", nombre: "Jefe/a de Sector" },
+  { id: "maquinista", nombre: "Maquinista" },
+  { id: "tecnico", nombre: "Técnico" },
+  { id: "mantenimiento", nombre: "Mantenimiento" },
+];
 
 const LINEAS_METRO = [
   { id: "L1", nombre: "Línea 1" },
@@ -775,6 +794,9 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [fotoUrl, setFotoUrl] = useState("");
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [lineaPreferente, setLineaPreferente] = useState("");
+  const [estacionPreferente, setEstacionPreferente] = useState("");
+  const [turnoPreferente, setTurnoPreferente] = useState("");
+  const [categoriaTurnos, setCategoriaTurnos] = useState("sector");
   const [indicadoresCalendario, setIndicadoresCalendario] = useState(INDICADORES_CALENDARIO.map((i) => i.id));
 
   useEffect(() => {
@@ -791,6 +813,11 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
     setMostrarSeguidores(perfil.mostrar_seguidores !== false);
     setFotoUrl(perfil.foto_url || "");
     setLineaPreferente(perfil.linea_preferente || "");
+    setEstacionPreferente((perfil.estaciones_preferentes && perfil.estaciones_preferentes[0]) || "");
+    setTurnoPreferente(perfil.turno_preferente || "");
+    setCategoriaTurnos(
+      perfil.categoria_turnos || ((perfil.cargo || "").toLowerCase().includes("maquinista") ? "maquinista" : "sector")
+    );
     setIndicadoresCalendario(perfil.indicadores_calendario || INDICADORES_CALENDARIO.map((i) => i.id));
   }, [perfil]);
 
@@ -817,6 +844,9 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
         notificar_comentarios: notificarComentarios,
         mostrar_seguidores: mostrarSeguidores,
         linea_preferente: lineaPreferente,
+        estaciones_preferentes: estacionPreferente ? [estacionPreferente] : [],
+        turno_preferente: turnoPreferente,
+        categoria_turnos: categoriaTurnos,
         indicadores_calendario: indicadoresCalendario,
       })
       .eq("id", sesion.user.id)
@@ -1004,6 +1034,68 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
               {LINEAS_METRO.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+          {lineaPreferente && LINEAS_METRO_ESTACIONES[lineaPreferente] && (
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                Estación preferente
+              </label>
+              <select
+                value={estacionPreferente}
+                onChange={(e) => setEstacionPreferente(e.target.value)}
+                className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                style={{ borderColor: C.line, color: C.ink }}
+              >
+                <option value="">Sin preferencia</option>
+                {LINEAS_METRO_ESTACIONES[lineaPreferente].estaciones.map((est) => (
+                  <option key={est} value={est}>
+                    {est}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div>
+            <p className="text-xs font-semibold mb-1.5" style={{ color: C.ink }}>
+              Mi categoría
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {CATEGORIAS_TURNO.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setCategoriaTurnos(cat.id)}
+                  style={{
+                    background: categoriaTurnos === cat.id ? C.blue : C.white,
+                    borderColor: C.line,
+                    color: categoriaTurnos === cat.id ? C.white : C.ink,
+                  }}
+                  className="border rounded-lg py-2 text-xs font-semibold"
+                >
+                  {cat.nombre}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+              Turno preferente
+            </label>
+            <select
+              value={turnoPreferente}
+              onChange={(e) => setTurnoPreferente(e.target.value)}
+              className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+              style={{ borderColor: C.line, color: C.ink }}
+            >
+              <option value="">Sin preferencia</option>
+              {(TURNOS[categoriaTurnos] || []).map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.nombre}
                 </option>
               ))}
             </select>
@@ -2411,29 +2503,21 @@ function CalendarioTurnos({
         <p className="text-xs font-semibold mb-1.5" style={{ color: C.ink }}>
           Mi categoría
         </p>
-        <div className="flex gap-2 mb-1">
-          <button
-            onClick={() => setCategoriaTurnos("sector")}
-            style={{
-              background: categoriaTurnos === "sector" ? C.blue : C.white,
-              borderColor: C.line,
-              color: categoriaTurnos === "sector" ? C.white : C.ink,
-            }}
-            className="flex-1 border rounded-lg py-2 text-xs font-semibold"
-          >
-            Jefe/a de Sector
-          </button>
-          <button
-            onClick={() => setCategoriaTurnos("maquinista")}
-            style={{
-              background: categoriaTurnos === "maquinista" ? C.blue : C.white,
-              borderColor: C.line,
-              color: categoriaTurnos === "maquinista" ? C.white : C.ink,
-            }}
-            className="flex-1 border rounded-lg py-2 text-xs font-semibold"
-          >
-            Maquinista
-          </button>
+        <div className="grid grid-cols-2 gap-2 mb-1">
+          {CATEGORIAS_TURNO.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setCategoriaTurnos(cat.id)}
+              style={{
+                background: categoriaTurnos === cat.id ? C.blue : C.white,
+                borderColor: C.line,
+                color: categoriaTurnos === cat.id ? C.white : C.ink,
+              }}
+              className="border rounded-lg py-2 text-xs font-semibold"
+            >
+              {cat.nombre}
+            </button>
+          ))}
         </div>
       </div>
 
