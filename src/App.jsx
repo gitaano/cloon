@@ -2977,10 +2977,32 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
   const [enviando, setEnviando] = useState(false);
   const [nuevoMensajeAbierto, setNuevoMensajeAbierto] = useState(false);
   const [todosSocios, setTodosSocios] = useState([]);
+  const [bloqueados, setBloqueados] = useState(new Set());
 
   useEffect(() => {
     cargarConversaciones();
   }, []);
+
+  useEffect(() => {
+    cargarBloqueados();
+  }, []);
+
+  function cargarBloqueados() {
+    supabase
+      .from("bloqueos")
+      .select("bloqueado_id")
+      .eq("usuario_id", sesion.user.id)
+      .then(({ data }) => setBloqueados(new Set((data || []).map((b) => b.bloqueado_id))));
+  }
+
+  async function alternarBloqueo(otroId) {
+    if (bloqueados.has(otroId)) {
+      await supabase.from("bloqueos").delete().eq("usuario_id", sesion.user.id).eq("bloqueado_id", otroId);
+    } else {
+      await supabase.from("bloqueos").insert({ usuario_id: sesion.user.id, bloqueado_id: otroId });
+    }
+    cargarBloqueados();
+  }
 
   useEffect(() => {
     if (conversacionInicial) abrirConversacion(conversacionInicial);
@@ -3124,6 +3146,16 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
             <Plus size={20} />
           </button>
         )}
+        {conversacionActiva && (
+          <button
+            onClick={() => alternarBloqueo(conversacionActiva)}
+            className="ml-auto text-white text-xs font-semibold border rounded-full px-2.5 py-1 flex items-center gap-1"
+            style={{ borderColor: "rgba(255,255,255,0.35)" }}
+          >
+            <Ban size={12} />
+            {bloqueados.has(conversacionActiva) ? "Desbloquear" : "Bloquear"}
+          </button>
+        )}
       </div>
 
       {!conversacionActiva && !nuevoMensajeAbierto && (
@@ -3138,7 +3170,9 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
               Todavía no tienes ningún mensaje. Pincha en + para escribir a un socio.
             </p>
           )}
-          {conversaciones.map((c) => {
+          {conversaciones
+            .filter((c) => !bloqueados.has(c.otroId))
+            .map((c) => {
             const p = perfilesPorId[c.otroId];
             return (
               <button
@@ -3243,6 +3277,13 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
             )}
           </div>
 
+{bloqueados.has(conversacionActiva) ? (
+            <div style={{ background: C.white, borderColor: C.line }} className="border-t p-3 shrink-0 text-center">
+              <p className="text-xs" style={{ color: C.mute }}>
+                Has bloqueado a este socio. Desbloquéalo para poder escribirle.
+              </p>
+            </div>
+          ) : (
           <div style={{ background: C.white, borderColor: C.line }} className="border-t p-3 shrink-0">
             <div className="max-w-2xl mx-auto flex items-center gap-2">
               <input
@@ -3265,6 +3306,7 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
               </button>
             </div>
           </div>
+          )}
         </>
       )}
     </div>
