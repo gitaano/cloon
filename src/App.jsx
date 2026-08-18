@@ -488,6 +488,7 @@ function ClubProvisional({ sesion }) {
   const [modalCambioAbierto, setModalCambioAbierto] = useState(false);
   const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0);
   const [mensajeIniciarCon, setMensajeIniciarCon] = useState(null);
+  const [ahora, setAhora] = useState(Date.now());
 
   useEffect(() => {
     cargarPerfil();
@@ -503,6 +504,11 @@ function ClubProvisional({ sesion }) {
       .eq("leido", false)
       .then(({ count }) => setMensajesNoLeidos(count || 0));
   }
+
+  useEffect(() => {
+    const iv = setInterval(() => setAhora(Date.now()), 15000);
+    return () => clearInterval(iv);
+  }, []);
 
   function cargarPerfil() {
     supabase
@@ -562,6 +568,12 @@ function ClubProvisional({ sesion }) {
         );
     }
     cargarHilos();
+  }
+
+  async function eliminarHiloPropio(id) {
+    if (!confirm("¿Seguro que quieres eliminar este tema? No se puede deshacer.")) return;
+    const { error } = await supabase.from("hilos").delete().eq("id", id);
+    if (!error) cargarHilos();
   }
 
   async function crearCambio({ ambito, titulo, texto, categoria, tipo, etiquetaCambio }) {
@@ -798,6 +810,17 @@ function ClubProvisional({ sesion }) {
                     <Mail size={12} />
                   </button>
                 )}
+                {h.autor_id === sesion.user.id &&
+                  ahora - new Date(h.creado_en).getTime() < 5 * 60 * 1000 && (
+                    <button
+                      onClick={() => eliminarHiloPropio(h.id)}
+                      aria-label="Eliminar tema"
+                      className="text-xs font-semibold ml-auto"
+                      style={{ color: C.red }}
+                    >
+                      Eliminar
+                    </button>
+                  )}
               </div>
               {h.texto && (
                 <p className="text-sm mt-2" style={{ color: C.ink }}>
