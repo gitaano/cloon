@@ -505,7 +505,7 @@ function ClubProvisional({ sesion }) {
     setCargandoHilos(true);
     supabase
       .from("hilos")
-      .select("*, perfiles(nombre, apellido, nickname, mostrar_nombre_real)")
+      .select("*, perfiles(nombre, apellido, nickname, mostrar_nombre_real, vip)")
       .order("creado_en", { ascending: false })
       .then(async ({ data, error }) => {
         if (error || !data) {
@@ -733,7 +733,13 @@ function ClubProvisional({ sesion }) {
                 {h.titulo}
               </p>
               <p className="text-xs mt-1" style={{ color: C.mute }}>
-                {nombrePublico(h.perfiles)} ·{" "}
+                {nombrePublico(h.perfiles)}
+                {h.perfiles?.vip && (
+                  <span className="font-bold" style={{ color: "#B8860B" }}>
+                    {" "}★ VIP
+                  </span>
+                )}{" "}
+                ·{" "}
                 {new Date(h.creado_en).toLocaleString("es-ES")}
               </p>
               {h.texto && (
@@ -1319,7 +1325,7 @@ function Respuestas({ hiloId, sesion }) {
     setCargando(true);
     supabase
       .from("respuestas")
-      .select("*, perfiles(nombre, apellido, nickname, mostrar_nombre_real)")
+      .select("*, perfiles(nombre, apellido, nickname, mostrar_nombre_real, vip)")
       .eq("hilo_id", hiloId)
       .order("creado_en", { ascending: true })
       .then(({ data, error }) => {
@@ -2036,6 +2042,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
   const [motivoBaneo, setMotivoBaneo] = useState("");
 
   const esDev = perfil?.rol === "dev";
+  const esAdmin = perfil?.rol === "admin";
 
   useEffect(() => {
     cargarTodo();
@@ -2058,6 +2065,12 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
 
   async function cambiarRol(usuarioId, nuevoRol) {
     const { error } = await supabase.from("perfiles").update({ rol: nuevoRol }).eq("id", usuarioId);
+    if (!error) cargarTodo();
+    else setMensaje({ tipo: "error", texto: error.message });
+  }
+
+  async function cambiarVip(usuarioId, nuevoVip) {
+    const { error } = await supabase.rpc("set_vip", { usuario_id: usuarioId, nuevo_vip: nuevoVip });
     if (!error) cargarTodo();
     else setMensaje({ tipo: "error", texto: error.message });
   }
@@ -2163,6 +2176,11 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold" style={{ color: C.ink }}>
                       {u.nombre} {u.apellido}{" "}
+                      {u.vip && (
+                        <span className="text-xs font-bold" style={{ color: "#B8860B" }}>
+                          ★ VIP
+                        </span>
+                      )}{" "}
                       {baneadosIds.has(u.id) && (
                         <span className="text-xs font-bold" style={{ color: C.red }}>
                           (baneado)
@@ -2188,6 +2206,18 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                     <span className="text-xs font-semibold" style={{ color: C.mute }}>
                       {u.rol || "socio"}
                     </span>
+                  )}
+                  {(esDev || esAdmin) && (
+                    <button
+                      onClick={() => cambiarVip(u.id, !u.vip)}
+                      style={{
+                        borderColor: u.vip ? "#B8860B" : C.line,
+                        color: u.vip ? "#B8860B" : C.ink,
+                      }}
+                      className="text-xs font-semibold border rounded-lg px-2.5 py-1.5"
+                    >
+                      {u.vip ? "Quitar VIP" : "Nombrar VIP"}
+                    </button>
                   )}
                   {baneadosIds.has(u.id) ? (
                     <button
