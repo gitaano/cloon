@@ -14,13 +14,62 @@ const C = {
   line: "#DCE4EC",
 };
 
-function LogoUnderground({ size = 40 }) {
+function LogoMetroColor({ size = 40, className, style }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="46" fill={C.red} />
-      <circle cx="50" cy="50" r="46" fill="none" stroke={C.white} strokeWidth="6" />
-      <circle cx="50" cy="50" r="30" fill={C.white} />
-      <circle cx="50" cy="50" r="21" fill={C.blue} />
+    <svg width={size} height={size * 0.6} viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      <polygon points="100,4 196,60 100,116 4,60" fill={C.red} />
+      <polygon points="100,22 178,60 100,98 22,60" fill="#0B1220" />
+      <polygon points="100,30 170,60 100,90 30,60" fill={C.white} />
+      <polygon points="100,38 162,60 100,82 38,60" fill="#0B1220" />
+      <path d="M100,38 L118,58 L82,58 Z" fill={C.blue} />
+      <path d="M70,58 L130,58 L130,82 L118,82 L118,70 L82,70 L82,82 L70,82 Z" fill={C.blue} />
+    </svg>
+  );
+}
+
+function LogoUnderground({ size = 40, className, style }) {
+  return <LogoMetroColor size={size} className={className} style={style} />;
+}
+
+function MarcaAguaFondo() {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ position: "absolute", inset: 0, zIndex: -1, overflow: "hidden", pointerEvents: "none" }}
+    >
+      <LogoMetroPlata
+        id="marcaAguaFondo"
+        size={1500}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%) rotate(-16deg)",
+          opacity: 0.06,
+        }}
+      />
+    </div>
+  );
+}
+
+function LogoMetroPlata({ size = 400, className, style, id = "logoPlataGrad" }) {
+  return (
+    <svg width={size} height={size * 0.6} viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      <defs>
+        <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#F4F6F8" />
+          <stop offset="35%" stopColor="#9AA5B1" />
+          <stop offset="55%" stopColor="#E8ECEF" />
+          <stop offset="75%" stopColor="#8A94A0" />
+          <stop offset="100%" stopColor="#F4F6F8" />
+        </linearGradient>
+      </defs>
+      <polygon points="100,4 196,60 100,116 4,60" fill={`url(#${id})`} />
+      <polygon points="100,22 178,60 100,98 22,60" fill="#0A0E12" />
+      <polygon points="100,30 170,60 100,90 30,60" fill={`url(#${id})`} />
+      <polygon points="100,38 162,60 100,82 38,60" fill="#0A0E12" />
+      <path d="M100,38 L118,58 L82,58 Z" fill={`url(#${id})`} />
+      <path d="M70,58 L130,58 L130,82 L118,82 L118,70 L82,70 L82,82 L70,82 Z" fill={`url(#${id})`} />
     </svg>
   );
 }
@@ -90,10 +139,11 @@ function NuevaContrasena({ onListo }) {
 
   return (
     <div
-      style={{ background: `linear-gradient(160deg, ${C.blueDarker}, ${C.blue})` }}
+      style={{ background: `linear-gradient(160deg, ${C.blueDarker}, ${C.blue})`, position: "relative", zIndex: 0, overflow: "hidden" }}
       className="min-h-screen w-full flex items-center justify-center p-4"
     >
-      <div className="w-full max-w-md">
+      <MarcaAguaFondo />
+      <div className="w-full max-w-md" style={{ position: "relative", zIndex: 1 }}>
         <div className="text-center mb-6">
           <div className="mx-auto w-fit drop-shadow-lg">
             <LogoUnderground size={72} />
@@ -638,9 +688,11 @@ function ClubProvisional({ sesion }) {
   }
 
   return (
-    <div style={{ background: "#F3F6F9" }} className="min-h-screen">
+    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+      <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
+          <LogoMetroColor size={28} />
           <p className="text-white font-bold text-sm">Underground</p>
           {perfil && (
             <p className="text-xs" style={{ color: "#BFD9EE" }}>
@@ -999,7 +1051,8 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   }
 
   return (
-    <div style={{ background: "#F3F6F9" }} className="min-h-screen">
+    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+      <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
           <ArrowLeft size={14} /> Volver
@@ -2492,7 +2545,8 @@ function VistaCalendario({ sesion, perfil, onVolver }) {
   );
 
   return (
-    <div style={{ background: "#F3F6F9" }} className="min-h-screen">
+    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+      <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
           <ArrowLeft size={14} /> Volver
@@ -3426,7 +3480,8 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
   const pendientes = documentos.filter((d) => !d.aprobado);
 
   return (
-    <div style={{ background: "#F3F6F9" }} className="min-h-screen">
+    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+      <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
           <ArrowLeft size={14} /> Volver
