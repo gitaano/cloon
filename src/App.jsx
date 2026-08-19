@@ -16,14 +16,14 @@ const C = {
 
 function LogoMetroColor({ size = 40, className, style }) {
   return (
-    <svg width={size} height={size * 0.6} viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-      <polygon points="100,4 196,60 100,116 4,60" fill={C.red} />
-      <polygon points="100,22 178,60 100,98 22,60" fill="#0B1220" />
-      <polygon points="100,30 170,60 100,90 30,60" fill={C.white} />
-      <polygon points="100,38 162,60 100,82 38,60" fill="#0B1220" />
-      <path d="M100,38 L118,58 L82,58 Z" fill={C.blue} />
-      <path d="M70,58 L130,58 L130,82 L118,82 L118,70 L82,70 L82,82 L70,82 Z" fill={C.blue} />
-    </svg>
+    <img
+      src="/logo_color_mini.png"
+      width={size}
+      height={size * 0.6}
+      className={className}
+      style={{ objectFit: "contain", ...style }}
+      alt="Underground"
+    />
   );
 }
 
@@ -52,25 +52,16 @@ function MarcaAguaFondo() {
   );
 }
 
-function LogoMetroPlata({ size = 400, className, style, id = "logoPlataGrad" }) {
+function LogoMetroPlata({ size = 400, className, style }) {
   return (
-    <svg width={size} height={size * 0.6} viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-      <defs>
-        <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#F4F6F8" />
-          <stop offset="35%" stopColor="#9AA5B1" />
-          <stop offset="55%" stopColor="#E8ECEF" />
-          <stop offset="75%" stopColor="#8A94A0" />
-          <stop offset="100%" stopColor="#F4F6F8" />
-        </linearGradient>
-      </defs>
-      <polygon points="100,4 196,60 100,116 4,60" fill={`url(#${id})`} />
-      <polygon points="100,22 178,60 100,98 22,60" fill="#0A0E12" />
-      <polygon points="100,30 170,60 100,90 30,60" fill={`url(#${id})`} />
-      <polygon points="100,38 162,60 100,82 38,60" fill="#0A0E12" />
-      <path d="M100,38 L118,58 L82,58 Z" fill={`url(#${id})`} />
-      <path d="M70,58 L130,58 L130,82 L118,82 L118,70 L82,70 L82,82 L70,82 Z" fill={`url(#${id})`} />
-    </svg>
+    <img
+      src="/logo_plata_mini.png"
+      width={size}
+      height={size * 0.6}
+      className={className}
+      style={{ objectFit: "contain", ...style }}
+      alt=""
+    />
   );
 }
 
