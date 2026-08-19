@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -60,7 +60,10 @@ export default function App() {
     return <Acceso />;
   }
 
-  return <ClubProvisional sesion={sesion} />;
+  return <>
+      <ClubProvisional sesion={sesion} />
+      <ChatBotFlotante />
+    </>;
 }
 
 function NuevaContrasena({ onListo }) {
@@ -615,6 +618,10 @@ function ClubProvisional({ sesion }) {
     return <VistaCalendario sesion={sesion} perfil={perfil} onVolver={() => setVista("foro")} />;
   }
 
+  if (vista === "biblioteca") {
+    return <VistaBiblioteca sesion={sesion} perfil={perfil} onVolver={() => setVista("foro")} />;
+  }
+
   if (vista === "mensajes") {
     return (
       <VistaMensajes
@@ -656,6 +663,14 @@ function ClubProvisional({ sesion }) {
           >
             <Calendar size={13} />
             Calendario
+          </button>
+          <button
+            onClick={() => setVista("biblioteca")}
+            style={{ borderColor: "rgba(255,255,255,0.35)" }}
+            className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
+          >
+            <FileText size={13} />
+            Biblioteca
           </button>
           <button
             onClick={() => setVista("mensajes")}
@@ -3333,6 +3348,390 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
         </>
       )}
     </div>
+  );
+}
+
+function VistaBiblioteca({ sesion, perfil, onVolver }) {
+  const [documentos, setDocumentos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [subiendo, setSubiendo] = useState(false);
+  const [mensaje, setMensaje] = useState(null);
+  const inputArchivoRef = useRef(null);
+
+  const esAdminODev = perfil?.rol === "admin" || perfil?.rol === "dev";
+
+  useEffect(() => {
+    cargarDocumentos();
+  }, []);
+
+  function cargarDocumentos() {
+    setCargando(true);
+    supabase
+      .from("documentos")
+      .select("*")
+      .order("creado_en", { ascending: false })
+      .then(({ data }) => {
+        setDocumentos(data || []);
+        setCargando(false);
+      });
+  }
+
+  async function subirArchivo(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSubiendo(true);
+    setMensaje(null);
+    const ruta = `${sesion.user.id}/${Date.now()}_${file.name}`;
+    const { error: errorSubida } = await supabase.storage.from("biblioteca").upload(ruta, file);
+    if (errorSubida) {
+      setMensaje({ tipo: "error", texto: "No se pudo subir el archivo." });
+      setSubiendo(false);
+      return;
+    }
+    const { error: errorFila } = await supabase.from("documentos").insert({
+      nombre: file.name,
+      tipo: file.type || file.name.split(".").pop(),
+      url_archivo: ruta,
+      autor_id: sesion.user.id,
+      aprobado: false,
+    });
+    setSubiendo(false);
+    if (errorFila) {
+      setMensaje({ tipo: "error", texto: "No se pudo registrar el documento." });
+    } else {
+      setMensaje({ tipo: "ok", texto: "Documento subido. Un admin debe aprobarlo para que sea visible." });
+      cargarDocumentos();
+    }
+    if (inputArchivoRef.current) inputArchivoRef.current.value = "";
+  }
+
+  async function abrirDocumento(doc) {
+    const { data, error } = await supabase.storage.from("biblioteca").createSignedUrl(doc.url_archivo, 3600);
+    if (!error && data) window.open(data.signedUrl, "_blank");
+  }
+
+  async function aprobarDocumento(id) {
+    await supabase.from("documentos").update({ aprobado: true }).eq("id", id);
+    cargarDocumentos();
+  }
+
+  async function eliminarDocumento(doc) {
+    if (!confirm("¿Eliminar este documento?")) return;
+    await supabase.storage.from("biblioteca").remove([doc.url_archivo]);
+    await supabase.from("documentos").delete().eq("id", doc.id);
+    cargarDocumentos();
+  }
+
+  const aprobados = documentos.filter((d) => d.aprobado);
+  const pendientes = documentos.filter((d) => !d.aprobado);
+
+  return (
+    <div style={{ background: "#F3F6F9" }} className="min-h-screen">
+      <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
+        <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
+          <ArrowLeft size={14} /> Volver
+        </button>
+        <p className="text-white font-bold text-sm">Biblioteca de documentos</p>
+      </div>
+
+      <div className="max-w-2xl mx-auto p-4 space-y-4">
+        <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
+          <input ref={inputArchivoRef} type="file" onChange={subirArchivo} className="hidden" id="archivo-biblioteca" disabled={subiendo} />
+          <label
+            htmlFor="archivo-biblioteca"
+            style={{ background: subiendo ? "#B9C6D2" : C.blue }}
+            className="w-full text-white font-semibold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Upload size={16} />
+            {subiendo ? "Subiendo..." : "Subir documento"}
+          </label>
+          <p className="text-xs mt-2" style={{ color: C.mute }}>
+            Tras subirlo, un admin debe aprobarlo para que sea visible para todos.
+          </p>
+          {mensaje && (
+            <p
+              className="text-xs mt-2 rounded-lg p-2"
+              style={{
+                background: mensaje.tipo === "error" ? "#FCEBEA" : "#E9F7EF",
+                color: mensaje.tipo === "error" ? C.red : "#1E8449",
+              }}
+            >
+              {mensaje.texto}
+            </p>
+          )}
+        </div>
+
+        {cargando && (
+          <p className="text-sm" style={{ color: C.mute }}>
+            Cargando...
+          </p>
+        )}
+
+        {!cargando && esAdminODev && pendientes.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
+              Pendientes de aprobación
+            </p>
+            {pendientes.map((doc) => (
+              <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
+                <FileText size={20} style={{ color: C.mute }} className="shrink-0" />
+                <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
+                  <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
+                    {doc.nombre}
+                  </p>
+                </button>
+                <button
+                  onClick={() => aprobarDocumento(doc.id)}
+                  style={{ background: "#22C55E" }}
+                  className="text-white rounded-lg p-1.5 shrink-0"
+                  aria-label="Aprobar"
+                >
+                  <Check size={15} />
+                </button>
+                <button
+                  onClick={() => eliminarDocumento(doc)}
+                  style={{ color: C.red }}
+                  className="shrink-0"
+                  aria-label="Eliminar"
+                >
+                  <X size={17} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!cargando && (
+          <div className="space-y-2">
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
+              Documentos
+            </p>
+            {aprobados.length === 0 && (
+              <p className="text-sm" style={{ color: C.mute }}>
+                Todavía no hay documentos disponibles.
+              </p>
+            )}
+            {aprobados.map((doc) => (
+              <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
+                <FileText size={20} style={{ color: C.blue }} className="shrink-0" />
+                <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
+                  <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
+                    {doc.nombre}
+                  </p>
+                </button>
+                {esAdminODev && (
+                  <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
+                    <X size={17} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const RESPUESTAS_BOT = [
+  {
+    match: ["madre", "padre", "hospital", "grave", "enfermedad grave", "familiar"],
+    respuesta:
+      "Por accidente o enfermedad grave, hospitalización o intervención quirúrgica de un familiar hasta 2º grado (padre, madre, hijos, hermanos, etc.) corresponden 5 días naturales de permiso retribuido. Si hace falta desplazarse fuera de la provincia, se amplía. (Art. 37.3.b del Estatuto de los Trabajadores, recogido en el convenio, cláusula 11ª). Esto es orientativo — confírmalo siempre con RR.HH.",
+  },
+  {
+    match: ["asuntos propios", "pap", "días libres"],
+    respuesta:
+      "Tienes 11 días anuales para asuntos propios, de los cuales 7 son retribuidos. Se pueden coger seguidos o sueltos, avisando con al menos 48h de antelación (72h en algunas áreas operativas).",
+  },
+  {
+    match: ["boda", "matrimonio", "pareja de hecho"],
+    respuesta: "Por matrimonio o registro de pareja de hecho corresponden 15 días naturales de permiso.",
+  },
+  {
+    match: ["mudanza", "traslado", "domicilio"],
+    respuesta: "Por traslado del domicilio habitual corresponde 1 día natural de permiso.",
+  },
+  {
+    match: ["líneas", "cuántas líneas", "km", "kilómetros", "estaciones tiene", "cifras", "cuántos empleados"],
+    respuesta:
+      "Metro de Madrid tiene 12 líneas, un Ramal (Ópera-Príncipe Pío) y una línea de Metro Ligero (ML1), con 296 km de red y 303 estaciones — la cuarta red del mundo occidental por número de estaciones. Más de 7.000 personas trabajan en la compañía, y en 2024 la usaron 715,2 millones de viajeros. Se inauguró el 17 de octubre de 1919 entre Cuatro Caminos y Sol.",
+  },
+  {
+    match: ["bicicleta", "bici"],
+    respuesta:
+      "Las bicicletas plegadas se pueden llevar siempre. Sin plegar, el acceso está limitado a ciertos horarios, líneas y tramos concretos de la red (fuera de horas punta); conviene consultar siempre el reglamento de viajeros actualizado para la línea concreta.",
+  },
+  {
+    match: ["perro", "mascota", "animal", "animales domésticos", "perro guía", "perro de asistencia"],
+    respuesta:
+      "Se permite viajar con un animal doméstico pequeño en transportín o bolsa cerrada, y con perros de tamaño mediano/grande sujetos con correa corta y bozal en las condiciones que marque el reglamento. Los perros de asistencia/guía tienen acceso garantizado sin las restricciones anteriores.",
+  },
+  {
+    match: ["globo", "globos metálicos"],
+    respuesta: "El acceso con globos metálicos (los de helio, tipo mylar) está prohibido en toda la red, ya que pueden provocar cortocircuitos en la catenaria e instalaciones.",
+  },
+  {
+    match: ["tarjeta multi", "tarjeta personal", "tarjeta infantil", "tarjeta azul", "tarjeta virtual", "título de transporte", "abono"],
+    respuesta:
+      "Los títulos de transporte se cargan sobre distintos soportes: Tarjeta Multi (no personal, 2,50€, recargable, dura 10 años), Tarjeta Personal (necesaria para bonificaciones de familia numerosa o discapacidad ≥65%), Tarjeta Infantil, Tarjeta Azul y Tarjeta Virtual (en el móvil). Cada una admite distintos tipos de billetes y abonos según el caso.",
+  },
+  {
+    match: ["primeros auxilios", "emergencia médica", "socorrista", "desmayo", "accidente en la estación"],
+    respuesta:
+      "Ante una urgencia médica en la estación, lo primero es garantizar tu seguridad y la de la persona afectada, avisar de inmediato al Puesto de Mando/servicios de emergencia y no mover a la persona salvo peligro inminente. El número de recursos de primeros auxilios necesarios depende de factores como el turno, la afluencia y la distancia a servicios médicos — consulta siempre el protocolo interno vigente para el procedimiento exacto.",
+  },
+  {
+    match: ["riesgos laborales", "prevención de riesgos", "prl"],
+    respuesta:
+      "La prevención de riesgos laborales en Metro cubre desde ergonomía y ruido hasta procedimientos ante emergencias según el puesto (Jefe/a de Sector, Maquinista, etc.). Para el detalle completo consulta el Manual de Riesgos Laborales disponible en la Biblioteca.",
+  },
+  {
+    match: ["reglamento de viajeros", "normas para viajar", "normas del viajero"],
+    respuesta:
+      "El Reglamento de Viajeros de Metro de Madrid regula el uso correcto de las instalaciones y trenes: validación de títulos, comportamiento en estaciones y andenes, objetos permitidos y prohibidos (bicicletas, animales, globos metálicos...) y sanciones por incumplimiento. Está disponible completo en la Biblioteca.",
+  },
+  {
+    match: ["temario", "examen de acceso", "nuevo ingreso", "oposición", "convocatoria"],
+    respuesta:
+      "En la Biblioteca tienes disponible el Temario de Nuevo Ingreso para Jefe/a de Sector y Maquinista de Tracción Eléctrica: historia de Metro, tarifas, reglamento de viajeros, CRTM, prevención de riesgos y primeros auxilios, entre otros temas.",
+  },
+];
+
+function respuestaBot(pregunta) {
+  const q = pregunta.toLowerCase();
+  const encontrada = RESPUESTAS_BOT.find((r) => r.match.some((k) => q.includes(k)));
+  return (
+    encontrada?.respuesta ||
+    "No tengo una respuesta para eso todavía. Puedes preguntar sobre permisos, vacaciones, el reglamento de viajeros, objetos permitidos, datos de Metro o el temario de nuevo ingreso — o consultar la Biblioteca de documentos."
+  );
+}
+
+function ChatBotFlotante() {
+  const [chatAbierto, setChatAbierto] = useState(false);
+  const [asistenteOculto, setAsistenteOculto] = useState(false);
+  const [mensajes, setMensajes] = useState([
+    { de: "bot", texto: "¡Hola! Pregúntame sobre permisos, vacaciones, el reglamento de viajeros o datos de Metro." },
+  ]);
+  const [pregunta, setPregunta] = useState("");
+
+  function enviarPregunta() {
+    if (!pregunta.trim()) return;
+    const nueva = { de: "user", texto: pregunta };
+    const resp = { de: "bot", texto: respuestaBot(pregunta) };
+    setMensajes((m) => [...m, nueva, resp]);
+    setPregunta("");
+  }
+
+  return (
+    <>
+      {!chatAbierto && !asistenteOculto && (
+        <div className="fixed bottom-5 right-5 z-40 flex flex-col items-center gap-1.5">
+          <style>{`
+            @keyframes reboteAsistente {
+              0%   { transform: translateY(0); }
+              4%   { transform: translateY(-14px); }
+              8%   { transform: translateY(0); }
+              12%  { transform: translateY(-14px); }
+              16%  { transform: translateY(0); }
+              100% { transform: translateY(0); }
+            }
+          `}</style>
+          <div className="relative">
+            <button
+              onClick={() => setAsistenteOculto(true)}
+              style={{ background: C.white, color: C.mute, borderColor: C.line }}
+              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full border flex items-center justify-center shadow z-10"
+              aria-label="Ocultar asistente"
+            >
+              <X size={11} />
+            </button>
+            <button
+              onClick={() => setChatAbierto(true)}
+              style={{
+                background: "rgba(0, 61, 115, 0.85)",
+                backdropFilter: "blur(14px) saturate(180%)",
+                WebkitBackdropFilter: "blur(14px) saturate(180%)",
+                animation: "reboteAsistente 12s ease-in-out infinite",
+              }}
+              className="text-white rounded-full pl-3 pr-4 py-3 flex items-center gap-2 shadow-2xl hover:opacity-90 transition"
+            >
+              <div style={{ background: C.white }} className="w-8 h-8 rounded-full flex items-center justify-center shrink-0">
+                <TrainFront size={17} style={{ color: C.blueDark }} />
+              </div>
+              <span className="text-sm font-bold hidden sm:inline">Pregúntame dudas</span>
+            </button>
+          </div>
+          <span
+            style={{ background: C.white, color: C.blueDark, borderColor: C.line }}
+            className="text-xs font-bold px-2.5 py-1 rounded-full border shadow text-center leading-tight"
+          >
+            Chat virtual
+            <br />
+            dudas Metro
+          </span>
+        </div>
+      )}
+
+      {asistenteOculto && (
+        <button
+          onClick={() => setAsistenteOculto(false)}
+          style={{ background: C.blueDark }}
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 text-white pl-2 pr-1 py-3 rounded-l-lg shadow-lg flex flex-col items-center gap-1"
+          aria-label="Mostrar el chat de ayuda"
+        >
+          <TrainFront size={16} />
+          <ChevronLeft size={14} />
+        </button>
+      )}
+
+      {chatAbierto && (
+        <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center z-30 p-0 sm:p-4">
+          <div
+            style={{ background: C.white, height: "80vh", maxHeight: 600 }}
+            className="w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col"
+          >
+            <div style={{ background: C.blueDark }} className="p-4 rounded-t-2xl flex items-center justify-between">
+              <div className="flex items-center gap-2 text-white">
+                <Bot size={18} />
+                <span className="font-bold text-sm">Asistente de dudas</span>
+              </div>
+              <button onClick={() => setChatAbierto(false)} className="text-white">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col">
+              {mensajes.map((m, i) => (
+                <div
+                  key={i}
+                  className={"text-sm px-3.5 py-2.5 rounded-2xl " + (m.de === "bot" ? "self-start rounded-tl-sm" : "self-end rounded-tr-sm ml-auto")}
+                  style={{
+                    background: m.de === "bot" ? "#EAF2F9" : C.blue,
+                    color: m.de === "bot" ? C.ink : C.white,
+                    maxWidth: "85%",
+                  }}
+                >
+                  {m.texto}
+                </div>
+              ))}
+            </div>
+            <div className="p-3 border-t flex gap-2" style={{ borderColor: C.line }}>
+              <input
+                value={pregunta}
+                onChange={(e) => setPregunta(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && enviarPregunta()}
+                placeholder="Escribe tu duda..."
+                className="flex-1 rounded-full border px-4 py-2 text-sm outline-none"
+                style={{ borderColor: C.line }}
+              />
+              <button onClick={enviarPregunta} style={{ background: C.blue }} className="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+                <Send size={16} className="text-white" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
