@@ -3700,12 +3700,24 @@ function ChatBotFlotante() {
   ]);
   const [pregunta, setPregunta] = useState("");
 
-  function enviarPregunta() {
+  async function buscarEnDocumentos(pregunta) {
+    const { data, error } = await supabase.rpc("buscar_documentos", { termino: pregunta });
+    if (error || !data || data.length === 0) return null;
+    const mejor = data[0];
+    if (mejor.rango < 0.01) return null;
+    const extracto = mejor.extracto.replace(/<\/?b>/g, "**");
+    return `Encontré esto en "${mejor.nombre}":\n\n"${extracto}"\n\nPuedes leer el documento completo en la Biblioteca.`;
+  }
+
+  async function enviarPregunta() {
     if (!pregunta.trim()) return;
-    const nueva = { de: "user", texto: pregunta };
-    const resp = { de: "bot", texto: respuestaBot(pregunta) };
-    setMensajes((m) => [...m, nueva, resp]);
+    const preguntaActual = pregunta;
+    const nueva = { de: "user", texto: preguntaActual };
+    setMensajes((m) => [...m, nueva]);
     setPregunta("");
+    const enDocumentos = await buscarEnDocumentos(preguntaActual);
+    const texto = enDocumentos || respuestaBot(preguntaActual);
+    setMensajes((m) => [...m, { de: "bot", texto }]);
   }
 
   return (
