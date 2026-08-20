@@ -588,6 +588,22 @@ function ClubProvisional({ sesion }) {
       .then(({ count }) => setMensajesNoLeidos(count || 0));
   }
 
+useEffect(() => {
+    const canal = supabase
+      .channel(`mensajes-privados-recibidos-${sesion.user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "mensajes_privados", filter: `destinatario_id=eq.${sesion.user.id}` },
+        () => {
+          cargarMensajesNoLeidos();
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(canal);
+    };
+  }, [sesion.user.id]);
+
   useEffect(() => {
     const iv = setInterval(() => setAhora(Date.now()), 15000);
     return () => clearInterval(iv);
@@ -3100,6 +3116,33 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
   const [nuevoMensajeAbierto, setNuevoMensajeAbierto] = useState(false);
   const [todosSocios, setTodosSocios] = useState([]);
   const [bloqueados, setBloqueados] = useState(new Set());
+  const conversacionActivaRef = useRef(conversacionInicial || null);
+
+  useEffect(() => {
+    conversacionActivaRef.current = conversacionActiva;
+  }, [conversacionActiva]);
+
+  useEffect(() => {
+    const canal = supabase
+      .channel(`mensajes-privados-hilo-${sesion.user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "mensajes_privados", filter: `destinatario_id=eq.${sesion.user.id}` },
+        (payload) => {
+          const nuevo = payload.new;
+          if (conversacionActivaRef.current === nuevo.remitente_id) {
+            setMensajesHilo((prev) => [...prev, nuevo]);
+            supabase.from("mensajes_privados").update({ leido: true }).eq("id", nuevo.id).then(() => {});
+          }
+          cargarConversaciones();
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(canal);
+    };
+  }, [sesion.user.id]);
+
 
   useEffect(() => {
     cargarConversaciones();
