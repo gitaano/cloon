@@ -3483,6 +3483,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
   const [cargando, setCargando] = useState(true);
   const [subiendo, setSubiendo] = useState(false);
   const [mensaje, setMensaje] = useState(null);
+  const [subirComoPrivado, setSubirComoPrivado] = useState(false);
   const inputArchivoRef = useRef(null);
 
   const esAdminODev = perfil?.rol === "admin" || perfil?.rol === "dev";
@@ -3521,6 +3522,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
       url_archivo: ruta,
       autor_id: sesion.user.id,
       aprobado: false,
+      privado: esAdminODev ? subirComoPrivado : false,
     });
     setSubiendo(false);
     if (errorFila) {
@@ -3549,8 +3551,9 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
     cargarDocumentos();
   }
 
-  const aprobados = documentos.filter((d) => d.aprobado);
   const pendientes = documentos.filter((d) => !d.aprobado);
+  const publicosAprobados = documentos.filter((d) => d.aprobado && !d.privado);
+  const privadosAprobados = documentos.filter((d) => d.aprobado && d.privado);
 
   return (
     <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
@@ -3573,8 +3576,19 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
             <Upload size={16} />
             {subiendo ? "Subiendo..." : "Subir documento"}
           </label>
+          {esAdminODev && (
+            <label className="flex items-center gap-2 text-xs mt-3" style={{ color: C.ink }}>
+              <input
+                type="checkbox"
+                checked={subirComoPrivado}
+                onChange={(e) => setSubirComoPrivado(e.target.checked)}
+                className="w-4 h-4"
+              />
+              Documento privado (solo lo usa el asistente virtual, no lo ven los socios)
+            </label>
+          )}
           <p className="text-xs mt-2" style={{ color: C.mute }}>
-            Tras subirlo, un admin debe aprobarlo para que sea visible para todos.
+            Tras subirlo, un admin debe aprobarlo para que sea visible.
           </p>
           {mensaje && (
             <p
@@ -3606,6 +3620,11 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
                 <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
                   <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
                     {doc.nombre}
+                    {doc.privado && (
+                      <span className="font-bold" style={{ color: C.blueDark }}>
+                        {" "}· privado
+                      </span>
+                    )}
                   </p>
                 </button>
                 <button
@@ -3616,12 +3635,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
                 >
                   <Check size={15} />
                 </button>
-                <button
-                  onClick={() => eliminarDocumento(doc)}
-                  style={{ color: C.red }}
-                  className="shrink-0"
-                  aria-label="Eliminar"
-                >
+                <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
                   <X size={17} />
                 </button>
               </div>
@@ -3632,14 +3646,14 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
         {!cargando && (
           <div className="space-y-2">
             <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
-              Documentos
+              Biblioteca pública
             </p>
-            {aprobados.length === 0 && (
+            {publicosAprobados.length === 0 && (
               <p className="text-sm" style={{ color: C.mute }}>
                 Todavía no hay documentos disponibles.
               </p>
             )}
-            {aprobados.map((doc) => (
+            {publicosAprobados.map((doc) => (
               <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
                 <FileText size={20} style={{ color: C.blue }} className="shrink-0" />
                 <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
@@ -3652,6 +3666,35 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
                     <X size={17} />
                   </button>
                 )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!cargando && esAdminODev && (
+          <div className="space-y-2">
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
+              Biblioteca privada (solo dev/admin y el asistente virtual)
+            </p>
+            <p className="text-xs" style={{ color: C.mute }}>
+              Estos documentos no los ven los socios en el foro, pero el chat de dudas los usa para responder.
+            </p>
+            {privadosAprobados.length === 0 && (
+              <p className="text-sm" style={{ color: C.mute }}>
+                Todavía no hay documentos privados.
+              </p>
+            )}
+            {privadosAprobados.map((doc) => (
+              <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
+                <FileText size={20} style={{ color: C.blueDark }} className="shrink-0" />
+                <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
+                  <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
+                    {doc.nombre}
+                  </p>
+                </button>
+                <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
+                  <X size={17} />
+                </button>
               </div>
             ))}
           </div>
