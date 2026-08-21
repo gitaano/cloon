@@ -3544,6 +3544,11 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
     if (!error && data) window.open(data.signedUrl, "_blank");
   }
 
+  async function alternarPrivado(doc) {
+    await supabase.from("documentos").update({ privado: !doc.privado }).eq("id", doc.id);
+    cargarDocumentos();
+  }
+
   async function aprobarDocumento(id) {
     await supabase.from("documentos").update({ aprobado: true }).eq("id", id);
     cargarDocumentos();
@@ -3640,7 +3645,8 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
                 >
                   <Check size={15} />
                 </button>
-                <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
+                <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={17} /> : <EyeOff size={17} />}</button>
+              <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
                   <X size={17} />
                 </button>
               </div>
@@ -3667,7 +3673,8 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
                   </p>
                 </button>
                 {esAdminODev && (
-                  <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
+                  <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={17} /> : <EyeOff size={17} />}</button>
+              <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
                     <X size={17} />
                   </button>
                 )}
@@ -3697,7 +3704,8 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
                     {doc.nombre}
                   </p>
                 </button>
-                <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
+                <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={17} /> : <EyeOff size={17} />}</button>
+              <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
                   <X size={17} />
                 </button>
               </div>
