@@ -559,8 +559,8 @@ const INDICADORES_CALENDARIO = [
 
 function nombrePublico(p) {
   if (!p) return "";
+  if (p.mostrar_nombre_real) return `${p.nombre || ""} ${p.apellido || ""}`.trim() || "Socio";
   if (p.nickname) return p.nickname;
-  if (p.mostrar_nombre_real) return `${p.nombre || ""} ${p.apellido || ""}`.trim();
   return "Socio";
 }
 
