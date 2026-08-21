@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+óimport React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb } from "lucide-react";
 
@@ -789,7 +789,7 @@ useEffect(() => {
                 className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
               >
                 <Lightbulb size={13} />
-                Buzón
+                Buzón sugerencias
               </button>
           <button
             onClick={() => setVista("mensajes")}
