@@ -465,10 +465,10 @@ const LINEAS_METRO_ESTACIONES = {
 
 const TURNOS = {
   sector: [
-    { id: "JS-M06", nombre: "JS-M06 (06:00-14:00)" },
-    { id: "JS-T14", nombre: "JS-T14 (14:00-22:00)" },
-    { id: "JS-N18", nombre: "JS-N18 (18:00-02:00)" },
-    { id: "JS-P14", nombre: "JS-P14 · Partido (14:00-18:00 y 22:00-02:00)" },
+    { id: "M", nombre: "M (06:00-14:00)" },
+    { id: "T", nombre: "T (14:00-22:00)" },
+    { id: "S", nombre: "S (18:00-02:00)" },
+    { id: "P", nombre: "P · Partido (14:00-18:00 y 22:00-02:00)" },
   ],
   maquinista: [
     { id: "M0530", nombre: "M0530 (05:30-13:00)" },
