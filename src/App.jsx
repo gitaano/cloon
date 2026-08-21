@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -723,6 +723,10 @@ useEffect(() => {
     return <VistaBiblioteca sesion={sesion} perfil={perfil} onVolver={() => setVista("foro")} />;
   }
 
+  if (vista === "sugerencias") {
+    return <VistaSugerencias sesion={sesion} perfil={perfil} onVolver={() => setVista("foro")} />;
+  }
+
   if (vista === "mensajes") {
     return (
       <VistaMensajes
@@ -779,6 +783,14 @@ useEffect(() => {
             <FileText size={13} />
             Biblioteca
           </button>
+              <button
+                onClick={() => setVista("sugerencias")}
+                style={{ borderColor: "rgba(255,255,255,0.35)" }}
+                className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
+              >
+                <Lightbulb size={13} />
+                Buzón
+              </button>
           <button
             onClick={() => setVista("mensajes")}
             style={{ borderColor: "rgba(255,255,255,0.35)" }}
@@ -2284,6 +2296,42 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
     cargarTodo();
   }, []);
 
+  const [sugerencias, setSugerencias] = useState([]);
+  const [respondiendoId, setRespondiendoId] = useState(null);
+  const [textoRespuesta, setTextoRespuesta] = useState("");
+
+  useEffect(() => {
+    cargarSugerencias();
+  }, []);
+
+  function cargarSugerencias() {
+    supabase
+      .from("sugerencias")
+      .select("*, perfiles(nombre, apellido, dne)")
+      .order("creado_en", { ascending: false })
+      .then(({ data }) => setSugerencias(data || []));
+  }
+
+  async function enviarRespuestaSugerencia(id) {
+    if (!textoRespuesta.trim()) return;
+    const { error } = await supabase
+      .from("sugerencias")
+      .update({
+        respuesta: textoRespuesta.trim(),
+        respondido_por_id: sesion.user.id,
+        respondido_en: new Date().toISOString(),
+        resuelto: true,
+      })
+      .eq("id", id);
+    if (!error) {
+      setRespondiendoId(null);
+      setTextoRespuesta("");
+      cargarSugerencias();
+    } else {
+      setMensaje({ tipo: "error", texto: error.message });
+    }
+  }
+
   async function cargarTodo() {
     setCargando(true);
     const [{ data: perfilesData }, { data: reportesData }, { data: solicitudesData }, { data: baneosData }] = await Promise.all([
@@ -2356,6 +2404,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
   const pendientesAlta = usuarios.filter((u) => !u.aprobado);
 
   const TABS = [
+    { id: "sugerencias", nombre: "Sugerencias", icon: Lightbulb, badge: sugerencias.filter((s) => !s.resuelto).length },
     { id: "altas", nombre: "Altas pendientes", icon: UserPlus, badge: pendientesAlta.length },
     { id: "usuarios", nombre: "Usuarios", icon: Contact, badge: 0 },
     { id: "reportes", nombre: "Reportes", icon: ShieldCheck, badge: reportes.length },
@@ -2560,6 +2609,85 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                     >
                       Rechazar
                     </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {tab === "sugerencias" && (
+              <div className="space-y-2">
+                {sugerencias.length === 0 && (
+                  <p className="text-sm" style={{ color: C.mute }}>
+                    Todavía no hay mensajes en el buzón.
+                  </p>
+                )}
+                {sugerencias.map((s) => (
+                  <div
+                    key={s.id}
+                    style={{ background: C.white, borderColor: C.line }}
+                    className="rounded-xl border p-3 space-y-2"
+                  >
+                    <p className="text-sm font-semibold" style={{ color: C.ink }}>
+                      {s.perfiles?.nombre} {s.perfiles?.apellido}{" "}
+                      <span className="font-normal" style={{ color: C.mute }}>
+                        · DNE {s.perfiles?.dne} · {new Date(s.creado_en).toLocaleString("es-ES")}
+                      </span>
+                    </p>
+                    <p className="text-sm" style={{ color: C.ink }}>
+                      {s.texto}
+                    </p>
+                    {s.respuesta ? (
+                      <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2.5">
+                        <p className="text-xs font-semibold mb-1" style={{ color: C.blueDark }}>
+                          Ya respondida
+                        </p>
+                        <p className="text-sm" style={{ color: C.ink }}>
+                          {s.respuesta}
+                        </p>
+                      </div>
+                    ) : respondiendoId === s.id ? (
+                      <div className="space-y-2">
+                        <textarea
+                          value={textoRespuesta}
+                          onChange={(e) => setTextoRespuesta(e.target.value)}
+                          rows={2}
+                          placeholder="Escribe tu respuesta..."
+                          className="w-full rounded-lg border px-3 py-2 text-sm outline-none resize-none"
+                          style={{ borderColor: C.line, color: C.ink }}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setRespondiendoId(null);
+                              setTextoRespuesta("");
+                            }}
+                            style={{ borderColor: C.line, color: C.ink }}
+                            className="flex-1 border text-xs font-semibold py-1.5 rounded-lg"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            onClick={() => enviarRespuestaSugerencia(s.id)}
+                            disabled={!textoRespuesta.trim()}
+                            style={{ background: textoRespuesta.trim() ? C.blue : "#B9C6D2" }}
+                            className="flex-1 text-white text-xs font-semibold py-1.5 rounded-lg"
+                          >
+                            Enviar respuesta
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setRespondiendoId(s.id);
+                          setTextoRespuesta("");
+                        }}
+                        style={{ background: C.blue }}
+                        className="text-white text-xs font-semibold px-3 py-1.5 rounded-lg"
+                      >
+                        Responder
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -3806,6 +3934,134 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function VistaSugerencias({ sesion, perfil, onVolver }) {
+  const [sugerencias, setSugerencias] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [texto, setTexto] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [mensaje, setMensaje] = useState(null);
+
+  useEffect(() => {
+    cargarSugerencias();
+  }, []);
+
+  function cargarSugerencias() {
+    setCargando(true);
+    supabase
+      .from("sugerencias")
+      .select("*")
+      .eq("autor_id", sesion.user.id)
+      .order("creado_en", { ascending: false })
+      .then(({ data }) => {
+        setSugerencias(data || []);
+        setCargando(false);
+      });
+  }
+
+  async function enviar() {
+    if (!texto.trim()) return;
+    setEnviando(true);
+    setMensaje(null);
+    const { error } = await supabase.from("sugerencias").insert({
+      autor_id: sesion.user.id,
+      texto: texto.trim(),
+    });
+    setEnviando(false);
+    if (error) {
+      setMensaje({ tipo: "error", texto: error.message });
+      return;
+    }
+    setTexto("");
+    setMensaje({ tipo: "ok", texto: "Enviado. El equipo de admin/dev lo revisará en breve." });
+    cargarSugerencias();
+  }
+
+  return (
+    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+      <MarcaAguaFondo />
+      <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
+        <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
+          <ArrowLeft size={14} /> Volver
+        </button>
+        <p className="text-white font-bold text-sm">Buzón de sugerencias</p>
+      </div>
+
+      <div className="max-w-2xl mx-auto p-4 space-y-4">
+        <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
+          <p className="text-xs" style={{ color: C.mute }}>
+            Escribe directamente a admin/dev: sugerencias, problemas con la web, o cualquier cosa que
+            quieras contarles en privado. Solo lo ven ellos.
+          </p>
+          <textarea
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            rows={4}
+            placeholder="Escribe aquí tu sugerencia o problema..."
+            className="w-full rounded-lg border px-3 py-2 text-sm outline-none resize-none"
+            style={{ borderColor: C.line, color: C.ink }}
+          />
+          {mensaje && (
+            <p
+              className="text-xs rounded-lg p-2.5"
+              style={{
+                background: mensaje.tipo === "error" ? "#FCEBEA" : "#E7F7EE",
+                color: mensaje.tipo === "error" ? C.red : "#15803D",
+              }}
+            >
+              {mensaje.texto}
+            </p>
+          )}
+          <button
+            onClick={enviar}
+            disabled={!texto.trim() || enviando}
+            style={{ background: texto.trim() ? C.blue : "#B9C6D2" }}
+            className="w-full text-white font-semibold py-2.5 rounded-lg text-sm"
+          >
+            {enviando ? "Enviando..." : "Enviar"}
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
+            Tus mensajes anteriores
+          </p>
+          {cargando && (
+            <p className="text-sm" style={{ color: C.mute }}>
+              Cargando...
+            </p>
+          )}
+          {!cargando && sugerencias.length === 0 && (
+            <p className="text-sm" style={{ color: C.mute }}>
+              Todavía no has enviado nada al buzón.
+            </p>
+          )}
+          {sugerencias.map((s) => (
+            <div key={s.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 space-y-2">
+              <p className="text-sm" style={{ color: C.ink }}>
+                {s.texto}
+              </p>
+              <p className="text-xs" style={{ color: C.mute }}>
+                {new Date(s.creado_en).toLocaleString("es-ES")}
+                {s.resuelto ? " · Resuelto" : " · Pendiente de respuesta"}
+              </p>
+              {s.respuesta && (
+                <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2.5">
+                  <p className="text-xs font-semibold mb-1" style={{ color: C.blueDark }}>
+                    Respuesta de admin/dev
+                  </p>
+                  <p className="text-sm" style={{ color: C.ink }}>
+                    {s.respuesta}
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
