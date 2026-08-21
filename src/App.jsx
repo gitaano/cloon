@@ -372,12 +372,16 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
                   style={{ borderColor: C.line, color: C.ink }}
                 >
                   <option value="">Selecciona...</option>
-                  <option>Jefe/a de Sector</option>
-                  <option>Maquinista de Tracción Eléctrica</option>
-                  <option>Mantenimiento (Vía / Instalaciones / Material Móvil)</option>
-                  <option>Técnico/a administrativo</option>
-                  <option>Técnico/a informático</option>
-                  <option>Otro</option>
+<option>Jefe/a de Sector</option>
+<option>Correturnos (Refuerzo/Reserva)</option>
+<option>Jefe/a de Vestíbulo</option>
+<option>Maquinista de Tracción Eléctrica</option>
+<option>Mantenimiento de Vía</option>
+<option>Talleres Centrales</option>
+<option>Instalaciones (Ascensores/Escaleras)</option>
+<option>Técnico/a administrativo</option>
+<option>Guardias Técnicos</option>
+<option>Otro</option>
                 </select>
               </div>
               <Campo label="Correo electrónico" type="email" value={regEmail} onChange={setRegEmail} placeholder="tucorreo@ejemplo.com" />
@@ -463,62 +467,76 @@ const LINEAS_METRO_ESTACIONES = {
 
 const TURNOS = {
   sector: [
-    { id: "M", nombre: "M" },
-    { id: "T", nombre: "T" },
-    { id: "S", nombre: "S" },
-    { id: "P", nombre: "P" },
+    { id: "JS-M06", nombre: "JS-M06 (06:00-14:00)" },
+    { id: "JS-T14", nombre: "JS-T14 (14:00-22:00)" },
+    { id: "JS-N18", nombre: "JS-N18 (18:00-02:00)" },
+    { id: "JS-P14", nombre: "JS-P14 · Partido (14:00-18:00 y 22:00-02:00)" },
+  ],
+  correturnos: [
+    { id: "CR-5/2", nombre: "CR-5/2 · Refuerzo (L-V, turno variable)" },
+    { id: "CR-4/2", nombre: "CR-4/2 · Reserva (rotativo, turno variable)" },
+  ],
+  vestibulo: [
+    { id: "JV-M", nombre: "JV-M (06:00-14:00)" },
+    { id: "JV-T", nombre: "JV-T (14:00-22:00)" },
+    { id: "JV-N", nombre: "JV-N (18:00-02:00)" },
   ],
   maquinista: [
-    { id: "M0530", nombre: "M0530" },
-    { id: "M0550", nombre: "M0550" },
-    { id: "M0600", nombre: "M0600" },
-    { id: "M0615", nombre: "M0615" },
-    { id: "M0630", nombre: "M0630" },
-    { id: "M0645", nombre: "M0645" },
-    { id: "M0700", nombre: "M0700" },
-    { id: "M0715", nombre: "M0715" },
-    { id: "P0730", nombre: "P0730" },
-    { id: "T1245", nombre: "T1245" },
-    { id: "T1300", nombre: "T1300" },
-    { id: "T1315", nombre: "T1315" },
-    { id: "T1320", nombre: "T1320" },
-    { id: "T1330", nombre: "T1330" },
-    { id: "T1345", nombre: "T1345" },
-    { id: "T1400", nombre: "T1400" },
-    { id: "T1415", nombre: "T1415" },
-    { id: "T1430", nombre: "T1430" },
-    { id: "T1500", nombre: "T1500" },
-    { id: "T1530", nombre: "T1530" },
-    { id: "T1600", nombre: "T1600" },
-    { id: "S1700", nombre: "S1700" },
-    { id: "S1730", nombre: "S1730" },
-    { id: "S1745", nombre: "S1745" },
-    { id: "S1830", nombre: "S1830" },
-    { id: "S1845", nombre: "S1845" },
-    { id: "N2230", nombre: "N2230" },
-    { id: "D0600", nombre: "D0600" },
-    { id: "D0630", nombre: "D0630" },
-    { id: "RVA", nombre: "RVA" },
-  ],
-  tecnico: [
-    { id: "M", nombre: "M" },
-    { id: "T", nombre: "T" },
-    { id: "S", nombre: "S" },
-    { id: "P", nombre: "P" },
+    { id: "M0530", nombre: "M0530 (05:30-13:00)" },
+    { id: "M0550", nombre: "M0550 (05:50-13:20)" },
+    { id: "M0600", nombre: "M0600 (06:00-13:30)" },
+    { id: "M0615", nombre: "M0615 (06:15-13:45)" },
+    { id: "M0630", nombre: "M0630 (06:30-14:00)" },
+    { id: "M0645", nombre: "M0645 (06:45-14:15)" },
+    { id: "D0600", nombre: "D0600 · Mañana FDS (06:00-13:30)" },
+    { id: "D0630", nombre: "D0630 · Mañana FDS (06:30-14:00)" },
+    { id: "F0600", nombre: "F0600 · Flexible (06:00-14:30)" },
+    { id: "F0645", nombre: "F0645 · Flexible (06:45-15:15)" },
+    { id: "T1415", nombre: "T1415 (14:15-21:45)" },
+    { id: "T1430", nombre: "T1430 (14:30-22:00)" },
+    { id: "T1445", nombre: "T1445 (14:45-22:15)" },
+    { id: "T1500", nombre: "T1500 (15:00-22:30)" },
+    { id: "T1530", nombre: "T1530 (15:30-23:00)" },
+    { id: "D1500", nombre: "D1500 · Tarde FDS (15:00-22:30)" },
+    { id: "P20", nombre: "P20 · Partido (13:00-17:30 y 20:50-23:50)" },
+    { id: "F1330", nombre: "F1330 · Flexible (13:30-22:00)" },
+    { id: "F1415", nombre: "F1415 · Flexible (14:15-22:45)" },
+    { id: "N2230", nombre: "N2230 · Noche (22:30-06:00)" },
+    { id: "SN1730", nombre: "SN1730 · Seminoche (17:30-01:30)" },
+    { id: "SN1800", nombre: "SN1800 · Seminoche (18:00-02:00)" },
   ],
   mantenimiento: [
-    { id: "M", nombre: "M" },
-    { id: "T", nombre: "T" },
-    { id: "S", nombre: "S" },
-    { id: "P", nombre: "P" },
+    { id: "MT-D07", nombre: "MT-D07 (07:00-14:30)" },
+    { id: "MT-T14", nombre: "MT-T14 (14:00-21:30)" },
+    { id: "MT-N23", nombre: "MT-N23 (23:00-06:30)" },
+  ],
+  talleres: [
+    { id: "TC-M08", nombre: "TC-M08 (08:00-15:30)" },
+    { id: "TC-T15", nombre: "TC-T15 (15:00-22:30)" },
+    { id: "TC-N22", nombre: "TC-N22 (22:00-05:30)" },
+  ],
+  instalaciones: [
+    { id: "IE-M09", nombre: "IE-M09 · Partido (09:00-13:30 y 15:30-18:30)" },
+    { id: "IE-S07", nombre: "IE-S07 · Fin de semana (07:20-14:50)" },
+  ],
+  tecnico: [
+    { id: "AT-D09", nombre: "AT-D09 · Partido (09:00-13:30 y 15:30-18:30 aprox.)" },
+  ],
+  guardias: [
+    { id: "GU-N22", nombre: "GU-N22 · Guardia (22:00-08:00)" },
   ],
 };
 
 const CATEGORIAS_TURNO = [
-  { id: "sector", nombre: "Jefe/a de Sector" },
-  { id: "maquinista", nombre: "Maquinista" },
-  { id: "tecnico", nombre: "Técnico" },
-  { id: "mantenimiento", nombre: "Mantenimiento" },
+  { id: "sector", nombre: "Jefe/a de Sector", corta: "J.Sector" },
+  { id: "correturnos", nombre: "Correturnos (Refuerzo/Reserva)", corta: "Correturnos" },
+  { id: "vestibulo", nombre: "Jefe/a de Vestíbulo", corta: "J.Vestíbulo" },
+  { id: "maquinista", nombre: "Maquinista de Tracción Eléctrica", corta: "Maquinista" },
+  { id: "mantenimiento", nombre: "Mantenimiento de Vía", corta: "Mant.Vía" },
+  { id: "talleres", nombre: "Talleres Centrales", corta: "Talleres" },
+  { id: "instalaciones", nombre: "Instalaciones (Asc./Esc.)", corta: "Instalaciones" },
+  { id: "tecnico", nombre: "Técnico/a administrativo", corta: "Técnico" },
+  { id: "guardias", nombre: "Guardias Técnicos", corta: "Guardias" },
 ];
 
 const LINEAS_METRO = [
@@ -1180,12 +1198,16 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
               style={{ borderColor: C.line, color: C.ink }}
             >
               <option value="">Selecciona...</option>
-              <option>Jefe/a de Sector</option>
-              <option>Maquinista de Tracción Eléctrica</option>
-              <option>Mantenimiento (Vía / Instalaciones / Material Móvil)</option>
-              <option>Técnico/a administrativo</option>
-              <option>Técnico/a informático</option>
-              <option>Otro</option>
+<option>Jefe/a de Sector</option>
+<option>Correturnos (Refuerzo/Reserva)</option>
+<option>Jefe/a de Vestíbulo</option>
+<option>Maquinista de Tracción Eléctrica</option>
+<option>Mantenimiento de Vía</option>
+<option>Talleres Centrales</option>
+<option>Instalaciones (Ascensores/Escaleras)</option>
+<option>Técnico/a administrativo</option>
+<option>Guardias Técnicos</option>
+<option>Otro</option>
             </select>
           </div>
 
@@ -1707,8 +1729,9 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
         (lineaEstacionConcreta && estacionConcreta))
     : diaLibreQuiero && diasLibreOfrezco.length > 0;
 
-  const nombreCategoria = categoria === "sector" ? "Jefe/a de Sector" : "Maquinista";
-  const nombreCategoriaCorta = categoria === "sector" ? "J.Sector" : "Maquinista";
+  const infoCategoriaCambio = CATEGORIAS_TURNO.find((c) => c.id === categoria) || {};
+  const nombreCategoria = infoCategoriaCambio.nombre || categoria;
+  const nombreCategoriaCorta = infoCategoriaCambio.corta || nombreCategoria;
   const tituloTipo = esServicio ? "servicio" : esDiaLibre ? "día libre" : "vacaciones";
   const tituloTipoCorta = esServicio ? "Servicio" : esDiaLibre ? "Día Libre" : "Vacaciones";
 
@@ -2108,10 +2131,7 @@ function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo
   const [abierto, setAbierto] = useState(false);
   const [accion, setAccion] = useState("");
 
-  const CATEGORIAS = [
-    { id: "sector", nombre: "Jefe/a de Sector" },
-    { id: "maquinista", nombre: "Maquinista" },
-  ];
+  const CATEGORIAS = CATEGORIAS_TURNO;
   const TIPOS = [
     { id: "servicio", nombre: "Servicio" },
     { id: "dia_libre", nombre: "Día libre" },
