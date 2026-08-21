@@ -1032,6 +1032,8 @@ function PendienteAprobacion({ onCerrarSesion }) {
 
 function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [nickname, setNickname] = useState("");
+  const [nombreReal, setNombreReal] = useState("");
+  const [apellidoReal, setApellidoReal] = useState("");
   const [cargo, setCargo] = useState("");
   const [intereses, setIntereses] = useState("");
   const [mostrarNombreReal, setMostrarNombreReal] = useState(false);
@@ -1055,6 +1057,8 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   useEffect(() => {
     if (!perfil) return;
     setNickname(perfil.nickname || "");
+    setNombreReal(perfil.nombre || "");
+    setApellidoReal(perfil.apellido || "");
     setCargo(perfil.cargo || "");
     setIntereses(perfil.intereses || "");
     setMostrarNombreReal(!!perfil.mostrar_nombre_real);
@@ -1082,10 +1086,16 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
 
   async function guardar() {
     setMensaje(null);
+    if (!nombreReal.trim() || !apellidoReal.trim()) {
+      setMensaje({ tipo: "error", texto: "El nombre y el apellido no pueden quedar vacíos." });
+      return;
+    }
     setCargando(true);
     const { data, error } = await supabase
       .from("perfiles")
       .update({
+        nombre: nombreReal.trim(),
+        apellido: apellidoReal.trim(),
         nickname: nickname.trim() || null,
         cargo,
         intereses: intereses.trim(),
@@ -1210,7 +1220,34 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
             </p>
           )}
 
-          <div>
+          <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                  Nombre real
+                </label>
+                <input
+                  value={nombreReal}
+                  onChange={(e) => setNombreReal(e.target.value)}
+                  placeholder="Ej: Ana"
+                  className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: C.line, color: C.ink }}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                  Apellido real
+                </label>
+                <input
+                  value={apellidoReal}
+                  onChange={(e) => setApellidoReal(e.target.value)}
+                  placeholder="Ej: Ruiz"
+                  className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                  style={{ borderColor: C.line, color: C.ink }}
+                />
+              </div>
+            </div>
+
+            <div>
             <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
               Nick (como te verán los demás)
             </label>
