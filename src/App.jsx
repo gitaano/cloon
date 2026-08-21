@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -1030,6 +1030,31 @@ function PendienteAprobacion({ onCerrarSesion }) {
   );
 }
 
+function BloqueDesplegable({ titulo, abierto, onToggle, children }) {
+  return (
+    <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border overflow-hidden">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-4 py-3"
+      >
+        <span className="text-xs font-semibold" style={{ color: C.ink }}>
+          {titulo}
+        </span>
+        <ChevronDown
+          size={19}
+          style={{
+            color: C.mute,
+            transform: abierto ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 0.15s ease",
+          }}
+        />
+      </button>
+      {abierto && <div className="px-4 pb-4 space-y-3">{children}</div>}
+    </div>
+  );
+}
+
 function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [nickname, setNickname] = useState("");
   const [nombreReal, setNombreReal] = useState("");
@@ -1052,6 +1077,8 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [estacionPreferente, setEstacionPreferente] = useState("");
   const [turnoPreferente, setTurnoPreferente] = useState("");
   const [categoriaTurnos, setCategoriaTurnos] = useState("sector");
+  const [categoriaAbierta, setCategoriaAbierta] = useState(false);
+  const [indicadoresAbiertos, setIndicadoresAbiertos] = useState(false);
   const [indicadoresCalendario, setIndicadoresCalendario] = useState(INDICADORES_CALENDARIO.map((i) => i.id));
 
   useEffect(() => {
@@ -1352,28 +1379,29 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
             </div>
           )}
 
-          <div>
-            <p className="text-xs font-semibold mb-1.5" style={{ color: C.ink }}>
-              Mi categoría
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {CATEGORIAS_TURNO.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setCategoriaTurnos(cat.id)}
-                  style={{
-                    background: categoriaTurnos === cat.id ? C.blue : C.white,
-                    borderColor: C.line,
-                    color: categoriaTurnos === cat.id ? C.white : C.ink,
-                  }}
-                  className="border rounded-lg py-2 text-xs font-semibold"
-                >
-                  {cat.nombre}
-                </button>
-              ))}
-            </div>
-          </div>
+          <BloqueDesplegable
+                titulo="Mi categoría"
+                abierto={categoriaAbierta}
+                onToggle={() => setCategoriaAbierta((v) => !v)}
+              >
+                <div className="grid grid-cols-2 gap-2">
+                  {CATEGORIAS_TURNO.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setCategoriaTurnos(cat.id)}
+                      style={{
+                        background: categoriaTurnos === cat.id ? C.blue : C.white,
+                        borderColor: C.line,
+                        color: categoriaTurnos === cat.id ? C.white : C.ink,
+                      }}
+                      className="border rounded-lg py-2 text-xs font-semibold"
+                    >
+                      {cat.nombre}
+                    </button>
+                  ))}
+                </div>
+              </BloqueDesplegable>
 
           <div>
             <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
@@ -1393,21 +1421,22 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
               ))}
             </select>
           </div>
-          <div>
-            <p className="text-xs font-semibold mb-1" style={{ color: C.ink }}>
-              Qué apartados quiero ver marcados
-            </p>
-            <div className="grid grid-cols-2 gap-x-3">
-              {INDICADORES_CALENDARIO.map((ind) => (
-                <CasillaPerfil
-                  key={ind.id}
-                  label={ind.nombre}
-                  checked={indicadoresCalendario.includes(ind.id)}
-                  onChange={() => toggleIndicador(ind.id)}
-                />
-              ))}
-            </div>
-          </div>
+          <BloqueDesplegable
+                titulo="Qué apartados quiero ver marcados"
+                abierto={indicadoresAbiertos}
+                onToggle={() => setIndicadoresAbiertos((v) => !v)}
+              >
+                <div className="grid grid-cols-2 gap-x-3">
+                  {INDICADORES_CALENDARIO.map((ind) => (
+                    <CasillaPerfil
+                      key={ind.id}
+                      label={ind.nombre}
+                      checked={indicadoresCalendario.includes(ind.id)}
+                      onChange={() => toggleIndicador(ind.id)}
+                    />
+                  ))}
+                </div>
+              </BloqueDesplegable>
         </div>
 
         <button
@@ -2901,6 +2930,7 @@ function CalendarioTurnos({
   setCategoriaTurnos,
   indicadoresVisibles,
 }) {
+  const [categoriaAbierta, setCategoriaAbierta] = useState(false);
   const NOMBRES_MES = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
@@ -3010,11 +3040,12 @@ function CalendarioTurnos({
 
   return (
     <div className="space-y-4">
-      <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
-        <p className="text-xs font-semibold mb-1.5" style={{ color: C.ink }}>
-          Mi categoría
-        </p>
-        <div className="grid grid-cols-2 gap-2 mb-1">
+      <BloqueDesplegable
+        titulo="Mi categoría"
+        abierto={categoriaAbierta}
+        onToggle={() => setCategoriaAbierta((v) => !v)}
+      >
+        <div className="grid grid-cols-2 gap-2">
           {CATEGORIAS_TURNO.map((cat) => (
             <button
               key={cat.id}
@@ -3030,7 +3061,7 @@ function CalendarioTurnos({
             </button>
           ))}
         </div>
-      </div>
+      </BloqueDesplegable>
 
       <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
         <div className="flex items-center justify-between mb-3">
