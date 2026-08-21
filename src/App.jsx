@@ -373,8 +373,6 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
                 >
                   <option value="">Selecciona...</option>
 <option>Jefe/a de Sector</option>
-<option>Correturnos (Refuerzo/Reserva)</option>
-<option>Jefe/a de Vestíbulo</option>
 <option>Maquinista de Tracción Eléctrica</option>
 <option>Mantenimiento de Vía</option>
 <option>Talleres Centrales</option>
@@ -472,15 +470,6 @@ const TURNOS = {
     { id: "JS-N18", nombre: "JS-N18 (18:00-02:00)" },
     { id: "JS-P14", nombre: "JS-P14 · Partido (14:00-18:00 y 22:00-02:00)" },
   ],
-  correturnos: [
-    { id: "CR-5/2", nombre: "CR-5/2 · Refuerzo (L-V, turno variable)" },
-    { id: "CR-4/2", nombre: "CR-4/2 · Reserva (rotativo, turno variable)" },
-  ],
-  vestibulo: [
-    { id: "JV-M", nombre: "JV-M (06:00-14:00)" },
-    { id: "JV-T", nombre: "JV-T (14:00-22:00)" },
-    { id: "JV-N", nombre: "JV-N (18:00-02:00)" },
-  ],
   maquinista: [
     { id: "M0530", nombre: "M0530 (05:30-13:00)" },
     { id: "M0550", nombre: "M0550 (05:50-13:20)" },
@@ -529,8 +518,6 @@ const TURNOS = {
 
 const CATEGORIAS_TURNO = [
   { id: "sector", nombre: "Jefe/a de Sector", corta: "J.Sector" },
-  { id: "correturnos", nombre: "Correturnos (Refuerzo/Reserva)", corta: "Correturnos" },
-  { id: "vestibulo", nombre: "Jefe/a de Vestíbulo", corta: "J.Vestíbulo" },
   { id: "maquinista", nombre: "Maquinista de Tracción Eléctrica", corta: "Maquinista" },
   { id: "mantenimiento", nombre: "Mantenimiento de Vía", corta: "Mant.Vía" },
   { id: "talleres", nombre: "Talleres Centrales", corta: "Talleres" },
@@ -1199,8 +1186,6 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
             >
               <option value="">Selecciona...</option>
 <option>Jefe/a de Sector</option>
-<option>Correturnos (Refuerzo/Reserva)</option>
-<option>Jefe/a de Vestíbulo</option>
 <option>Maquinista de Tracción Eléctrica</option>
 <option>Mantenimiento de Vía</option>
 <option>Talleres Centrales</option>
