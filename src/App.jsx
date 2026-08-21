@@ -1223,7 +1223,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
           <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-                  Nombre real
+                  Nombre
                 </label>
                 <input
                   value={nombreReal}
@@ -1235,7 +1235,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
               </div>
               <div>
                 <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-                  Apellido real
+                  Apellido
                 </label>
                 <input
                   value={apellidoReal}
@@ -1421,8 +1421,8 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
         {mostrarPreview && (
           <TarjetaSocioPreview
             perfilPreview={{
-              nombre: perfil.nombre,
-              apellido: perfil.apellido,
+              nombre: nombreReal,
+              apellido: apellidoReal,
               dne: perfil.dne,
               nickname,
               cargo,
