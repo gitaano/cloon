@@ -14,7 +14,7 @@ const C = {
   line: "#DCE4EC",
 };
 
-function LogoMetroColor({ size = 40, className, style }) {
+function LogoMetroColor({ size = 48, className, style }) {
   return (
     <img
       src="/logo_color_mini.png"
@@ -27,7 +27,7 @@ function LogoMetroColor({ size = 40, className, style }) {
   );
 }
 
-function LogoUnderground({ size = 40, className, style }) {
+function LogoUnderground({ size = 48, className, style }) {
   return <LogoMetroColor size={size} className={className} style={style} />;
 }
 
@@ -39,7 +39,7 @@ function MarcaAguaFondo() {
     >
       <LogoMetroPlata
         id="marcaAguaFondo"
-        size={1500}
+        size={1800}
         style={{
           position: "absolute",
           top: "50%",
@@ -52,7 +52,7 @@ function MarcaAguaFondo() {
   );
 }
 
-function LogoMetroPlata({ size = 400, className, style }) {
+function LogoMetroPlata({ size = 480, className, style }) {
   return (
     <img
       src="/logo_plata_mini.png"
@@ -148,7 +148,7 @@ function NuevaContrasena({ onListo }) {
       <div className="w-full max-w-md" style={{ position: "relative", zIndex: 1 }}>
         <div className="text-center mb-6">
           <div className="mx-auto w-fit drop-shadow-lg">
-            <LogoUnderground size={72} />
+            <LogoUnderground size={86} />
           </div>
           <h1 style={{ color: C.white }} className="text-2xl font-bold mt-4">
             Nueva contraseña
@@ -301,7 +301,7 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
       <div className="relative w-full max-w-md">
         <div className="text-center mb-6">
           <div className="mx-auto w-fit drop-shadow-lg">
-            <LogoUnderground size={88} />
+            <LogoUnderground size={106} />
           </div>
           <h1 style={{ color: C.white }} className="text-2xl font-bold mt-4">
             Underground
@@ -319,14 +319,14 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
                 className="flex-1 py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
                 style={{ background: modo === "login" ? C.blue : C.white, color: modo === "login" ? C.white : C.mute }}
               >
-                <LogIn size={16} /> Entrar
+                <LogIn size={19} /> Entrar
               </button>
               <button
                 onClick={() => { setModo("registro"); setMensaje(null); }}
                 className="flex-1 py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
                 style={{ background: modo === "registro" ? C.blue : C.white, color: modo === "registro" ? C.white : C.mute }}
               >
-                <UserPlus size={16} /> Darse de alta
+                <UserPlus size={19} /> Darse de alta
               </button>
             </div>
           )}
@@ -385,7 +385,7 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
               <Campo label="Correo electrónico" type="email" value={regEmail} onChange={setRegEmail} placeholder="tucorreo@ejemplo.com" />
               <CampoPass verPass={verPass} setVerPass={setVerPass} value={regPass} onChange={setRegPass} />
               <p className="text-xs rounded-lg p-2.5 flex gap-2" style={{ background: "#EAF2F9", color: C.blueDark }}>
-                <ShieldCheck size={24} className="shrink-0" />
+                <ShieldCheck size={29} className="shrink-0" />
                 Tus datos solo los ve el equipo de administración — nunca se muestran en el foro.
               </p>
               <BotonPrincipal
@@ -400,7 +400,7 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
           {modo === "recuperar" && (
             <div className="space-y-4">
               <button onClick={() => { setModo("login"); setMensaje(null); }} className="text-xs flex items-center gap-1" style={{ color: C.blue }}>
-                <ArrowLeft size={14} /> Volver
+                <ArrowLeft size={17} /> Volver
               </button>
               <p className="text-sm" style={{ color: C.ink }}>
                 Escribe el correo con el que te diste de alta y te mandaremos un enlace para elegir una contraseña nueva.
@@ -417,7 +417,7 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
             <div style={{ background: C.blueDarker }} className="p-4 rounded-t-2xl flex items-center justify-between shrink-0">
               <p className="text-white font-bold text-sm">Normas del club</p>
               <button onClick={() => setNormasAbiertas(false)} className="text-white">
-                <X size={20} />
+                <X size={24} />
               </button>
             </div>
             <div className="p-4 space-y-4 overflow-y-auto">
@@ -751,7 +751,7 @@ useEffect(() => {
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <LogoMetroColor size={28} />
+          <LogoMetroColor size={34} />
           <p className="text-white font-bold text-sm">Underground</p>
           {perfil && (
             <p className="text-xs" style={{ color: "#BFD9EE" }}>
@@ -772,7 +772,7 @@ useEffect(() => {
             style={{ borderColor: "rgba(255,255,255,0.35)" }}
             className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
           >
-            <Calendar size={13} />
+            <Calendar size={16} />
             Calendario
           </button>
           <button
@@ -780,7 +780,7 @@ useEffect(() => {
             style={{ borderColor: "rgba(255,255,255,0.35)" }}
             className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
           >
-            <FileText size={13} />
+            <FileText size={16} />
             Biblioteca
           </button>
               <button
@@ -788,7 +788,7 @@ useEffect(() => {
                 style={{ borderColor: "rgba(255,255,255,0.35)" }}
                 className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
               >
-                <Lightbulb size={13} />
+                <Lightbulb size={16} />
                 Buzón sugerencias
               </button>
           <button
@@ -796,7 +796,7 @@ useEffect(() => {
             style={{ borderColor: "rgba(255,255,255,0.35)" }}
             className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1 relative"
           >
-            <Mail size={13} />
+            <Mail size={16} />
             Mensajes
             {mensajesNoLeidos > 0 && (
               <span
@@ -813,7 +813,7 @@ useEffect(() => {
               style={{ borderColor: "rgba(255,255,255,0.35)" }}
               className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
             >
-              <Settings size={13} />
+              <Settings size={16} />
               Panel admin
             </button>
           )}
@@ -907,7 +907,7 @@ useEffect(() => {
                   const IconoAmb = ambInfo ? ambInfo.icon : MessageSquare;
                   return (
                     <>
-                      <IconoAmb size={13} />
+                      <IconoAmb size={16} />
                       {ambInfo ? ambInfo.nombre : h.ambito}
                     </>
                   );
@@ -941,7 +941,7 @@ useEffect(() => {
                     aria-label="Enviar mensaje privado"
                     style={{ color: C.mute }}
                   >
-                    <Mail size={12} />
+                    <Mail size={14} />
                   </button>
                 )}
                 {h.autor_id === sesion.user.id &&
@@ -1009,7 +1009,7 @@ function PendienteAprobacion({ onCerrarSesion }) {
         className="rounded-2xl border shadow-xl p-6 max-w-md w-full text-center space-y-4"
       >
         <div className="mx-auto w-fit">
-          <LogoUnderground size={64} />
+          <LogoUnderground size={77} />
         </div>
         <h1 className="text-lg font-bold" style={{ color: C.ink }}>
           Tu alta está pendiente de aprobación
@@ -1165,7 +1165,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
-          <ArrowLeft size={14} /> Volver
+          <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Mi perfil</p>
       </div>
@@ -1703,7 +1703,7 @@ function BotonReaccion({ icon: Icon, color, activo, cantidad, onClick, label }) 
       aria-label={label}
       className="flex flex-col items-center gap-0.5"
     >
-      <Icon size={17} style={{ color: activo ? color : C.mute }} strokeWidth={activo ? 2.5 : 2} />
+      <Icon size={20} style={{ color: activo ? color : C.mute }} strokeWidth={activo ? 2.5 : 2} />
       <span className="text-xs font-semibold" style={{ color: activo ? color : C.mute }}>
         {cantidad}
       </span>
@@ -1718,7 +1718,7 @@ function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre }) {
       className="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
       style={{ background: activo ? "#EAF2F9" : "transparent" }}
     >
-      <Icon size={17} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
+      <Icon size={20} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
       <p className="text-sm font-semibold truncate" style={{ color: activo ? C.blueDark : C.ink }}>
         {nombre}
       </p>
@@ -1878,7 +1878,7 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
             <p className="text-xs opacity-80">{nombreCategoria}</p>
           </div>
           <button onClick={onCerrar} className="text-white">
-            <X size={20} />
+            <X size={24} />
           </button>
         </div>
 
@@ -1948,7 +1948,7 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                       >
                         {formatearFecha(d)}
                         <button onClick={() => quitarDiaOfrecido(d)} aria-label="Quitar día">
-                          <X size={12} />
+                          <X size={14} />
                         </button>
                       </span>
                     ))}
@@ -2219,14 +2219,14 @@ function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo
         className="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
         style={{ background: activo ? "#EAF2F9" : "transparent" }}
       >
-        <Repeat size={17} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
+        <Repeat size={20} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold truncate" style={{ color: activo ? C.blueDark : C.ink }}>
             Cambios
           </p>
         </div>
         <ChevronRight
-          size={13}
+          size={16}
           className="shrink-0"
           style={{ color: C.mute, transform: abierto ? "rotate(90deg)" : "none" }}
         />
@@ -2452,7 +2452,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
     <div style={{ background: C.bg }} className="min-h-screen">
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
-          <ArrowLeft size={14} /> Volver
+          <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Panel de administración</p>
       </div>
@@ -2469,7 +2469,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                 style={{ background: activo ? "#EAF2F9" : "transparent" }}
                 className="shrink-0 text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
               >
-                <Icono size={17} style={{ color: activo ? C.blue : C.mute }} />
+                <Icono size={20} style={{ color: activo ? C.blue : C.mute }} />
                 <span className="text-sm font-semibold whitespace-nowrap" style={{ color: activo ? C.blueDark : C.ink }}>
                   {tb.nombre}
                 </span>
@@ -2859,7 +2859,7 @@ function VistaCalendario({ sesion, perfil, onVolver }) {
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
-          <ArrowLeft size={14} /> Volver
+          <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Calendario de turnos</p>
       </div>
@@ -3035,13 +3035,13 @@ function CalendarioTurnos({
       <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => cambiarMes(-1)} style={{ color: C.blueDark }} className="p-1.5">
-            <ChevronLeft size={18} />
+            <ChevronLeft size={22} />
           </button>
           <p className="text-sm font-bold" style={{ color: C.ink }}>
             {NOMBRES_MES[mesVisto]} {anoVisto}
           </p>
           <button onClick={() => cambiarMes(1)} style={{ color: C.blueDark }} className="p-1.5">
-            <ChevronRight size={18} />
+            <ChevronRight size={22} />
           </button>
         </div>
 
@@ -3091,7 +3091,7 @@ function CalendarioTurnos({
                     style={{ background: C.white, borderColor: "#B91C1C" }}
                     className="absolute bottom-0.5 left-0.5 w-3.5 h-3.5 rounded-sm border flex items-center justify-center"
                   >
-                    <Plus size={9} strokeWidth={3.5} style={{ color: "#B91C1C" }} />
+                    <Plus size={11} strokeWidth={3.5} style={{ color: "#B91C1C" }} />
                   </span>
                 )}
                 {visible("desplazamiento") && r?.desplazamiento && (
@@ -3556,11 +3556,11 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
             }}
             className="text-white text-xs font-semibold flex items-center gap-1"
           >
-            <ArrowLeft size={14} /> Mensajes
+            <ArrowLeft size={17} /> Mensajes
           </button>
         ) : (
           <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
-            <ArrowLeft size={14} /> Volver
+            <ArrowLeft size={17} /> Volver
           </button>
         )}
         <p className="text-white font-bold text-sm">
@@ -3572,7 +3572,7 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
         </p>
         {!conversacionActiva && !nuevoMensajeAbierto && (
           <button onClick={abrirNuevoMensaje} className="ml-auto text-white">
-            <Plus size={20} />
+            <Plus size={24} />
           </button>
         )}
         {conversacionActiva && (
@@ -3581,7 +3581,7 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
             className="ml-auto text-white text-xs font-semibold border rounded-full px-2.5 py-1 flex items-center gap-1"
             style={{ borderColor: "rgba(255,255,255,0.35)" }}
           >
-            <Ban size={12} />
+            <Ban size={14} />
             {bloqueados.has(conversacionActiva) ? "Desbloquear" : "Bloquear"}
           </button>
         )}
@@ -3731,7 +3731,7 @@ function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
                 style={{ background: texto.trim() ? C.blue : "#B9C6D2" }}
                 className="w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0"
               >
-                <Send size={16} />
+                <Send size={19} />
               </button>
             </div>
           </div>
@@ -3829,7 +3829,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
-          <ArrowLeft size={14} /> Volver
+          <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Biblioteca de documentos</p>
       </div>
@@ -3842,7 +3842,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
             style={{ background: subiendo ? "#B9C6D2" : C.blue }}
             className="w-full text-white font-semibold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Upload size={16} />
+            <Upload size={19} />
             {subiendo ? "Subiendo..." : "Subir documento"}
           </label>
           {esAdminODev && (
@@ -3885,7 +3885,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
             </p>
             {pendientes.map((doc) => (
               <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
-                <FileText size={20} style={{ color: C.mute }} className="shrink-0" />
+                <FileText size={24} style={{ color: C.mute }} className="shrink-0" />
                 <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
                   <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
                     {doc.nombre}
@@ -3902,11 +3902,11 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
                   className="text-white rounded-lg p-1.5 shrink-0"
                   aria-label="Aprobar"
                 >
-                  <Check size={15} />
+                  <Check size={18} />
                 </button>
-                <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={17} /> : <EyeOff size={17} />}</button>
+                <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={20} /> : <EyeOff size={20} />}</button>
               <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
-                  <X size={17} />
+                  <X size={20} />
                 </button>
               </div>
             ))}
@@ -3925,16 +3925,16 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
             )}
             {publicosAprobados.map((doc) => (
               <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
-                <FileText size={20} style={{ color: C.blue }} className="shrink-0" />
+                <FileText size={24} style={{ color: C.blue }} className="shrink-0" />
                 <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
                   <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
                     {doc.nombre}
                   </p>
                 </button>
                 {esAdminODev && (<>
-                  <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={17} /> : <EyeOff size={17} />}</button>
+                  <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={20} /> : <EyeOff size={20} />}</button>
               <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
-                    <X size={17} />
+                    <X size={20} />
                   </button>
                 </>)}
               </div>
@@ -3957,15 +3957,15 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
             )}
             {privadosAprobados.map((doc) => (
               <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
-                <FileText size={20} style={{ color: C.blueDark }} className="shrink-0" />
+                <FileText size={24} style={{ color: C.blueDark }} className="shrink-0" />
                 <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
                   <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
                     {doc.nombre}
                   </p>
                 </button>
-                <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={17} /> : <EyeOff size={17} />}</button>
+                <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={20} /> : <EyeOff size={20} />}</button>
               <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
-                  <X size={17} />
+                  <X size={20} />
                 </button>
               </div>
             ))}
@@ -4023,7 +4023,7 @@ function VistaSugerencias({ sesion, perfil, onVolver }) {
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
-          <ArrowLeft size={14} /> Volver
+          <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Buzón de sugerencias</p>
       </div>
@@ -4227,7 +4227,7 @@ function ChatBotFlotante() {
               className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full border flex items-center justify-center shadow z-10"
               aria-label="Ocultar asistente"
             >
-              <X size={11} />
+              <X size={13} />
             </button>
             <button
               onClick={() => setChatAbierto(true)}
@@ -4240,7 +4240,7 @@ function ChatBotFlotante() {
               className="text-white rounded-full pl-3 pr-4 py-3 flex items-center gap-2 shadow-2xl hover:opacity-90 transition"
             >
               <div style={{ background: C.white }} className="w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-                <TrainFront size={17} style={{ color: C.blueDark }} />
+                <TrainFront size={20} style={{ color: C.blueDark }} />
               </div>
               <span className="text-sm font-bold hidden sm:inline">Pregúntame dudas</span>
             </button>
@@ -4263,8 +4263,8 @@ function ChatBotFlotante() {
           className="fixed right-0 top-1/2 -translate-y-1/2 z-40 text-white pl-2 pr-1 py-3 rounded-l-lg shadow-lg flex flex-col items-center gap-1"
           aria-label="Mostrar el chat de ayuda"
         >
-          <TrainFront size={16} />
-          <ChevronLeft size={14} />
+          <TrainFront size={19} />
+          <ChevronLeft size={17} />
         </button>
       )}
 
@@ -4276,11 +4276,11 @@ function ChatBotFlotante() {
           >
             <div style={{ background: C.blueDark }} className="p-4 rounded-t-2xl flex items-center justify-between">
               <div className="flex items-center gap-2 text-white">
-                <Bot size={18} />
+                <Bot size={22} />
                 <span className="font-bold text-sm">Asistente de dudas</span>
               </div>
               <button onClick={() => setChatAbierto(false)} className="text-white">
-                <X size={20} />
+                <X size={24} />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col">
@@ -4308,7 +4308,7 @@ function ChatBotFlotante() {
                 style={{ borderColor: C.line }}
               />
               <button onClick={enviarPregunta} style={{ background: C.blue }} className="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
-                <Send size={16} className="text-white" />
+                <Send size={19} className="text-white" />
               </button>
             </div>
           </div>
@@ -4381,7 +4381,7 @@ function NormasContenido({ normasLeidas, onConfirmar }) {
   return (
     <>
       <div style={{ background: "#FCEBEA", borderColor: "#F3B8B8" }} className="rounded-xl border p-3 flex items-start gap-2.5">
-        <ShieldCheck size={18} style={{ color: C.red }} className="shrink-0 mt-0.5" />
+        <ShieldCheck size={22} style={{ color: C.red }} className="shrink-0 mt-0.5" />
         <p className="text-xs" style={{ color: "#7A1518" }}>
           Underground <strong>no es un canal oficial</strong> de Metro de Madrid. Nada de lo publicado aquí
           sustituye a los cauces y herramientas oficiales de la empresa.
@@ -4407,7 +4407,7 @@ function NormasContenido({ normasLeidas, onConfirmar }) {
       >
         {normasLeidas ? (
           <p className="text-sm font-semibold flex items-center gap-2" style={{ color: "#15803D" }}>
-            <Check size={16} /> Ya has confirmado que has leído las normas del club.
+            <Check size={19} /> Ya has confirmado que has leído las normas del club.
           </p>
         ) : (
           <>
@@ -4458,7 +4458,7 @@ function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) {
       <MarcaAguaFondo />
       <div className="w-full max-w-xl text-center" style={{ position: "relative", zIndex: 1 }}>
         <div className="mx-auto w-fit drop-shadow-lg">
-          <LogoMetroColor size={110} />
+          <LogoMetroColor size={132} />
         </div>
         <h1 style={{ color: C.white }} className="text-3xl font-bold mt-5">
           Underground
@@ -4473,7 +4473,7 @@ function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) {
           {PUNTOS.map((p, i) => (
             <div key={i} className="flex items-start gap-3">
               <div style={{ background: "#EAF2F9" }} className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
-                <p.icon size={18} style={{ color: C.blue }} />
+                <p.icon size={22} style={{ color: C.blue }} />
               </div>
               <p className="text-sm pt-1.5" style={{ color: C.ink }}>
                 {p.texto}
@@ -4495,9 +4495,9 @@ function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) {
             className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
           >
             {normasLeidas ? (
-              <Check size={18} style={{ color: C.white }} />
+              <Check size={22} style={{ color: C.white }} />
             ) : (
-              <ShieldCheck size={18} style={{ color: C.blueDark }} />
+              <ShieldCheck size={22} style={{ color: C.blueDark }} />
             )}
           </div>
           <div className="min-w-0">
@@ -4533,7 +4533,7 @@ function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) {
             <div style={{ background: C.blueDarker }} className="p-4 rounded-t-2xl flex items-center justify-between shrink-0">
               <p className="text-white font-bold text-sm">Normas del club</p>
               <button onClick={() => setNormasAbiertas(false)} className="text-white">
-                <X size={20} />
+                <X size={24} />
               </button>
             </div>
             <div className="p-4 space-y-4 overflow-y-auto">
@@ -4586,7 +4586,7 @@ function CampoPass({ verPass, setVerPass, value, onChange }) {
           style={{ borderColor: C.line, color: C.ink }}
         />
         <button type="button" onClick={() => setVerPass(!verPass)} className="absolute right-3 top-2.5" style={{ color: C.mute }}>
-          {verPass ? <EyeOff size={18} /> : <Eye size={18} />}
+          {verPass ? <EyeOff size={22} /> : <Eye size={22} />}
         </button>
       </div>
     </div>
