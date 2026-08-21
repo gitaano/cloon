@@ -3672,12 +3672,12 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
                     {doc.nombre}
                   </p>
                 </button>
-                {esAdminODev && (
+                {esAdminODev && (<>
                   <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={17} /> : <EyeOff size={17} />}</button>
               <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
                     <X size={17} />
                   </button>
-                )}
+                </>)}
               </div>
             ))}
           </div>
