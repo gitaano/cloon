@@ -738,6 +738,10 @@ useEffect(() => {
     );
   }
 
+  if (perfil && perfil.aprobado === false && perfil.rol !== "admin" && perfil.rol !== "dev") {
+    return <PendienteAprobacion onCerrarSesion={() => supabase.auth.signOut()} />;
+  }
+
   return (
     <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
@@ -976,6 +980,39 @@ useEffect(() => {
           ))}
         </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function PendienteAprobacion({ onCerrarSesion }) {
+  return (
+    <div
+      style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }}
+      className="min-h-screen flex items-center justify-center p-4"
+    >
+      <MarcaAguaFondo />
+      <div
+        style={{ background: C.white, borderColor: C.line, position: "relative", zIndex: 1 }}
+        className="rounded-2xl border shadow-xl p-6 max-w-md w-full text-center space-y-4"
+      >
+        <div className="mx-auto w-fit">
+          <LogoUnderground size={64} />
+        </div>
+        <h1 className="text-lg font-bold" style={{ color: C.ink }}>
+          Tu alta está pendiente de aprobación
+        </h1>
+        <p className="text-sm" style={{ color: C.mute }}>
+          Un administrador tiene que confirmar que eres agente de Metro de Madrid antes de que puedas
+          entrar al club. En cuanto la revisen, podrás acceder con normalidad.
+        </p>
+        <button
+          onClick={onCerrarSesion}
+          style={{ borderColor: C.line, color: C.ink }}
+          className="border rounded-lg py-2.5 px-4 text-sm font-semibold"
+        >
+          Cerrar sesión
+        </button>
       </div>
     </div>
   );
@@ -2310,7 +2347,16 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
     if (!error) cargarTodo();
   }
 
+  async function aprobarAlta(usuarioId) {
+    const { error } = await supabase.from("perfiles").update({ aprobado: true }).eq("id", usuarioId);
+    if (!error) cargarTodo();
+    else setMensaje({ tipo: "error", texto: error.message });
+  }
+
+  const pendientesAlta = usuarios.filter((u) => !u.aprobado);
+
   const TABS = [
+    { id: "altas", nombre: "Altas pendientes", icon: UserPlus, badge: pendientesAlta.length },
     { id: "usuarios", nombre: "Usuarios", icon: Contact, badge: 0 },
     { id: "reportes", nombre: "Reportes", icon: ShieldCheck, badge: reportes.length },
     { id: "baneos", nombre: "Peticiones de baneo", icon: Ban, badge: solicitudesBaneo.length },
@@ -2380,7 +2426,12 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                           ★ VIP
                         </span>
                       )}{" "}
-                      {baneadosIds.has(u.id) && (
+                      {!u.aprobado && (
+                <span className="text-xs font-bold" style={{ color: C.blueDark }}>
+                  {" "}(pendiente de aprobación)
+                </span>
+              )}{" "}
+              {baneadosIds.has(u.id) && (
                         <span className="text-xs font-bold" style={{ color: C.red }}>
                           (baneado)
                         </span>
@@ -2471,7 +2522,50 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
             </div>
           )}
 
-          {!cargando && tab === "baneos" && (
+          {!cargando && tab === "altas" && (
+              <div className="space-y-2">
+                {pendientesAlta.length === 0 && (
+                  <p className="text-sm" style={{ color: C.mute }}>
+                    No hay altas pendientes de aprobación.
+                  </p>
+                )}
+                {pendientesAlta.map((u) => (
+                  <div
+                    key={u.id}
+                    style={{ background: C.white, borderColor: C.line }}
+                    className="rounded-xl border p-3 flex flex-wrap items-center gap-3"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold" style={{ color: C.ink }}>
+                        {u.nombre} {u.apellido}
+                      </p>
+                      <p className="text-xs" style={{ color: C.mute }}>
+                        DNE: {u.dne} · {u.cargo}
+                      </p>
+                      <p className="text-xs" style={{ color: C.mute }}>
+                        Solicitado el {new Date(u.creado_en).toLocaleDateString("es-ES")}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => aprobarAlta(u.id)}
+                      style={{ background: "#22C55E" }}
+                      className="text-white text-xs font-semibold rounded-lg px-3 py-1.5"
+                    >
+                      Aprobar
+                    </button>
+                    <button
+                      onClick={() => setBaneandoId(u.id)}
+                      style={{ borderColor: C.red, color: C.red }}
+                      className="text-xs font-semibold border rounded-lg px-2.5 py-1.5"
+                    >
+                      Rechazar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!cargando && tab === "baneos" && (
             <div className="space-y-2">
               {solicitudesBaneo.length === 0 && (
                 <p className="text-sm" style={{ color: C.mute }}>
