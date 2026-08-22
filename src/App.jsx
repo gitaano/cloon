@@ -3006,7 +3006,7 @@ function CalendarioTurnos({
     vacaciones: "#22C55E",
     trabajo_permuta: "#F97316",
     descanso_permuta: "#7DD3FC",
-    compensa: "#6366F1",
+    compensa: "#EAB308",
   };
 
   function colorFondoDia(fecha, estado, tieneTurnoRegistrado) {
