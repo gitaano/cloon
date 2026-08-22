@@ -3249,14 +3249,14 @@ function EditorDia({ fecha, registro, resumen, categoriaTurnos, indicadoresVisib
         </div>
       )}
 
-      <div>
+      <div className="relative">
         <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
           Estado del día
         </label>
         <select
           value={estado}
           onChange={(e) => setEstado(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+          className="w-full rounded-lg border px-3 py-2 text-sm outline-none appearance-none pr-8"
           style={{ borderColor: C.line, color: C.ink }}
         >
           <option value="">Trabajado / normal</option>
@@ -3268,17 +3268,18 @@ function EditorDia({ fecha, registro, resumen, categoriaTurnos, indicadoresVisib
             </option>
           ))}
         </select>
+            <ChevronDown size={19} style={{ color: C.mute }} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
       </div>
 
       {!estado && (
-        <div>
+        <div className="relative">
           <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
             Turno (opcional)
           </label>
           <select
             value={turno}
             onChange={(e) => setTurno(e.target.value)}
-            className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+            className="w-full rounded-lg border px-3 py-2 text-sm outline-none appearance-none pr-8"
             style={{ borderColor: C.line, color: C.ink }}
           >
             <option value="">Sin especificar</option>
@@ -3288,6 +3289,7 @@ function EditorDia({ fecha, registro, resumen, categoriaTurnos, indicadoresVisib
               </option>
             ))}
           </select>
+            <ChevronDown size={19} style={{ color: C.mute }} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
         </div>
       )}
 
