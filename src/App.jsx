@@ -577,6 +577,8 @@ function ClubProvisional({ sesion }) {
   const [modalCambioAbierto, setModalCambioAbierto] = useState(false);
   const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0);
   const [notificacionesNoLeidas, setNotificacionesNoLeidas] = useState(0);
+  const [numUsuariosRegistrados, setNumUsuariosRegistrados] = useState(null);
+  const [usuariosOnline, setUsuariosOnline] = useState(1);
   const [mensajeIniciarCon, setMensajeIniciarCon] = useState(null);
   const [ahora, setAhora] = useState(Date.now());
   const [verSocioId, setVerSocioId] = useState(null);
@@ -586,6 +588,11 @@ function ClubProvisional({ sesion }) {
     cargarHilos();
     cargarMensajesNoLeidos();
     cargarNotificacionesNoLeidas();
+    supabase
+      .from("perfiles")
+      .select("id", { count: "exact", head: true })
+      .eq("aprobado", true)
+      .then(({ count }) => setNumUsuariosRegistrados(count || 0));
   }, [sesion]);
 
   function cargarMensajesNoLeidos() {
@@ -635,6 +642,25 @@ useEffect(() => {
       .subscribe();
     return () => {
       supabase.removeChannel(canalNotif);
+    };
+  }, [sesion.user.id]);
+
+  useEffect(() => {
+    const canalPresencia = supabase.channel("presencia-online", {
+      config: { presence: { key: sesion.user.id } },
+    });
+    canalPresencia
+      .on("presence", { event: "sync" }, () => {
+        const estado = canalPresencia.presenceState();
+        setUsuariosOnline(Object.keys(estado).length || 1);
+      })
+      .subscribe(async (estadoSuscripcion) => {
+        if (estadoSuscripcion === "SUBSCRIBED") {
+          await canalPresencia.track({ online_at: new Date().toISOString() });
+        }
+      });
+    return () => {
+      supabase.removeChannel(canalPresencia);
     };
   }, [sesion.user.id]);
 
@@ -1078,7 +1104,63 @@ useEffect(() => {
           ))}
         </div>
         </div>
-      </div>
+      
+          <aside className="w-full lg:w-64 shrink-0">
+            <div
+              style={{ background: C.white, borderColor: C.line }}
+              className="rounded-xl border p-4 space-y-4 lg:sticky lg:top-4"
+            >
+              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
+                El club en cifras
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2 shrink-0">
+                    <MessageSquare size={18} style={{ color: C.blue }} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold leading-none" style={{ color: C.ink }}>
+                      {hilos.length}
+                    </p>
+                    <p className="text-xs" style={{ color: C.mute }}>
+                      Temas abiertos
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2 shrink-0">
+                    <Users size={18} style={{ color: C.blue }} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold leading-none" style={{ color: C.ink }}>
+                      {numUsuariosRegistrados === null ? "..." : numUsuariosRegistrados}
+                    </p>
+                    <p className="text-xs" style={{ color: C.mute }}>
+                      Socios registrados
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div style={{ background: "#E7F7EE" }} className="rounded-lg p-2 shrink-0 relative">
+                    <Users size={18} style={{ color: "#16A34A" }} />
+                    <span
+                      style={{ background: "#22C55E", borderColor: C.white }}
+                      className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold leading-none" style={{ color: C.ink }}>
+                      {usuariosOnline}
+                    </p>
+                    <p className="text-xs flex items-center gap-1" style={{ color: C.mute }}>
+                      <span style={{ background: "#22C55E" }} className="w-1.5 h-1.5 rounded-full inline-block" />
+                      En línea ahora
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside></div>
     {verSocioId && (
         <TarjetaSocioModal usuarioId={verSocioId} sesion={sesion} onCerrar={() => setVerSocioId(null)} />
       )}
