@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -572,6 +572,7 @@ function ClubProvisional({ sesion }) {
   const [vista, setVista] = useState("foro");
   const [ambitoActivo, setAmbitoActivo] = useState("todos");
   const [busqueda, setBusqueda] = useState("");
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const [cambiosCategoria, setCambiosCategoria] = useState("");
   const [cambiosTipo, setCambiosTipo] = useState("");
   const [modalCambioAbierto, setModalCambioAbierto] = useState(false);
@@ -829,92 +830,153 @@ useEffect(() => {
           <LogoMetroColor size={34} />
           <p className="text-white font-bold text-sm">Underground</p>
           {perfil && (
-            <p className="text-xs" style={{ color: "#BFD9EE" }}>
+            <p className="text-xs" style={{ color: "#8FD9EE" }}>
               {nombrePublico(perfil)} · {perfil.cargo}
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setVista("perfil")}
-            style={{ borderColor: "rgba(255,255,255,0.35)" }}
-            className="text-white text-xs font-semibold border rounded-full px-3 py-1.5"
-          >
-            Mi perfil
-          </button>
-          <button
-            onClick={() => setVista("calendario")}
-            style={{ borderColor: "rgba(255,255,255,0.35)" }}
-            className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
-          >
-            <Calendar size={16} />
-            Calendario
-          </button>
-          <button
-            onClick={() => setVista("biblioteca")}
-            style={{ borderColor: "rgba(255,255,255,0.35)" }}
-            className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
-          >
-            <FileText size={16} />
-            Biblioteca
-          </button>
-              <button
-                onClick={() => setVista("sugerencias")}
-                style={{ borderColor: "rgba(255,255,255,0.35)" }}
-                className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
-              >
-                <Lightbulb size={16} />
-                Buzón sugerencias
-              </button>
+
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => setVista("mensajes")}
-            style={{ borderColor: "rgba(255,255,255,0.35)" }}
-            className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1 relative"
+            style={{ background: "rgba(255,255,255,0.12)" }}
+            className="text-white rounded-full p-2 flex items-center relative"
+            aria-label="Mensajes"
+            title="Mensajes"
           >
-            <Mail size={16} />
-            Mensajes
+            <Mail size={17} />
             {mensajesNoLeidos > 0 && (
               <span
-                style={{ background: C.red }}
-                className="absolute -top-1.5 -right-1.5 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center"
+                style={{ background: C.red, borderColor: C.blueDarker }}
+                className="absolute -top-1 -right-1 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2"
               >
                 {mensajesNoLeidos}
               </span>
             )}
           </button>
-              <button
-                onClick={() => setVista("notificaciones")}
-                style={{ borderColor: "rgba(255,255,255,0.35)" }}
-                className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1 relative"
-              >
-                <Bell size={16} />
-                Notificaciones
-                {notificacionesNoLeidas > 0 && (
-                  <span
-                    style={{ background: C.red }}
-                    className="absolute -top-1.5 -right-1.5 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center"
-                  >
-                    {notificacionesNoLeidas}
-                  </span>
-                )}
-              </button>
-          {perfil && (perfil.rol === "admin" || perfil.rol === "dev") && (
-            <button
-              onClick={() => setVista("admin")}
-              style={{ borderColor: "rgba(255,255,255,0.35)" }}
-              className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1"
-            >
-              <Settings size={16} />
-              Panel admin
-            </button>
-          )}
+
           <button
-            onClick={() => supabase.auth.signOut()}
-            style={{ borderColor: "rgba(255,255,255,0.35)" }}
-            className="text-white text-xs font-semibold border rounded-full px-3 py-1.5"
+            onClick={() => setVista("notificaciones")}
+            style={{ background: "rgba(255,255,255,0.12)" }}
+            className="text-white rounded-full p-2 flex items-center relative"
+            aria-label="Notificaciones"
+            title="Notificaciones"
           >
-            Cerrar sesión
+            <Bell size={17} />
+            {notificacionesNoLeidas > 0 && (
+              <span
+                style={{ background: C.red, borderColor: C.blueDarker }}
+                className="absolute -top-1 -right-1 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2"
+              >
+                {notificacionesNoLeidas}
+              </span>
+            )}
           </button>
+
+          <div className="relative">
+            <button
+              onClick={() => setMenuAbierto((v) => !v)}
+              style={{ background: "rgba(255,255,255,0.12)" }}
+              className="flex items-center gap-1 rounded-full pl-1 pr-2 py-1"
+              aria-label="Menú de cuenta"
+            >
+              {perfil?.foto_url ? (
+                <img src={perfil.foto_url} alt="Tu avatar" className="w-7 h-7 rounded-full object-cover" />
+              ) : (
+                <div
+                  style={{ background: C.blue }}
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                >
+                  {(nombrePublico(perfil) || "?").slice(0, 1).toUpperCase()}
+                </div>
+              )}
+              <ChevronDown
+                size={14}
+                style={{
+                  color: C.white,
+                  transform: menuAbierto ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: "transform 0.15s ease",
+                }}
+              />
+            </button>
+
+            {menuAbierto && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setMenuAbierto(false)} />
+                <div
+                  style={{ background: C.white, borderColor: C.line }}
+                  className="absolute right-0 top-full mt-2 w-56 rounded-xl border shadow-xl py-1.5 z-50"
+                >
+                  <button
+                    onClick={() => {
+                      setVista("perfil");
+                      setMenuAbierto(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5"
+                    style={{ color: C.ink }}
+                  >
+                    <Contact size={16} style={{ color: C.mute }} />
+                    Mi perfil
+                  </button>
+                  <button
+                    onClick={() => {
+                      setVista("calendario");
+                      setMenuAbierto(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5"
+                    style={{ color: C.ink }}
+                  >
+                    <Calendar size={16} style={{ color: C.mute }} />
+                    Calendario
+                  </button>
+                  <button
+                    onClick={() => {
+                      setVista("biblioteca");
+                      setMenuAbierto(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5"
+                    style={{ color: C.ink }}
+                  >
+                    <FileText size={16} style={{ color: C.mute }} />
+                    Biblioteca
+                  </button>
+                  <button
+                    onClick={() => {
+                      setVista("sugerencias");
+                      setMenuAbierto(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5"
+                    style={{ color: C.ink }}
+                  >
+                    <Lightbulb size={16} style={{ color: C.mute }} />
+                    Buzón sugerencias
+                  </button>
+                  {perfil && (perfil.rol === "admin" || perfil.rol === "dev") && (
+                    <button
+                      onClick={() => {
+                        setVista("admin");
+                        setMenuAbierto(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5"
+                      style={{ color: C.ink }}
+                    >
+                      <Settings size={16} style={{ color: C.mute }} />
+                      Panel admin
+                    </button>
+                  )}
+                  <div className="my-1.5 border-t" style={{ borderColor: C.line }} />
+                  <button
+                    onClick={() => supabase.auth.signOut()}
+                    className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5"
+                    style={{ color: C.red }}
+                  >
+                    <LogOut size={16} />
+                    Cerrar sesión
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
