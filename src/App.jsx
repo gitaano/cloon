@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -575,13 +575,16 @@ function ClubProvisional({ sesion }) {
   const [cambiosTipo, setCambiosTipo] = useState("");
   const [modalCambioAbierto, setModalCambioAbierto] = useState(false);
   const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0);
+  const [notificacionesNoLeidas, setNotificacionesNoLeidas] = useState(0);
   const [mensajeIniciarCon, setMensajeIniciarCon] = useState(null);
   const [ahora, setAhora] = useState(Date.now());
+  const [verSocioId, setVerSocioId] = useState(null);
 
   useEffect(() => {
     cargarPerfil();
     cargarHilos();
     cargarMensajesNoLeidos();
+    cargarNotificacionesNoLeidas();
   }, [sesion]);
 
   function cargarMensajesNoLeidos() {
@@ -591,6 +594,15 @@ function ClubProvisional({ sesion }) {
       .eq("destinatario_id", sesion.user.id)
       .eq("leido", false)
       .then(({ count }) => setMensajesNoLeidos(count || 0));
+  }
+
+  function cargarNotificacionesNoLeidas() {
+    supabase
+      .from("notificaciones")
+      .select("id", { count: "exact", head: true })
+      .eq("usuario_id", sesion.user.id)
+      .eq("leida", false)
+      .then(({ count }) => setNotificacionesNoLeidas(count || 0));
   }
 
 useEffect(() => {
@@ -606,6 +618,22 @@ useEffect(() => {
       .subscribe();
     return () => {
       supabase.removeChannel(canal);
+    };
+  }, [sesion.user.id]);
+
+  useEffect(() => {
+    const canalNotif = supabase
+      .channel(`notificaciones-${sesion.user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notificaciones", filter: `usuario_id=eq.${sesion.user.id}` },
+        () => {
+          cargarNotificacionesNoLeidas();
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(canalNotif);
     };
   }, [sesion.user.id]);
 
@@ -727,6 +755,18 @@ useEffect(() => {
     return <VistaSugerencias sesion={sesion} perfil={perfil} onVolver={() => setVista("foro")} />;
   }
 
+  if (vista === "notificaciones") {
+    return (
+      <VistaNotificaciones
+        sesion={sesion}
+        onVolver={() => {
+          setVista("foro");
+          cargarNotificacionesNoLeidas();
+        }}
+      />
+    );
+  }
+
   if (vista === "mensajes") {
     return (
       <VistaMensajes
@@ -807,6 +847,22 @@ useEffect(() => {
               </span>
             )}
           </button>
+              <button
+                onClick={() => setVista("notificaciones")}
+                style={{ borderColor: "rgba(255,255,255,0.35)" }}
+                className="text-white text-xs font-semibold border rounded-full px-3 py-1.5 flex items-center gap-1 relative"
+              >
+                <Bell size={16} />
+                Notificaciones
+                {notificacionesNoLeidas > 0 && (
+                  <span
+                    style={{ background: C.red }}
+                    className="absolute -top-1.5 -right-1.5 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center"
+                  >
+                    {notificacionesNoLeidas}
+                  </span>
+                )}
+              </button>
           {perfil && (perfil.rol === "admin" || perfil.rol === "dev") && (
             <button
               onClick={() => setVista("admin")}
@@ -923,7 +979,7 @@ useEffect(() => {
               </p>
               <div className="flex items-center gap-1.5 mt-1">
                 <p className="text-xs" style={{ color: C.mute }}>
-                  {nombrePublico(h.perfiles)}
+                  <button type="button" onClick={() => setVerSocioId(h.autor_id)} className="font-semibold">{nombrePublico(h.perfiles)}</button>
                   {h.perfiles?.vip && (
                     <span className="font-bold" style={{ color: "#B8860B" }}>
                       {" "}★ VIP
@@ -987,11 +1043,139 @@ useEffect(() => {
                   label="Me cabrea"
                 />
               </div>
-              <Respuestas hiloId={h.id} sesion={sesion} />
+              <Respuestas hiloId={h.id} sesion={sesion} onVerSocio={setVerSocioId} />
             </div>
           ))}
         </div>
         </div>
+      </div>
+    {verSocioId && (
+        <TarjetaSocioModal usuarioId={verSocioId} sesion={sesion} onCerrar={() => setVerSocioId(null)} />
+      )}
+    </div>
+  );
+}
+
+function TarjetaSocioModal({ usuarioId, sesion, onCerrar }) {
+  const [perfilVisto, setPerfilVisto] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [siguiendo, setSiguiendo] = useState(false);
+  const [numSeguidores, setNumSeguidores] = useState(0);
+  const [numSiguiendo, setNumSiguiendo] = useState(0);
+  const [procesando, setProcesando] = useState(false);
+
+  useEffect(() => {
+    cargar();
+  }, [usuarioId]);
+
+  async function cargar() {
+    setCargando(true);
+    const [{ data: p }, { count: cSeguidores }, { count: cSiguiendo }, { data: yo }] = await Promise.all([
+      supabase.from("perfiles").select("*").eq("id", usuarioId).single(),
+      supabase.from("seguidores").select("id", { count: "exact", head: true }).eq("seguido_id", usuarioId),
+      supabase.from("seguidores").select("id", { count: "exact", head: true }).eq("seguidor_id", usuarioId),
+      supabase.from("seguidores").select("id").eq("seguidor_id", sesion.user.id).eq("seguido_id", usuarioId).maybeSingle(),
+    ]);
+    setPerfilVisto(p);
+    setNumSeguidores(cSeguidores || 0);
+    setNumSiguiendo(cSiguiendo || 0);
+    setSiguiendo(!!yo);
+    setCargando(false);
+  }
+
+  async function alternarSeguir() {
+    setProcesando(true);
+    if (siguiendo) {
+      await supabase
+        .from("seguidores")
+        .delete()
+        .eq("seguidor_id", sesion.user.id)
+        .eq("seguido_id", usuarioId);
+    } else {
+      await supabase.from("seguidores").insert({ seguidor_id: sesion.user.id, seguido_id: usuarioId });
+    }
+    await cargar();
+    setProcesando(false);
+  }
+
+  const esUnoMismo = usuarioId === sesion.user.id;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4" onClick={onCerrar}>
+      <div
+        style={{ background: C.white }}
+        className="rounded-2xl shadow-2xl p-5 max-w-sm w-full space-y-3"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {(cargando || !perfilVisto) ? (
+          <p className="text-sm text-center py-4" style={{ color: C.mute }}>
+            Cargando...
+          </p>
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
+                Tarjeta de socio
+              </p>
+              <button onClick={onCerrar} style={{ color: C.mute }}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="flex items-center gap-3">
+              {perfilVisto.foto_url ? (
+                <img src={perfilVisto.foto_url} alt="Avatar" className="w-14 h-14 rounded-full object-cover shrink-0" />
+              ) : (
+                <div
+                  style={{ background: C.blue }}
+                  className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0"
+                >
+                  {(nombrePublico(perfilVisto) || "?").slice(0, 1).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-semibold flex items-center gap-1" style={{ color: C.ink }}>
+                  {nombrePublico(perfilVisto)}
+                  {perfilVisto.vip && (
+                    <span className="font-bold" style={{ color: "#B8860B" }}>
+                      ★ VIP
+                    </span>
+                  )}
+                </p>
+                {perfilVisto.mostrar_cargo && perfilVisto.cargo && (
+                  <p className="text-xs" style={{ color: C.mute }}>
+                    {perfilVisto.cargo}
+                  </p>
+                )}
+              </div>
+            </div>
+            {perfilVisto.mostrar_intereses && perfilVisto.intereses && (
+              <p className="text-sm" style={{ color: C.ink }}>
+                {perfilVisto.intereses}
+              </p>
+            )}
+            {(perfilVisto.mostrar_seguidores || esUnoMismo) && (
+              <p className="text-xs" style={{ color: C.mute }}>
+                <strong style={{ color: C.ink }}>{numSeguidores}</strong> seguidores ·{" "}
+                <strong style={{ color: C.ink }}>{numSiguiendo}</strong> siguiendo
+              </p>
+            )}
+            {!esUnoMismo && perfilVisto.permite_seguir !== false && (
+              <button
+                onClick={alternarSeguir}
+                disabled={procesando}
+                style={{
+                  background: siguiendo ? C.white : C.blue,
+                  color: siguiendo ? C.blue : C.white,
+                  borderColor: C.blue,
+                }}
+                className="w-full border-2 font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-1.5"
+              >
+                <UserPlus size={16} />
+                {siguiendo ? "Dejar de seguir" : "Seguir"}
+              </button>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
@@ -1080,6 +1264,8 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [categoriaAbierta, setCategoriaAbierta] = useState(false);
   const [indicadoresAbiertos, setIndicadoresAbiertos] = useState(false);
   const [indicadoresCalendario, setIndicadoresCalendario] = useState(INDICADORES_CALENDARIO.map((i) => i.id));
+  const [numSeguidores, setNumSeguidores] = useState(0);
+  const [numSiguiendo, setNumSiguiendo] = useState(0);
 
   useEffect(() => {
     if (!perfil) return;
@@ -1104,6 +1290,19 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
     );
     setIndicadoresCalendario(perfil.indicadores_calendario || INDICADORES_CALENDARIO.map((i) => i.id));
   }, [perfil]);
+
+  useEffect(() => {
+    supabase
+      .from("seguidores")
+      .select("id", { count: "exact", head: true })
+      .eq("seguido_id", sesion.user.id)
+      .then(({ count }) => setNumSeguidores(count || 0));
+    supabase
+      .from("seguidores")
+      .select("id", { count: "exact", head: true })
+      .eq("seguidor_id", sesion.user.id)
+      .then(({ count }) => setNumSiguiendo(count || 0));
+  }, [sesion.user.id]);
 
   function toggleIndicador(id) {
     setIndicadoresCalendario((prev) =>
@@ -1228,6 +1427,10 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
                 {perfil.nombre} {perfil.apellido}
               </p>
               <p className="text-xs" style={{ color: C.mute }}>DNE: {perfil.dne}</p>
+              <p className="text-xs" style={{ color: C.mute }}>
+                <strong style={{ color: C.ink }}>{numSeguidores}</strong> rseguidores ·{" "}
+                <strong style={{ color: C.ink }}>{numSiguiendo}</strong> siguiendo
+              </p>
             </div>
           </div>
           <p className="text-xs rounded-lg p-2.5" style={{ background: "#EAF2F9", color: C.blueDark }}>
@@ -1630,7 +1833,7 @@ function FormularioNuevoTema({ sesion, onCreado }) {
   );
 }
 
-function Respuestas({ hiloId, sesion }) {
+function Respuestas({ hiloId, sesion, onVerSocio }) {
   const [respuestas, setRespuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [texto, setTexto] = useState("");
@@ -1696,7 +1899,7 @@ function Respuestas({ hiloId, sesion }) {
         {respuestas.map((r) => (
           <div key={r.id} style={{ background: "#F3F6F9" }} className="rounded-lg p-2">
             <p className="text-xs font-semibold" style={{ color: C.ink }}>
-              {nombrePublico(r.perfiles)}{" "}
+              <button type="button" onClick={() => onVerSocio && onVerSocio(r.autor_id)} className="font-semibold">{nombrePublico(r.perfiles)}</button>{" "}
               <span className="font-normal" style={{ color: C.mute }}>
                 · {new Date(r.creado_en).toLocaleString("es-ES")}
               </span>
@@ -2357,6 +2560,9 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
   const [cargando, setCargando] = useState(true);
   const [mensaje, setMensaje] = useState(null);
   const [baneandoId, setBaneandoId] = useState(null);
+  const [textoAnuncio, setTextoAnuncio] = useState("");
+  const [enviandoAnuncio, setEnviandoAnuncio] = useState(false);
+  const [mensajeAnuncio, setMensajeAnuncio] = useState(null);
   const [motivoBaneo, setMotivoBaneo] = useState("");
 
   const esDev = perfil?.rol === "dev";
@@ -2465,6 +2671,20 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
     if (!error) cargarTodo();
   }
 
+  async function enviarAnuncio() {
+    if (!textoAnuncio.trim()) return;
+    setEnviandoAnuncio(true);
+    setMensajeAnuncio(null);
+    const { error } = await supabase.rpc("anunciar_a_todos", { mensaje: textoAnuncio.trim() });
+    setEnviandoAnuncio(false);
+    if (error) {
+      setMensajeAnuncio({ tipo: "error", texto: error.message });
+      return;
+    }
+    setTextoAnuncio("");
+    setMensajeAnuncio({ tipo: "ok", texto: "Anuncio enviado a todos los socios." });
+  }
+
   async function aprobarAlta(usuarioId) {
     const { error } = await supabase.from("perfiles").update({ aprobado: true }).eq("id", usuarioId);
     if (!error) cargarTodo();
@@ -2474,6 +2694,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
   const pendientesAlta = usuarios.filter((u) => !u.aprobado);
 
   const TABS = [
+    { id: "anuncios", nombre: "Anuncios", icon: Megaphone, badge: 0 },
     { id: "sugerencias", nombre: "Sugerencias", icon: Lightbulb, badge: sugerencias.filter((s) => !s.resuelto).length },
     { id: "altas", nombre: "Altas pendientes", icon: UserPlus, badge: pendientesAlta.length },
     { id: "usuarios", nombre: "Usuarios", icon: Contact, badge: 0 },
@@ -2681,6 +2902,44 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                     </button>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {tab === "anuncios" && (
+              <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
+                <p className="text-xs font-semibold" style={{ color: C.ink }}>
+                  Enviar un aviso a todos los socios
+                </p>
+                <p className="text-xs" style={{ color: C.mute }}>
+                  Les llegará como notificación del club (no como mensaje directo).
+                </p>
+                {mensajeAnuncio && (
+                  <p
+                    className="text-xs rounded-lg p-2.5"
+                    style={{
+                      background: mensajeAnuncio.tipo === "error" ? "#FCEBEA" : "#E7F7EE",
+                      color: mensajeAnuncio.tipo === "error" ? C.red : "#15803D",
+                    }}
+                  >
+                    {mensajeAnuncio.texto}
+                  </p>
+                )}
+                <textarea
+                  value={textoAnuncio}
+                  onChange={(e) => setTextoAnuncio(e.target.value)}
+                  rows={3}
+                  placeholder="Ej: Se ha actualizado el convenio en la Biblioteca..."
+                  className="w-full rounded-lg border px-3 py-2 text-sm outline-none resize-none"
+                  style={{ borderColor: C.line, color: C.ink }}
+                />
+                <button
+                  onClick={enviarAnuncio}
+                  disabled={!textoAnuncio.trim() || enviandoAnuncio}
+                  style={{ background: textoAnuncio.trim() ? C.blue : "#B9C6D2" }}
+                  className="w-full text-white font-semibold py-2.5 rounded-lg text-sm"
+                >
+                  {enviandoAnuncio ? "Enviando..." : "Enviar a todos los socios"}
+                </button>
               </div>
             )}
 
@@ -3405,6 +3664,87 @@ function EditorDia({ fecha, registro, resumen, categoriaTurnos, indicadoresVisib
     </div>
   );
 }
+function VistaNotificaciones({ sesion, onVolver }) {
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    cargar();
+  }, []);
+
+  function cargar() {
+    setCargando(true);
+    supabase
+      .from("notificaciones")
+      .select("*")
+      .eq("usuario_id", sesion.user.id)
+      .order("creado_en", { ascending: false })
+      .then(({ data }) => {
+        setNotificaciones(data || []);
+        setCargando(false);
+      });
+  }
+
+  async function marcarLeida(id) {
+    await supabase.from("notificaciones").update({ leida: true }).eq("id", id);
+    setNotificaciones((prev) => prev.map((n) => (n.id === id ? { ...n, leida: true } : n)));
+  }
+
+  function iconoTipo(tipo) {
+    if (tipo === "nuevo_seguidor") return UserPlus;
+    if (tipo === "anuncio") return Megaphone;
+    return MessageSquare;
+  }
+
+  return (
+    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+      <MarcaAguaFondo />
+      <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
+        <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
+          <ArrowLeft size={17} /> Volver
+        </button>
+        <p className="text-white font-bold text-sm">Notificaciones del club</p>
+      </div>
+
+      <div className="max-w-2xl mx-auto p-4 space-y-2">
+        {cargando && (
+          <p className="text-sm text-center" style={{ color: C.mute }}>
+            Cargando...
+          </p>
+        )}
+        {!cargando && notificaciones.length === 0 && (
+          <p className="text-sm text-center py-8" style={{ color: C.mute }}>
+            Todavía no tienes notificaciones.
+          </p>
+        )}
+        {notificaciones.map((n) => {
+          const Icono = iconoTipo(n.tipo);
+          return (
+            <button
+              key={n.id}
+              onClick={() => !n.leida && marcarLeida(n.id)}
+              style={{ background: n.leida ? C.white : "#EAF2F9", borderColor: C.line }}
+              className="w-full text-left rounded-xl border p-3 flex items-start gap-3"
+            >
+              <div style={{ background: n.leida ? C.line : C.blue }} className="rounded-full p-2 shrink-0">
+                <Icono size={16} color={n.leida ? C.mute : C.white} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm" style={{ color: C.ink, fontWeight: n.leida ? 400 : 600 }}>
+                  {n.texto}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: C.mute }}>
+                  {new Date(n.creado_en).toLocaleString("es-ES")}
+                </p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 
 function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
   const [conversaciones, setConversaciones] = useState([]);
