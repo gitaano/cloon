@@ -2956,16 +2956,23 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                     </p>
                   </div>
                   {esDev ? (
-                    <select
+                    <div className="relative">
+          <select
                       value={u.rol || "socio"}
                       onChange={(e) => cambiarRol(u.id, e.target.value)}
-                      className="rounded-lg border px-2 py-1.5 text-xs outline-none"
+                      className="rounded-lg border pl-2 pr-6 py-1.5 text-xs outline-none appearance-none"
                       style={{ borderColor: C.line, color: C.ink }}
                     >
                       <option value="socio">Socio</option>
                       <option value="admin">Admin</option>
                       <option value="dev">Dev</option>
                     </select>
+          <ChevronDown
+            size={14}
+            style={{ color: C.mute }}
+            className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2"
+          />
+        </div>
                   ) : (
                     <span className="text-xs font-semibold" style={{ color: C.mute }}>
                       {u.rol || "socio"}
