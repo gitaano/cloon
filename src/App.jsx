@@ -1540,7 +1540,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
               </p>
               <p className="text-xs" style={{ color: C.mute }}>DNE: {perfil.dne}</p>
               <p className="text-xs" style={{ color: C.mute }}>
-                <strong style={{ color: C.ink }}>{numSeguidores}</strong> rseguidores ·{" "}
+                <strong style={{ color: C.ink }}>{numSeguidores}</strong> seguidores ·{" "}
                 <strong style={{ color: C.ink }}>{numSiguiendo}</strong> siguiendo
               </p>
             </div>
