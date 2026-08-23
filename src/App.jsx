@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -571,6 +571,7 @@ function ClubProvisional({ sesion }) {
   const [formAbierto, setFormAbierto] = useState(false);
   const [vista, setVista] = useState("foro");
   const [ambitoActivo, setAmbitoActivo] = useState("todos");
+  const [busqueda, setBusqueda] = useState("");
   const [cambiosCategoria, setCambiosCategoria] = useState("");
   const [cambiosTipo, setCambiosTipo] = useState("");
   const [modalCambioAbierto, setModalCambioAbierto] = useState(false);
@@ -786,6 +787,14 @@ useEffect(() => {
     return <PendienteAprobacion onCerrarSesion={() => supabase.auth.signOut()} />;
   }
 
+  const hilosFiltrados = hilos.filter((h) => {
+    const coincideAmbito = ambitoActivo === "todos" || h.ambito === ambitoActivo;
+    const q = busqueda.trim().toLowerCase();
+    const coincideBusqueda =
+      !q || h.titulo.toLowerCase().includes(q) || (h.texto || "").toLowerCase().includes(q);
+    return coincideAmbito && coincideBusqueda;
+  });
+
   return (
     <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
@@ -935,6 +944,21 @@ useEffect(() => {
           {formAbierto ? "Cancelar" : "+ Crear nuevo tema"}
         </button>
 
+            <div className="relative">
+              <Search
+                size={17}
+                style={{ color: C.mute }}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+              />
+              <input
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                placeholder="Buscar temas por título o texto..."
+                className="w-full rounded-lg border pl-9 pr-3 py-2 text-sm outline-none"
+                style={{ borderColor: C.line, color: C.ink, background: C.white }}
+              />
+            </div>
+
         {formAbierto && <FormularioNuevoTema sesion={sesion} onCreado={() => { setFormAbierto(false); cargarHilos(); }} />}
 
         {modalCambioAbierto && (
@@ -954,8 +978,14 @@ useEffect(() => {
           </p>
         )}
 
+          {!cargandoHilos && hilos.length > 0 && hilosFiltrados.length === 0 && (
+            <p className="text-sm text-center py-8" style={{ color: C.mute }}>
+              No se ha encontrado ningún tema con esa búsqueda.
+            </p>
+          )}
+
         <div className="space-y-2">
-          {hilos.filter((h) => ambitoActivo === "todos" || h.ambito === ambitoActivo).map((h) => (
+          {hilosFiltrados.map((h) => (
             <div key={h.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
               <p className="text-xs font-semibold flex items-center gap-1" style={{ color: C.blue }}>
                 {(() => {
