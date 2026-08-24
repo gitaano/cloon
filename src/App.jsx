@@ -1457,6 +1457,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [categoriaTurnos, setCategoriaTurnos] = useState("sector");
   const [categoriaAbierta, setCategoriaAbierta] = useState(false);
   const [indicadoresAbiertos, setIndicadoresAbiertos] = useState(false);
+  const [queVenAbierto, setQueVenAbierto] = useState(false);
   const [indicadoresCalendario, setIndicadoresCalendario] = useState(INDICADORES_CALENDARIO.map((i) => i.id));
   const [numSeguidores, setNumSeguidores] = useState(0);
   const [numSiguiendo, setNumSiguiendo] = useState(0);
@@ -1722,19 +1723,21 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
           </div>
         </div>
 
-        <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-1">
-          <p className="text-xs font-semibold mb-2" style={{ color: C.ink }}>
-            Qué ven los demás socios de ti
-          </p>
-          <CasillaPerfil label="Mostrar mi nombre real (en vez de solo el nick)" checked={mostrarNombreReal} onChange={setMostrarNombreReal} />
-          <CasillaPerfil label="Mostrar mi DNE" checked={mostrarDne} onChange={setMostrarDne} />
-          <CasillaPerfil label="Mostrar mi puesto / categoría" checked={mostrarCargo} onChange={setMostrarCargo} />
-          <CasillaPerfil label="Mostrar lo que he escrito en 'Sobre ti'" checked={mostrarIntereses} onChange={setMostrarIntereses} />
-          <CasillaPerfil label="Mostrar mi lista de seguidores" checked={mostrarSeguidores} onChange={setMostrarSeguidores} />
-          <CasillaPerfil label="Permitir que otros socios me sigan" checked={permiteSeguir} onChange={setPermiteSeguir} />
-          <CasillaPerfil label="Notificarme cuando respondan a mis temas" checked={notificarComentarios} onChange={setNotificarComentarios} />
+        <BloqueDesplegable
+            titulo="Qué ven los demás socios de ti"
+            abierto={queVenAbierto}
+            onToggle={() => setQueVenAbierto((v) => !v)}
+          >
+            <CasillaPerfil label="Mostrar mi nombre real (en vez de solo el nick)" checked={mostrarNombreReal} onChange={setMostrarNombreReal} />
+            <CasillaPerfil label="Mostrar mi DNE" checked={mostrarDne} onChange={setMostrarDne} />
+            <CasillaPerfil label="Mostrar mi puesto / categoría" checked={mostrarCargo} onChange={setMostrarCargo} />
+            <CasillaPerfil label="Mostrar lo que he escrito en 'Sobre ti'" checked={mostrarIntereses} onChange={setMostrarIntereses} />
+            <CasillaPerfil label="Mostrar mi lista de seguidores" checked={mostrarSeguidores} onChange={setMostrarSeguidores} />
+            <CasillaPerfil label="Permitir que otros socios me sigan" checked={permiteSeguir} onChange={setPermiteSeguir} />
+            <CasillaPerfil label="Notificarme cuando respondan a mis temas" checked={notificarComentarios} onChange={setNotificarComentarios} />
+          </BloqueDesplegable>
 
-        <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
+                  <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
           <p className="text-xs font-semibold" style={{ color: C.ink }}>
             Preferencias del futuro calendario
           </p>
@@ -2648,7 +2651,22 @@ function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo
   const [abierto, setAbierto] = useState(false);
   const [accion, setAccion] = useState("");
 
-  const CATEGORIAS = CATEGORIAS_TURNO;
+  const [categoriasVisibles, setCategoriasVisibles] = useState(["sector", "maquinista"]);
+
+  useEffect(() => {
+    supabase
+      .from("ajustes_club")
+      .select("categorias_cambios_visibles")
+      .eq("id", true)
+      .single()
+      .then(({ data }) => {
+        if (data?.categorias_cambios_visibles?.length) {
+          setCategoriasVisibles(data.categorias_cambios_visibles);
+        }
+      });
+  }, []);
+
+  const CATEGORIAS = CATEGORIAS_TURNO.filter((c) => categoriasVisibles.includes(c.id));
   const TIPOS = [
     { id: "servicio", nombre: "Servicio" },
     { id: "dia_libre", nombre: "Día libre" },
@@ -2773,6 +2791,37 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
   const [textoAnuncio, setTextoAnuncio] = useState("");
   const [enviandoAnuncio, setEnviandoAnuncio] = useState(false);
   const [mensajeAnuncio, setMensajeAnuncio] = useState(null);
+  const [categoriasCambiosSel, setCategoriasCambiosSel] = useState(["sector", "maquinista"]);
+  const [guardandoAjustes, setGuardandoAjustes] = useState(false);
+  const [mensajeAjustes, setMensajeAjustes] = useState(null);
+
+  useEffect(() => {
+    supabase
+      .from("ajustes_club")
+      .select("categorias_cambios_visibles")
+      .eq("id", true)
+      .single()
+      .then(({ data }) => {
+        if (data?.categorias_cambios_visibles) setCategoriasCambiosSel(data.categorias_cambios_visibles);
+      });
+  }, []);
+
+  function alternarCategoriaCambios(id) {
+    setCategoriasCambiosSel((prev) => (prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]));
+  }
+
+  async function guardarCategoriasCambios() {
+    setGuardandoAjustes(true);
+    setMensajeAjustes(null);
+    const { error } = await supabase
+      .from("ajustes_club")
+      .update({ categorias_cambios_visibles: categoriasCambiosSel, actualizado_en: new Date().toISOString() })
+      .eq("id", true);
+    setGuardandoAjustes(false);
+    if (error) setMensajeAjustes({ tipo: "error", texto: error.message });
+    else setMensajeAjustes({ tipo: "ok", texto: "Guardado." });
+  }
+
   const [motivoBaneo, setMotivoBaneo] = useState("");
 
   const esDev = perfil?.rol === "dev";
@@ -2910,6 +2959,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
   const pendientesAlta = usuarios.filter((u) => !u.aprobado);
 
   const TABS = [
+    { id: "ajustes", nombre: "Ajustes", icon: Settings, badge: 0 },
     { id: "anuncios", nombre: "Anuncios", icon: Megaphone, badge: 0 },
     { id: "sugerencias", nombre: "Sugerencias", icon: Lightbulb, badge: sugerencias.filter((s) => !s.resuelto).length },
     { id: "altas", nombre: "Altas pendientes", icon: UserPlus, badge: pendientesAlta.length },
@@ -3139,6 +3189,50 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                     </button>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {tab === "ajustes" && (
+              <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
+                <p className="text-xs font-semibold" style={{ color: C.ink }}>
+                  Categorías visibles en "Cambios"
+                </p>
+                <p className="text-xs" style={{ color: C.mute }}>
+                  Elige qué categorías aparecen al elegir categoría para ofertar un cambio. Las que
+                  desmarques siguen existiendo, solo se ocultan de ese desplegable.
+                </p>
+                {mensajeAjustes && (
+                  <p
+                    className="text-xs rounded-lg p-2.5"
+                    style={{
+                      background: mensajeAjustes.tipo === "error" ? "#FCEBEA" : "#E7F7EE",
+                      color: mensajeAjustes.tipo === "error" ? C.red : "#15803D",
+                    }}
+                  >
+                    {mensajeAjustes.texto}
+                  </p>
+                )}
+                <div className="space-y-1.5">
+                  {CATEGORIAS_TURNO.map((cat) => (
+                    <label key={cat.id} className="flex items-center gap-2 text-sm" style={{ color: C.ink }}>
+                      <input
+                        type="checkbox"
+                        checked={categoriasCambiosSel.includes(cat.id)}
+                        onChange={() => alternarCategoriaCambios(cat.id)}
+                        className="w-4 h-4"
+                      />
+                      {cat.nombre}
+                    </label>
+                  ))}
+                </div>
+                <button
+                  onClick={guardarCategoriasCambios}
+                  disabled={guardandoAjustes}
+                  style={{ background: C.blue }}
+                  className="w-full text-white font-semibold py-2.5 rounded-lg text-sm"
+                >
+                  {guardandoAjustes ? "Guardando..." : "Guardar"}
+                </button>
               </div>
             )}
 
