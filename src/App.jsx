@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -670,6 +670,15 @@ useEffect(() => {
     return () => clearInterval(iv);
   }, []);
 
+  async function alternarModoDiosPropio() {
+    const { error } = await supabase
+      .from("perfiles")
+      .update({ modo_dios: !perfil.modo_dios })
+      .eq("id", sesion.user.id);
+    if (!error) cargarPerfil();
+    setMenuAbierto(false);
+  }
+
   function cargarPerfil() {
     supabase
       .from("perfiles")
@@ -964,6 +973,16 @@ useEffect(() => {
                       Panel admin
                     </button>
                   )}
+                  {perfil && perfil.rol === "dev" && (
+                    <button
+                      onClick={() => alternarModoDiosPropio()}
+                      className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5"
+                      style={{ color: perfil.modo_dios ? "#B45309" : C.ink }}
+                    >
+                      <Zap size={16} style={{ color: perfil.modo_dios ? "#F59E0B" : C.mute }} />
+                      {perfil.modo_dios ? "Desactivar modo dios" : "Activar modo dios"}
+                    </button>
+                  )}
                   <div className="my-1.5 border-t" style={{ borderColor: C.line }} />
                   <button
                     onClick={() => supabase.auth.signOut()}
@@ -1118,17 +1137,18 @@ useEffect(() => {
                     <Mail size={14} />
                   </button>
                 )}
-                {h.autor_id === sesion.user.id &&
-                  ahora - new Date(h.creado_en).getTime() < 5 * 60 * 1000 && (
-                    <button
-                      onClick={() => eliminarHiloPropio(h.id)}
-                      aria-label="Eliminar tema"
-                      className="text-xs font-semibold ml-auto"
-                      style={{ color: C.red }}
-                    >
-                      Eliminar
-                    </button>
-                  )}
+                {((h.autor_id === sesion.user.id && ahora - new Date(h.creado_en).getTime() < 5 * 60 * 1000) ||
+              perfil?.modo_dios) && (
+              <button
+                onClick={() => eliminarHiloPropio(h.id)}
+                aria-label="Eliminar tema"
+                className="text-xs font-semibold ml-auto flex items-center gap-1"
+                style={{ color: C.red }}
+              >
+                {perfil?.modo_dios && h.autor_id !== sesion.user.id && <Zap size={12} />}
+                Eliminar
+              </button>
+            )}
               </div>
               {h.texto && (
                 <p className="text-sm mt-2" style={{ color: C.ink }}>
@@ -1161,7 +1181,7 @@ useEffect(() => {
                   label="Me cabrea"
                 />
               </div>
-              <Respuestas hiloId={h.id} sesion={sesion} onVerSocio={setVerSocioId} />
+              <Respuestas hiloId={h.id} sesion={sesion} onVerSocio={setVerSocioId} perfil={perfil} />
             </div>
           ))}
         </div>
@@ -2007,7 +2027,7 @@ function FormularioNuevoTema({ sesion, onCreado }) {
   );
 }
 
-function Respuestas({ hiloId, sesion, onVerSocio }) {
+function Respuestas({ hiloId, sesion, onVerSocio, perfil }) {
   const [respuestas, setRespuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [texto, setTexto] = useState("");
@@ -2029,6 +2049,11 @@ function Respuestas({ hiloId, sesion, onVerSocio }) {
         if (!error) setRespuestas(data || []);
         setCargando(false);
       });
+  }
+
+  async function eliminarRespuesta(id) {
+    const { error } = await supabase.from("respuestas").delete().eq("id", id);
+    if (!error) cargar();
   }
 
   async function enviar() {
@@ -2077,6 +2102,17 @@ function Respuestas({ hiloId, sesion, onVerSocio }) {
               <span className="font-normal" style={{ color: C.mute }}>
                 · {new Date(r.creado_en).toLocaleString("es-ES")}
               </span>
+              {perfil?.modo_dios && (
+                <button
+                  type="button"
+                  onClick={() => eliminarRespuesta(r.id)}
+                  className="font-semibold"
+                  style={{ color: C.red }}
+                >
+                  {" "}
+                  · Eliminar
+                </button>
+              )}
             </p>
             <p className="text-sm mt-0.5" style={{ color: C.ink }}>
               {r.texto}
@@ -2803,6 +2839,12 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
     else setMensaje({ tipo: "error", texto: error.message });
   }
 
+  async function cambiarModoDios(usuarioId, nuevoValor) {
+    const { error } = await supabase.from("perfiles").update({ modo_dios: nuevoValor }).eq("id", usuarioId);
+    if (!error) cargarTodo();
+    else setMensaje({ tipo: "error", texto: error.message });
+  }
+
   async function cambiarVip(usuarioId, nuevoVip) {
     const { error } = await supabase.rpc("set_vip", { usuario_id: usuarioId, nuevo_vip: nuevoVip });
     if (!error) cargarTodo();
@@ -2990,6 +3032,20 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
                       {u.vip ? "Quitar VIP" : "Nombrar VIP"}
                     </button>
                   )}
+              {esDev && u.rol === "admin" && (
+                <button
+                  onClick={() => cambiarModoDios(u.id, !u.modo_dios)}
+                  style={{
+                    borderColor: u.modo_dios ? "#F59E0B" : C.line,
+                    color: u.modo_dios ? "#B45309" : C.ink,
+                    background: u.modo_dios ? "#FEF3C7" : C.white,
+                  }}
+                  className="text-xs font-semibold border rounded-lg px-2.5 py-1.5 flex items-center gap-1"
+                >
+                  <Zap size={12} />
+                  {u.modo_dios ? "Quitar modo dios" : "Dar modo dios"}
+                </button>
+              )}
                   {baneadosIds.has(u.id) ? (
                     <button
                       onClick={() => desbanear(u.id)}
