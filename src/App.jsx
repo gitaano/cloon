@@ -1868,8 +1868,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
             }}
           />
         )}
-        </div>
-
+        
         <BotonPrincipal onClick={guardar} cargando={cargando}>
           Guardar cambios
         </BotonPrincipal>
