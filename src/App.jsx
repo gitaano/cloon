@@ -2349,6 +2349,148 @@ function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre }) {
   );
 }
 
+function SelectorFecha({ value, onChange, min, label }) {
+  const hoyRef = new Date();
+  const fechaValor = value ? new Date(value + "T00:00:00") : null;
+  const [abierto, setAbierto] = useState(false);
+  const [mesVisto, setMesVisto] = useState((fechaValor || hoyRef).getMonth());
+  const [anoVisto, setAnoVisto] = useState((fechaValor || hoyRef).getFullYear());
+
+  const MESES = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+  ];
+  const DIAS_SEMANA = ["L", "M", "X", "J", "V", "S", "D"];
+
+  function abrir() {
+    const base = fechaValor || hoyRef;
+    setMesVisto(base.getMonth());
+    setAnoVisto(base.getFullYear());
+    setAbierto(true);
+  }
+
+  function cambiarMes(delta) {
+    let m = mesVisto + delta;
+    let a = anoVisto;
+    if (m < 0) {
+      m = 11;
+      a -= 1;
+    } else if (m > 11) {
+      m = 0;
+      a += 1;
+    }
+    setMesVisto(m);
+    setAnoVisto(a);
+  }
+
+  function aIso(a, m, d) {
+    return `${a}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  }
+
+  function seleccionarDia(d) {
+    onChange(aIso(anoVisto, mesVisto, d));
+    setAbierto(false);
+  }
+
+  const primerDiaSemana = (new Date(anoVisto, mesVisto, 1).getDay() + 6) % 7;
+  const diasEnMes = new Date(anoVisto, mesVisto + 1, 0).getDate();
+  const celdas = [];
+  for (let i = 0; i < primerDiaSemana; i++) celdas.push(null);
+  for (let d = 1; d <= diasEnMes; d++) celdas.push(d);
+
+  const minDate = min ? new Date(min + "T00:00:00") : null;
+  const hoyIso = aIso(hoyRef.getFullYear(), hoyRef.getMonth(), hoyRef.getDate());
+
+  function formatear(v) {
+    if (!v) return "Selecciona una fecha";
+    const f = new Date(v + "T00:00:00");
+    const texto = f.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => (abierto ? setAbierto(false) : abrir())}
+        className="w-full rounded-lg border px-3 py-2 text-sm outline-none flex items-center justify-between gap-2"
+        style={{ borderColor: C.line, color: value ? C.ink : C.mute, background: C.white }}
+      >
+        <span className="truncate">{formatear(value)}</span>
+        <Calendar size={16} style={{ color: C.blue }} className="shrink-0" />
+      </button>
+      {abierto && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setAbierto(false)} />
+          <div
+            style={{ background: C.white, borderColor: C.line }}
+            className="absolute z-50 mt-1 border rounded-xl shadow-xl p-3 w-72 max-w-[80vw]"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <button
+                type="button"
+                onClick={() => cambiarMes(-1)}
+                aria-label="Mes anterior"
+                style={{ color: C.blue }}
+                className="p-1.5 rounded-full hover:bg-black/5"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <p className="text-sm font-semibold capitalize" style={{ color: C.ink }}>
+                {MESES[mesVisto]} {anoVisto}
+              </p>
+              <button
+                type="button"
+                onClick={() => cambiarMes(1)}
+                aria-label="Mes siguiente"
+                style={{ color: C.blue }}
+                className="p-1.5 rounded-full hover:bg-black/5"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+            <div className="grid grid-cols-7 gap-1 mb-1">
+              {DIAS_SEMANA.map((d, i) => (
+                <p key={i} className="text-center text-[10px] font-semibold" style={{ color: C.mute }}>
+                  {d}
+                </p>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {celdas.map((d, i) => {
+                if (d === null) return <div key={i} />;
+                const iso = aIso(anoVisto, mesVisto, d);
+                const fechaCelda = new Date(anoVisto, mesVisto, d);
+                const esSeleccionado = value === iso;
+                const esHoy = iso === hoyIso;
+                const deshabilitado = minDate && fechaCelda < minDate;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    disabled={deshabilitado}
+                    onClick={() => seleccionarDia(d)}
+                    className="aspect-square rounded-full text-xs flex items-center justify-center"
+                    style={{
+                      background: esSeleccionado ? C.blue : "transparent",
+                      color: deshabilitado ? "#C7D2DA" : esSeleccionado ? C.white : C.ink,
+                      fontWeight: esHoy ? 700 : 400,
+                      boxShadow: esHoy && !esSeleccionado ? `inset 0 0 0 1px ${C.blue}` : "none",
+                      cursor: deshabilitado ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {d}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
   const turnos = TURNOS[categoria] || [];
   const esServicio = tipo === "servicio";
@@ -2511,14 +2653,7 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
             <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
               Día del cambio
             </label>
-            <input
-              type="date"
-              min={minStr}
-              value={diaOfrecido}
-              onChange={(e) => elegirDiaOfrecido(e.target.value)}
-              className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-              style={{ borderColor: C.line, color: C.ink }}
-            />
+            <SelectorFecha value={diaOfrecido} min={minStr} onChange={elegirDiaOfrecido} />
           </div>
           )}
 
@@ -2528,13 +2663,10 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                 <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
                   Día que quieres/necesitas librar
                 </label>
-                <input
-                  type="date"
-                  min={minStr}
+                <SelectorFecha
                   value={diaLibreQuiero}
-                  onChange={(e) => setDiaLibreQuiero(e.target.value < minStr ? minStr : e.target.value)}
-                  className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-                  style={{ borderColor: C.line, color: C.ink }}
+                  min={minStr}
+                  onChange={(v) => setDiaLibreQuiero(v < minStr ? minStr : v)}
                 />
               </div>
 
@@ -2543,14 +2675,13 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                   Día(s) que ofreces a cambio
                 </label>
                 <div className="flex gap-2">
-                  <input
-                    type="date"
-                    min={minStr}
-                    value={nuevoDiaOfrecido}
-                    onChange={(e) => setNuevoDiaOfrecido(e.target.value < minStr ? minStr : e.target.value)}
-                    className="flex-1 rounded-lg border px-3 py-2 text-sm outline-none"
-                    style={{ borderColor: C.line, color: C.ink }}
-                  />
+                                    <div className="flex-1">
+                    <SelectorFecha
+                      value={nuevoDiaOfrecido}
+                      min={minStr}
+                      onChange={(v) => setNuevoDiaOfrecido(v < minStr ? minStr : v)}
+                    />
+                  </div>
                   <button
                     onClick={anadirDiaOfrecido}
                     disabled={!nuevoDiaOfrecido}
@@ -2588,21 +2719,15 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                   Periodo que tienes
                 </p>
                 <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    min={minStr}
+                                    <SelectorFecha
                     value={vacTengoInicio}
-                    onChange={(e) => setVacTengoInicio(e.target.value < minStr ? minStr : e.target.value)}
-                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-                    style={{ borderColor: C.line, color: C.ink }}
+                    min={minStr}
+                    onChange={(v) => setVacTengoInicio(v < minStr ? minStr : v)}
                   />
-                  <input
-                    type="date"
-                    min={vacTengoInicio || minStr}
+                  <SelectorFecha
                     value={vacTengoFin}
-                    onChange={(e) => setVacTengoFin(e.target.value < minStr ? minStr : e.target.value)}
-                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-                    style={{ borderColor: C.line, color: C.ink }}
+                    min={vacTengoInicio || minStr}
+                    onChange={(v) => setVacTengoFin(v < minStr ? minStr : v)}
                   />
                 </div>
               </div>
@@ -2612,21 +2737,15 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                   Periodo que quieres
                 </p>
                 <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    min={minStr}
+                                    <SelectorFecha
                     value={vacQuieroInicio}
-                    onChange={(e) => setVacQuieroInicio(e.target.value < minStr ? minStr : e.target.value)}
-                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-                    style={{ borderColor: C.line, color: C.ink }}
+                    min={minStr}
+                    onChange={(v) => setVacQuieroInicio(v < minStr ? minStr : v)}
                   />
-                  <input
-                    type="date"
-                    min={vacQuieroInicio || minStr}
+                  <SelectorFecha
                     value={vacQuieroFin}
-                    onChange={(e) => setVacQuieroFin(e.target.value < minStr ? minStr : e.target.value)}
-                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-                    style={{ borderColor: C.line, color: C.ink }}
+                    min={vacQuieroInicio || minStr}
+                    onChange={(v) => setVacQuieroFin(v < minStr ? minStr : v)}
                   />
                 </div>
               </div>
