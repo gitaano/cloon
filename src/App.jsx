@@ -1124,8 +1124,21 @@ useEffect(() => {
           )}
 
         <div className="space-y-2">
-          {hilosFiltrados.map((h) => (
-            <div key={h.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
+                    {hilosFiltrados.map((h) => (
+            <div
+              key={h.id}
+              style={{
+                background: h.destacado ? "#FEF3C7" : C.white,
+                borderColor: h.destacado ? "#F59E0B" : C.line,
+                borderWidth: h.destacado ? 2 : 1,
+              }}
+              className="rounded-xl border p-4"
+            >
+              {h.destacado && (
+                <p className="text-xs font-bold flex items-center gap-1 mb-1" style={{ color: "#B45309" }}>
+                  <Star size={12} fill="#F59E0B" /> Tema destacado
+                </p>
+              )}
               <p className="text-xs font-semibold flex items-center gap-1" style={{ color: C.blue }}>
                 {(() => {
                   const ambInfo = AMBITOS.find((a) => a.id === h.ambito);
@@ -1167,6 +1180,17 @@ useEffect(() => {
                     style={{ color: C.mute }}
                   >
                     <Mail size={14} />
+                  </button>
+                )}
+                                {perfil?.modo_dios && (
+                  <button
+                    onClick={() => alternarDestacado(h.id, h.destacado)}
+                    aria-label={h.destacado ? "Quitar destacado" : "Destacar tema"}
+                    className={((h.autor_id === sesion.user.id && ahora - new Date(h.creado_en).getTime() < 5 * 60 * 1000) ? "" : "ml-auto ") + "text-xs font-semibold flex items-center gap-1"}
+                    style={{ color: h.destacado ? "#B45309" : C.mute }}
+                  >
+                    <Star size={12} fill={h.destacado ? "#F59E0B" : "none"} />
+                    {h.destacado ? "Quitar" : "Destacar"}
                   </button>
                 )}
                 {((h.autor_id === sesion.user.id && ahora - new Date(h.creado_en).getTime() < 5 * 60 * 1000) ||
@@ -1293,9 +1317,89 @@ useEffect(() => {
               </div>
             </div>
           </aside></div>
-    {verSocioId && (
+        {verSocioId && (
         <TarjetaSocioModal usuarioId={verSocioId} sesion={sesion} onCerrar={() => setVerSocioId(null)} />
       )}
+    {modalListaUsuarios && (
+      <ModalListaUsuarios
+        tipo={modalListaUsuarios}
+        usuarios={listaUsuariosModal}
+        cargando={cargandoListaUsuarios}
+        onCerrar={() => setModalListaUsuarios(null)}
+        onVerSocio={(id) => {
+          setModalListaUsuarios(null);
+          setVerSocioId(id);
+        }}
+      />
+    )}
+    </div>
+  );
+}
+
+function ModalListaUsuarios({ tipo, usuarios, cargando, onCerrar, onVerSocio }) {
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4" onClick={onCerrar}>
+      <div
+        style={{ background: C.white }}
+        className="rounded-2xl shadow-2xl p-5 max-w-sm w-full space-y-3 max-h-[80vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between shrink-0">
+          <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
+            {tipo === "registrados" ? "Socios registrados" : "Socios en línea ahora"}
+          </p>
+          <button onClick={onCerrar} style={{ color: C.mute }}>
+            <X size={20} />
+          </button>
+        </div>
+        <div className="overflow-y-auto space-y-1 -mx-1 px-1">
+          {cargando && (
+            <p className="text-sm text-center py-4" style={{ color: C.mute }}>
+              Cargando...
+            </p>
+          )}
+          {!cargando && usuarios.length === 0 && (
+            <p className="text-sm text-center py-4" style={{ color: C.mute }}>
+              {tipo === "registrados" ? "No hay socios registrados." : "No hay nadie en línea ahora mismo."}
+            </p>
+          )}
+          {!cargando &&
+            usuarios.map((u) => (
+              <button
+                key={u.id}
+                type="button"
+                onClick={() => onVerSocio(u.id)}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-black/5 text-left"
+              >
+                {u.foto_url ? (
+                  <img src={u.foto_url} alt="Avatar" className="w-9 h-9 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div
+                    style={{ background: C.blue }}
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+                  >
+                    {(nombrePublico(u) || "?").slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
+                    {nombrePublico(u)}
+                    {u.vip && (
+                      <span className="font-bold" style={{ color: "#B8860B" }}>
+                        {" "}★
+                      </span>
+                    )}
+                  </p>
+                  {u.cargo && (
+                    <p className="text-xs truncate" style={{ color: C.mute }}>
+                      {u.cargo}
+                    </p>
+                  )}
+                </div>
+              </button>
+            ))}
+        </div>
+      </div>
     </div>
   );
 }
