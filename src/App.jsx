@@ -4827,7 +4827,6 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
     await supabase.from("documentos").delete().eq("id", doc.id);
     cargarDocumentos();
   }
-  }
 
   const pendientes = documentos.filter((d) => !d.aprobado);
   const publicosAprobados = documentos.filter((d) => d.aprobado && !d.privado);
