@@ -4748,7 +4748,9 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
   const [cargando, setCargando] = useState(true);
   const [subiendo, setSubiendo] = useState(false);
   const [mensaje, setMensaje] = useState(null);
-  const [subirComoPrivado, setSubirComoPrivado] = useState(false);
+    const [subirComoPrivado, setSubirComoPrivado] = useState(false);
+  const [verTexto, setVerTexto] = useState(null);
+  const inputArchivoRef = useRef(null);
   const inputArchivoRef = useRef(null);
 
   const esAdminODev = perfil?.rol === "admin" || perfil?.rol === "dev";
@@ -4800,6 +4802,10 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
   }
 
   async function abrirDocumento(doc) {
+    if (!doc.url_archivo) {
+      setVerTexto(doc);
+      return;
+    }
     const { data, error } = await supabase.storage.from("biblioteca").createSignedUrl(doc.url_archivo, 3600);
     if (!error && data) window.open(data.signedUrl, "_blank");
   }
@@ -4816,9 +4822,12 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
 
   async function eliminarDocumento(doc) {
     if (!confirm("¿Eliminar este documento?")) return;
-    await supabase.storage.from("biblioteca").remove([doc.url_archivo]);
+    if (doc.url_archivo) {
+      await supabase.storage.from("biblioteca").remove([doc.url_archivo]);
+    }
     await supabase.from("documentos").delete().eq("id", doc.id);
     cargarDocumentos();
+  }
   }
 
   const pendientes = documentos.filter((d) => !d.aprobado);
@@ -4973,10 +4982,36 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
           </div>
         )}
       </div>
+          </div>
+
+      {verTexto && (
+        <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-40 p-0 sm:p-4" onClick={() => setVerTexto(null)}>
+          <div
+            style={{ background: C.white, maxHeight: "88vh" }}
+            className="w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ background: C.blueDarker }} className="p-4 rounded-t-2xl flex items-center justify-between shrink-0">
+              <p className="text-white font-bold text-sm">{verTexto.nombre}</p>
+              <button onClick={() => setVerTexto(null)} className="text-white">
+                <X size={22} />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto space-y-3">
+              {(verTexto.contenido_texto || "Este documento todavía no tiene contenido.").split("\n").map((linea, i) =>
+                linea.trim() ? (
+                  <p key={i} className="text-sm" style={{ color: C.ink, lineHeight: 1.6 }}>
+                    {linea}
+                  </p>
+                ) : null
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
 function VistaSugerencias({ sesion, perfil, onVolver }) {
   const [sugerencias, setSugerencias] = useState([]);
   const [cargando, setCargando] = useState(true);
