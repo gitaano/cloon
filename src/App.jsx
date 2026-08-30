@@ -694,6 +694,12 @@ useEffect(() => {
       .then(({ data }) => setPerfil(data));
   }
 
+  async function cerrarBienvenida() {
+    setPerfil((p) => (p ? { ...p, bienvenida_vista: true } : p));
+    await supabase.from("perfiles").update({ bienvenida_vista: true }).eq("id", sesion.user.id);
+  }
+  }
+
   function cargarHilos() {
     setCargandoHilos(true);
     supabase
@@ -1075,6 +1081,42 @@ useEffect(() => {
         </aside>
 
         <div className="flex-1 min-w-0 space-y-4">
+        {perfil && !perfil.bienvenida_vista && (
+          <div style={{ background: C.white, borderColor: C.blue }} className="rounded-xl border-2 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-bold flex items-center gap-1.5" style={{ color: C.blue }}>
+                👋 ¡Bienvenido/a a Underground!
+              </p>
+              <button onClick={cerrarBienvenida} style={{ color: C.mute }} aria-label="Cerrar bienvenida">
+                <X size={18} />
+              </button>
+            </div>
+            <p className="text-xs" style={{ color: C.ink }}>
+              Una guía rápida de cuatro cosas para empezar:
+            </p>
+            <div className="space-y-2">
+              <p className="text-xs" style={{ color: C.ink }}>
+                <strong>💬 Foro:</strong> aquí mismo, elige un ámbito a la izquierda (Estaciones, Vías, Cambios...) o pulsa "Crear nuevo tema".
+              </p>
+              <p className="text-xs" style={{ color: C.ink }}>
+                <strong>🔁 Cambios:</strong> ofrece o busca cambios de turno, servicio o vacaciones desde el ámbito "Cambios".
+              </p>
+              <p className="text-xs" style={{ color: C.ink }}>
+                <strong>👤 Mi perfil:</strong> arriba a la derecha, en tu avatar. Ahí controlas qué ven los demás socios de ti y tus preferencias de calendario.
+              </p>
+              <p className="text-xs" style={{ color: C.ink }}>
+                <strong>📅 Calendario:</strong> también desde tu avatar, para llevar tus turnos, vacaciones y bajas de forma privada.
+              </p>
+            </div>
+            <button
+              onClick={cerrarBienvenida}
+              style={{ background: C.blue }}
+              className="w-full text-white font-semibold py-2 rounded-lg text-xs"
+            >
+              Entendido, no volver a mostrar
+            </button>
+          </div>
+        )}
         <button
           onClick={() => setFormAbierto((v) => !v)}
           style={{ background: C.blue }}
