@@ -1241,11 +1241,11 @@ useEffect(() => {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3">
                   <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2 shrink-0">
                     <Users size={18} style={{ color: C.blue }} />
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <p className="text-lg font-bold leading-none" style={{ color: C.ink }}>
                       {numUsuariosRegistrados === null ? "..." : numUsuariosRegistrados}
                     </p>
@@ -1253,6 +1253,15 @@ useEffect(() => {
                       Socios registrados
                     </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => abrirListaUsuarios("registrados")}
+                    aria-label="Ver socios registrados"
+                    style={{ color: C.mute }}
+                    className="shrink-0"
+                  >
+                    <Eye size={16} />
+                  </button>
                 </div>
                 <div className="flex items-center gap-3">
                   <div style={{ background: "#E7F7EE" }} className="rounded-lg p-2 shrink-0 relative">
@@ -1262,7 +1271,7 @@ useEffect(() => {
                       className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2"
                     />
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <p className="text-lg font-bold leading-none" style={{ color: C.ink }}>
                       {usuariosOnline}
                     </p>
@@ -1271,6 +1280,15 @@ useEffect(() => {
                       En línea ahora
                     </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => abrirListaUsuarios("online")}
+                    aria-label="Ver socios en línea"
+                    style={{ color: C.mute }}
+                    className="shrink-0"
+                  >
+                    <Eye size={16} />
+                  </button>
                 </div>
               </div>
             </div>
