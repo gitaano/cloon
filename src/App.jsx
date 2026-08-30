@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -583,6 +583,10 @@ function ClubProvisional({ sesion }) {
   const [mensajeIniciarCon, setMensajeIniciarCon] = useState(null);
   const [ahora, setAhora] = useState(Date.now());
   const [verSocioId, setVerSocioId] = useState(null);
+    const [usuariosOnlineIds, setUsuariosOnlineIds] = useState([]);
+  const [modalListaUsuarios, setModalListaUsuarios] = useState(null);
+  const [listaUsuariosModal, setListaUsuariosModal] = useState([]);
+  const [cargandoListaUsuarios, setCargandoListaUsuarios] = useState(false);
 
   useEffect(() => {
     cargarPerfil();
@@ -653,7 +657,9 @@ useEffect(() => {
     canalPresencia
       .on("presence", { event: "sync" }, () => {
         const estado = canalPresencia.presenceState();
-        setUsuariosOnline(Object.keys(estado).length || 1);
+        const idsOnline = Object.keys(estado);
+        setUsuariosOnline(idsOnline.length || 1);
+        setUsuariosOnlineIds(idsOnline);
       })
       .subscribe(async (estadoSuscripcion) => {
         if (estadoSuscripcion === "SUBSCRIBED") {
