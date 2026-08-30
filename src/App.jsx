@@ -1895,10 +1895,9 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
               className="w-full rounded-lg border px-3 py-2 text-sm outline-none resize-none"
               style={{ borderColor: C.line, color: C.ink }}
             />
-          </div>
-        </div>
+                    </div>
 
-        <BloqueDesplegable
+          <BloqueDesplegable
             titulo="Qué ven los demás socios de ti"
             abierto={queVenAbierto}
             onToggle={() => setQueVenAbierto((v) => !v)}
@@ -1911,9 +1910,10 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
             <CasillaPerfil label="Permitir que otros socios me sigan" checked={permiteSeguir} onChange={setPermiteSeguir} />
             <CasillaPerfil label="Notificarme cuando respondan a mis temas" checked={notificarComentarios} onChange={setNotificarComentarios} />
           </BloqueDesplegable>
+        </div>
 
-                  <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
-          <p className="text-xs font-semibold" style={{ color: C.ink }}>
+        <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
+<p className="text-xs font-semibold" style={{ color: C.ink }}>
             Preferencias del futuro calendario
           </p>
           <div className="relative">
