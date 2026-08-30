@@ -1914,7 +1914,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
 
         <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
 <p className="text-xs font-semibold" style={{ color: C.ink }}>
-            Preferencias del futuro calendario
+            Preferencias del calendario
           </p>
           <div className="relative">
             <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
