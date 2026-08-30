@@ -2396,6 +2396,8 @@ function SelectorFecha({ value, onChange, min, label }) {
   const [abierto, setAbierto] = useState(false);
   const [mesVisto, setMesVisto] = useState((fechaValor || hoyRef).getMonth());
   const [anoVisto, setAnoVisto] = useState((fechaValor || hoyRef).getFullYear());
+  const botonRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
 
   const MESES = [
     "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -2403,10 +2405,15 @@ function SelectorFecha({ value, onChange, min, label }) {
   ];
   const DIAS_SEMANA = ["L", "M", "X", "J", "V", "S", "D"];
 
-  function abrir() {
+    function abrir() {
     const base = fechaValor || hoyRef;
     setMesVisto(base.getMonth());
     setAnoVisto(base.getFullYear());
+    if (botonRef.current) {
+      const r = botonRef.current.getBoundingClientRect();
+      const izq = Math.max(8, Math.min(r.left, window.innerWidth - 296));
+      setPos({ top: r.bottom + 4, left: izq });
+    }
     setAbierto(true);
   }
 
@@ -2451,7 +2458,8 @@ function SelectorFecha({ value, onChange, min, label }) {
 
   return (
     <div className="relative">
-      <button
+            <button
+        ref={botonRef}
         type="button"
         onClick={() => (abierto ? setAbierto(false) : abrir())}
         className="w-full rounded-lg border px-3 py-2 text-sm outline-none flex items-center justify-between gap-2"
@@ -2464,8 +2472,8 @@ function SelectorFecha({ value, onChange, min, label }) {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setAbierto(false)} />
           <div
-            style={{ background: C.white, borderColor: C.line }}
-            className="absolute z-50 mt-1 border rounded-xl shadow-xl p-3 w-72 max-w-[80vw]"
+            style={{ background: C.white, borderColor: C.line, top: pos.top, left: pos.left }}
+            className="fixed z-50 border rounded-xl shadow-xl p-3 w-72 max-w-[80vw]"
           >
             <div className="flex items-center justify-between mb-2">
               <button
