@@ -1318,7 +1318,16 @@ useEffect(() => {
             </div>
           </aside></div>
         {verSocioId && (
-        <TarjetaSocioModal usuarioId={verSocioId} sesion={sesion} onCerrar={() => setVerSocioId(null)} />
+        <TarjetaSocioModal
+          usuarioId={verSocioId}
+          sesion={sesion}
+          onCerrar={() => setVerSocioId(null)}
+          onMensaje={(id) => {
+            setVerSocioId(null);
+            setMensajeIniciarCon(id);
+            setVista("mensajes");
+          }}
+        />
       )}
     {modalListaUsuarios && (
       <ModalListaUsuarios
@@ -1404,7 +1413,7 @@ function ModalListaUsuarios({ tipo, usuarios, cargando, onCerrar, onVerSocio }) 
   );
 }
 
-function TarjetaSocioModal({ usuarioId, sesion, onCerrar }) {
+function TarjetaSocioModal({ usuarioId, sesion, onCerrar, onMensaje }) {
   const [perfilVisto, setPerfilVisto] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [siguiendo, setSiguiendo] = useState(false);
@@ -1507,20 +1516,32 @@ function TarjetaSocioModal({ usuarioId, sesion, onCerrar }) {
                 <strong style={{ color: C.ink }}>{numSiguiendo}</strong> siguiendo
               </p>
             )}
-            {!esUnoMismo && perfilVisto.permite_seguir !== false && (
-              <button
-                onClick={alternarSeguir}
-                disabled={procesando}
-                style={{
-                  background: siguiendo ? C.white : C.blue,
-                  color: siguiendo ? C.blue : C.white,
-                  borderColor: C.blue,
-                }}
-                className="w-full border-2 font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-1.5"
-              >
-                <UserPlus size={16} />
-                {siguiendo ? "Dejar de seguir" : "Seguir"}
-              </button>
+            {!esUnoMismo && (
+              <div className="flex gap-2">
+                {perfilVisto.permite_seguir !== false && (
+                  <button
+                    onClick={alternarSeguir}
+                    disabled={procesando}
+                    style={{
+                      background: siguiendo ? C.white : C.blue,
+                      color: siguiendo ? C.blue : C.white,
+                      borderColor: C.blue,
+                    }}
+                    className="flex-1 border-2 font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-1.5"
+                  >
+                    <UserPlus size={16} />
+                    {siguiendo ? "Dejar de seguir" : "Seguir"}
+                  </button>
+                )}
+                <button
+                  onClick={() => onMensaje(usuarioId)}
+                  style={{ borderColor: C.line, color: C.ink }}
+                  className="flex-1 border-2 font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-1.5"
+                >
+                  <Mail size={16} />
+                  Mensaje
+                </button>
+              </div>
             )}
           </>
         )}
