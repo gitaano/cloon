@@ -4751,7 +4751,6 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
     const [subirComoPrivado, setSubirComoPrivado] = useState(false);
   const [verTexto, setVerTexto] = useState(null);
   const inputArchivoRef = useRef(null);
-  const inputArchivoRef = useRef(null);
 
   const esAdminODev = perfil?.rol === "admin" || perfil?.rol === "dev";
 
@@ -4982,8 +4981,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
           </div>
         )}
       </div>
-          </div>
-
+          
       {verTexto && (
         <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-40 p-0 sm:p-4" onClick={() => setVerTexto(null)}>
           <div
