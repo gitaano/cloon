@@ -725,6 +725,32 @@ useEffect(() => {
       });
   }
 
+    async function abrirListaUsuarios(tipo) {
+    setModalListaUsuarios(tipo);
+    setCargandoListaUsuarios(true);
+    if (tipo === "registrados") {
+      const { data } = await supabase
+        .from("perfiles")
+        .select("id, nombre, apellido, nickname, mostrar_nombre_real, cargo, foto_url, vip")
+        .eq("aprobado", true)
+        .order("nombre", { ascending: true });
+      setListaUsuariosModal(data || []);
+    } else {
+      const ids = usuariosOnlineIds.length ? usuariosOnlineIds : ["00000000-0000-0000-0000-000000000000"];
+      const { data } = await supabase
+        .from("perfiles")
+        .select("id, nombre, apellido, nickname, mostrar_nombre_real, cargo, foto_url, vip")
+        .in("id", ids);
+      setListaUsuariosModal(data || []);
+    }
+    setCargandoListaUsuarios(false);
+  }
+
+  async function alternarDestacado(id, valorActual) {
+    const { error } = await supabase.from("hilos").update({ destacado: !valorActual }).eq("id", id);
+    if (!error) cargarHilos();
+  }
+
   async function votar(hiloId, tipoVoto) {
     const hilo = hilos.find((h) => h.id === hiloId);
     const yaVotado = hilo && hilo.miVoto === tipoVoto;
