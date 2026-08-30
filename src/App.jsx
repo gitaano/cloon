@@ -698,8 +698,7 @@ useEffect(() => {
     setPerfil((p) => (p ? { ...p, bienvenida_vista: true } : p));
     await supabase.from("perfiles").update({ bienvenida_vista: true }).eq("id", sesion.user.id);
   }
-  }
-
+  
   function cargarHilos() {
     setCargandoHilos(true);
     supabase
