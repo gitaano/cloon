@@ -4828,7 +4828,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
   const [cargando, setCargando] = useState(true);
   const [subiendo, setSubiendo] = useState(false);
   const [mensaje, setMensaje] = useState(null);
-    const [subirComoPrivado, setSubirComoPrivado] = useState(false);
+    const [subirComoPrivado, setSubirComoPrivado] = useState(false); const [categoriaSubida, setCategoriaSubida] = useState("");
   const [verTexto, setVerTexto] = useState(null);
   const inputArchivoRef = useRef(null);
 
@@ -4868,7 +4868,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
       url_archivo: ruta,
       autor_id: sesion.user.id,
       aprobado: false,
-      privado: esAdminODev ? subirComoPrivado : false,
+      privado: esAdminODev ? subirComoPrivado : false, categoria: categoriaSubida || null,
     });
     setSubiendo(false);
     if (errorFila) {
@@ -4909,7 +4909,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
   }
 
   const pendientes = documentos.filter((d) => !d.aprobado);
-  const publicosAprobados = documentos.filter((d) => d.aprobado && !d.privado);
+  const publicosAprobados = documentos.filter((d) => d.aprobado && !d.privado); const circulares = publicosAprobados.filter((d) => d.categoria === "circular"); const generales = publicosAprobados.filter((d) => d.categoria !== "circular");
   const privadosAprobados = documentos.filter((d) => d.aprobado && d.privado);
 
   return (
@@ -4924,7 +4924,7 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">
         <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4">
-          <input ref={inputArchivoRef} type="file" onChange={subirArchivo} className="hidden" id="archivo-biblioteca" disabled={subiendo} />
+          <select value={categoriaSubida} onChange={(e) => setCategoriaSubida(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm outline-none mb-3" style={{ borderColor: C.line, color: C.ink }}><option value="">Documento general</option><option value="circular">Circular o aviso (empresa / sindicatos)</option></select><input ref={inputArchivoRef} type="file" onChange={subirArchivo} className="hidden" id="archivo-biblioteca" disabled={subiendo} />
           <label
             htmlFor="archivo-biblioteca"
             style={{ background: subiendo ? "#B9C6D2" : C.blue }}
