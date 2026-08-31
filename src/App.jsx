@@ -2046,7 +2046,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
                 abierto={indicadoresAbiertos}
                 onToggle={() => setIndicadoresAbiertos((v) => !v)}
               >
-                <div className="grid grid-cols-2 gap-x-3">
+                <p className="text-xs mb-2" style={{ color: C.mute }}>Elige los apartados que quieres tener visibles</p><div className="grid grid-cols-2 gap-x-3">
                   {INDICADORES_CALENDARIO.map((ind) => (
                     <CasillaPerfil
                       key={ind.id}
