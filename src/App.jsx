@@ -1079,7 +1079,7 @@ useEffect(() => {
           )}
         </aside>
 
-        <div className="flex-1 min-w-0 space-y-4">
+        <div className="flex-1 min-w-0 space-y-4"><div style={{ background: "#F3F6F9", borderColor: C.line }} className="rounded-lg border px-3 py-2 flex items-start gap-2"><Megaphone size={14} style={{ color: C.mute }} className="shrink-0 mt-0.5" /><p className="text-xs" style={{ color: C.mute }}>Este foro se está construyendo para todos. Hay muchas cosas que podemos mejorar, muchas veces por desconocimiento de otras categorías, así que por favor, mándanos tus sugerencias para poder mejorar el club. — La dirección</p></div>
         {perfil && !perfil.bienvenida_vista && (
           <div style={{ background: C.white, borderColor: C.blue }} className="rounded-xl border-2 p-4 space-y-3">
             <div className="flex items-center justify-between">
