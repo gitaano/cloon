@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -437,13 +437,13 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
 }
 
 const AMBITOS = [
-  { id: "anden", nombre: "Estaciones", icon: Users },
-  { id: "conduccion", nombre: "Vías", icon: TrainFront },
-  { id: "mantenimiento", nombre: "Mantenimiento", icon: Wrench },
-  { id: "oficinas", nombre: "Oficinas y técnicos", icon: Monitor },
+  { id: "anden", nombre: "Estaciones", icon: Users, descripcion: "Pensado sobre todo para Jefes de Sector, aunque puede publicar quien quiera. Temas de estaciones, seguridad, incidencias, etc." },
+  { id: "conduccion", nombre: "Vías", icon: TrainFront, descripcion: "Pensado sobre todo para Maquinistas de Tracción Eléctrica, aunque también caben otros temas como suspensiones, averías, etc." },
+  { id: "mantenimiento", nombre: "Mantenimiento", icon: Wrench, descripcion: "Para técnicos de escaleras, billeteras, torniquetes y el resto de empleados relacionados con las instalaciones del metro." },
+  { id: "oficinas", nombre: "Oficinas y técnicos", icon: Monitor, descripcion: "Para personal de nombramiento, informáticos, etc. Gente de oficinas." },
   { id: "cambios", nombre: "Cambios", icon: Repeat },
-  { id: "mercadillo", nombre: "Mercadillo", icon: ShoppingBag },
-  { id: "sindicatos", nombre: "Sindicatos", icon: Handshake },
+  { id: "mercadillo", nombre: "Mercadillo", icon: ShoppingBag, descripcion: "Para ofertas de venta de cosas de segunda mano, trabajos ofertados, casas de alquiler... cosas así." },
+  { id: "sindicatos", nombre: "Sindicatos", icon: Handshake, descripcion: "Para que quien represente a un sindicato pueda ir subiendo avisos y la gente hable sobre ello." },
   { id: "general", nombre: "General / Café", icon: MessageSquare },
 ];
 
