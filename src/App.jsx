@@ -2042,7 +2042,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
             <ChevronDown size={19} style={{ color: C.mute }} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
           </div>
           <BloqueDesplegable
-                titulo="Qué apartados quiero ver marcados"
+                titulo="Configurar mi calendario"
                 abierto={indicadoresAbiertos}
                 onToggle={() => setIndicadoresAbiertos((v) => !v)}
               >
