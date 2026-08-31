@@ -74,7 +74,7 @@ export default function App() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      setSesion(data.session);
+      const _ts = localStorage.getItem("ug_login_ts"); const _rec = localStorage.getItem("ug_recordar") === "1"; const _maxMs = _rec ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000; if (data.session && _ts && Date.now() - Number(_ts) > _maxMs) { supabase.auth.signOut(); setSesion(null); } else { setSesion(data.session); }
       setCargando(false);
     });
     const { data: listener } = supabase.auth.onAuthStateChange((evento, nuevaSesion) => {
@@ -195,7 +195,7 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
   const [mensaje, setMensaje] = useState(null);
 
   const [loginEmail, setLoginEmail] = useState("");
-  const [loginPass, setLoginPass] = useState("");
+  const [loginPass, setLoginPass] = useState(""); const [recordar, setRecordar] = useState(true);
 
   const [regNombre, setRegNombre] = useState("");
   const [regApellido, setRegApellido] = useState("");
@@ -218,7 +218,7 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
       password: loginPass,
     });
     setCargando(false);
-    if (error) setMensaje({ tipo: "error", texto: "Email o contraseña incorrectos." });
+    if (error) setMensaje({ tipo: "error", texto: "Email o contraseña incorrectos." }); if (!error) { localStorage.setItem("ug_login_ts", String(Date.now())); localStorage.setItem("ug_recordar", recordar ? "1" : "0"); }
   }
 
   async function registrar() {
@@ -346,7 +346,7 @@ function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
           {modo === "login" && (
             <div className="space-y-4">
               <Campo label="Email" type="email" value={loginEmail} onChange={setLoginEmail} placeholder="tucorreo@ejemplo.com" />
-              <CampoPass verPass={verPass} setVerPass={setVerPass} value={loginPass} onChange={setLoginPass} />
+              <CampoPass verPass={verPass} setVerPass={setVerPass} value={loginPass} onChange={setLoginPass} /><label className="flex items-center gap-2 text-xs" style={{ color: C.ink }}><input type="checkbox" checked={recordar} onChange={(e) => setRecordar(e.target.checked)} />Recordarme en este dispositivo</label>
               <BotonPrincipal onClick={entrar} cargando={cargando}>Entrar</BotonPrincipal>
               <button onClick={() => { setModo("recuperar"); setMensaje(null); }} className="text-xs text-center w-full" style={{ color: C.blue }}>
                 ¿Olvidaste tu contraseña?
