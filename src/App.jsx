@@ -1073,7 +1073,7 @@ useEffect(() => {
                 activo={ambitoActivo === a.id}
                 onClick={() => setAmbitoActivo(a.id)}
                 icon={a.icon}
-                nombre={a.nombre}
+                nombre={a.nombre} descripcion={a.descripcion}
               />
             )
           )}
@@ -2375,18 +2375,49 @@ function BotonReaccion({ icon: Icon, color, activo, cantidad, onClick, label }) 
   );
 }
 
-function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre }) {
+function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre, descripcion }) {
   return (
-    <button
-      onClick={onClick}
-      className="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
-      style={{ background: activo ? "#EAF2F9" : "transparent" }}
-    >
-      <Icon size={20} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
-      <p className="text-sm font-semibold truncate" style={{ color: activo ? C.blueDark : C.ink }}>
-        {nombre}
-      </p>
-    </button>
+    <div className="flex items-center gap-1">
+      <button
+        onClick={onClick}
+        className="flex-1 min-w-0 text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
+        style={{ background: activo ? "#EAF2F9" : "transparent" }}
+      >
+        <Icon size={20} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
+        <p className="text-sm font-semibold truncate" style={{ color: activo ? C.blueDark : C.ink }}>
+          {nombre}
+        </p>
+      </button>
+      {descripcion && <InfoAmbito texto={descripcion} />}
+    </div>
+  );
+}
+
+function InfoAmbito({ texto }) {
+  const [abierto, setAbierto] = useState(false);
+  return (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setAbierto((v) => !v)}
+        aria-label="Qué se publica aquí"
+        style={{ color: C.mute }}
+        className="p-1 rounded-full hover:bg-black/5"
+      >
+        <Info size={15} />
+      </button>
+      {abierto && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setAbierto(false)} />
+          <div
+            style={{ background: C.blueDarker }}
+            className="absolute z-40 left-0 top-full mt-1 w-60 rounded-lg shadow-xl p-3 text-xs text-white leading-relaxed"
+          >
+            {texto}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
