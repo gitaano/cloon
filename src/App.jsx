@@ -5001,17 +5001,46 @@ function VistaBiblioteca({ sesion, perfil, onVolver }) {
           </div>
         )}
 
+                {!cargando && (
+          <div className="space-y-2">
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
+              Circulares y avisos
+            </p>
+            {circulares.length === 0 && (
+              <p className="text-sm" style={{ color: C.mute }}>
+                Todavía no hay circulares ni avisos publicados.
+              </p>
+            )}
+            {circulares.map((doc) => (
+              <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
+                <Megaphone size={24} style={{ color: C.blue }} className="shrink-0" />
+                <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
+                  <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>
+                    {doc.nombre}
+                  </p>
+                </button>
+                {esAdminODev && (<>
+                  <button onClick={() => alternarPrivado(doc)} style={{ color: C.blueDark }} className="shrink-0" aria-label={doc.privado ? "Marcar como público" : "Marcar como privado"} title={doc.privado ? "Hacer público" : "Hacer privado"}>{doc.privado ? <Eye size={20} /> : <EyeOff size={20} />}</button>
+              <button onClick={() => eliminarDocumento(doc)} style={{ color: C.red }} className="shrink-0" aria-label="Eliminar">
+                    <X size={20} />
+                  </button>
+                </>)}
+              </div>
+            ))}
+          </div>
+        )}
+
         {!cargando && (
           <div className="space-y-2">
             <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
-              Biblioteca pública
+              Biblioteca general
             </p>
-            {publicosAprobados.length === 0 && (
+            {generales.length === 0 && (
               <p className="text-sm" style={{ color: C.mute }}>
                 Todavía no hay documentos disponibles.
               </p>
             )}
-            {publicosAprobados.map((doc) => (
+            {generales.map((doc) => (
               <div key={doc.id} style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-3 flex items-center gap-3">
                 <FileText size={24} style={{ color: C.blue }} className="shrink-0" />
                 <button onClick={() => abrirDocumento(doc)} className="min-w-0 flex-1 text-left">
