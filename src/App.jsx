@@ -440,10 +440,10 @@ const AMBITOS = [
   { id: "anden", nombre: "Estaciones", icon: Users, descripcion: "Pensado sobre todo para Jefes de Sector, aunque puede publicar quien quiera. Temas de estaciones, seguridad, incidencias, etc." },
   { id: "conduccion", nombre: "Vías", icon: TrainFront, descripcion: "Pensado sobre todo para Maquinistas de Tracción Eléctrica, aunque también caben otros temas como suspensiones, averías, etc." },
   { id: "mantenimiento", nombre: "Mantenimiento", icon: Wrench, descripcion: "Para técnicos de escaleras, billeteras, torniquetes y el resto de empleados relacionados con las instalaciones del metro." },
-  { id: "oficinas", nombre: "Oficinas y técnicos", icon: Monitor, descripcion: "Para personal de nombramiento, informáticos, etc. Gente de oficinas." },
+  { id: "oficinas", nombre: "Oficinas y técnicos", icon: Monitor, descripcion: "Para gente de oficinas: Otics, Informáticos, nombramiento, etc..." },
   { id: "cambios", nombre: "Cambios", icon: Repeat },
   { id: "mercadillo", nombre: "Mercadillo", icon: ShoppingBag, descripcion: "Para ofertas de venta de cosas de segunda mano, trabajos ofertados, casas de alquiler... cosas así." },
-  { id: "sindicatos", nombre: "Sindicatos", icon: Handshake, descripcion: "Para que quien represente a un sindicato pueda ir subiendo avisos y la gente hable sobre ello." },
+  { id: "sindicatos", nombre: "Sindicatos", icon: Handshake, descripcion: "Para hablar de asuntos sindicales y más." },
   { id: "general", nombre: "General / Café", icon: MessageSquare },
 ];
 
