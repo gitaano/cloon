@@ -5587,7 +5587,7 @@ function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) {
     { icon: Repeat, texto: "Oferta y encuentra cambios de turno, día libre o vacaciones con tu misma categoría" },
     { icon: ShoppingBag, texto: "Compra, vende o alquila entre compañeros en el Mercadillo" },
     { icon: FileText, texto: "Consulta el convenio y los manuales internos en la Biblioteca, siempre a mano" },
-    { icon: Bot, texto: "Resuelve dudas rápidas (permisos, vacaciones...) con el chat virtual" },
+    { icon: Bot, texto: "Resuelve dudas rápidas (permisos, vacaciones...)" },
   ];
 
   const [normasAbiertas, setNormasAbiertas] = useState(false);
@@ -5607,7 +5607,7 @@ function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) {
         </h1>
         <p style={{ color: "#BFD9EE" }} className="text-base mt-3 leading-relaxed">
           El espacio privado, hecho por y para trabajadores de Metro. Un sitio donde plantear
-          problemas del día a día, ayudarte con compañeros de tu misma categoría y estar al tanto
+          problemas del día a día, hablar de las cosas que pasan en nuestro trabajo y estar al tanto
           de lo importante, sin jefes de por medio.
         </p>
 
