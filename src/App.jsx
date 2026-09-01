@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 const C = {
   blue: "#0060A9",
@@ -3198,7 +3198,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
   const [motivoBaneo, setMotivoBaneo] = useState("");
 
   const esDev = perfil?.rol === "dev";
-  const esAdmin = perfil?.rol === "admin";
+  const esAdmin = perfil?.rol === "admin"; const [generandoBackup, setGenerandoBackup] = useState(false); async function generarBackup() { setGenerandoBackup(true); const tablas = ["perfiles","documentos","hilos","respuestas","mensajes_privados","notificaciones","reacciones","registros_calendario","reportes","solicitudes_baneo","sugerencias","baneos","bloqueos","seguidores","avatares","biblioteca","ajustes_club"]; const backup = {}; for (const t of tablas) { const { data } = await supabase.from(t).select("*"); backup[t] = data || []; } const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `backup_underground_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); setGenerandoBackup(false); }
 
   useEffect(() => {
     cargarTodo();
@@ -3338,7 +3338,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
     { id: "altas", nombre: "Altas pendientes", icon: UserPlus, badge: pendientesAlta.length },
     { id: "usuarios", nombre: "Usuarios", icon: Contact, badge: 0 },
     { id: "reportes", nombre: "Reportes", icon: ShieldCheck, badge: reportes.length },
-    { id: "baneos", nombre: "Peticiones de baneo", icon: Ban, badge: solicitudesBaneo.length },
+    { id: "baneos", nombre: "Peticiones de baneo", icon: Ban, badge: solicitudesBaneo.length }, ...(esDev ? [{ id: "backup", nombre: "Backup", icon: Download, badge: 0 }] : []),
   ];
 
   return (
@@ -3726,7 +3726,7 @@ function PanelAdmin({ sesion, perfil, onVolver }) {
               </div>
             )}
 
-            {!cargando && tab === "baneos" && (
+            {esDev && tab === "backup" && (<div className="space-y-3"><p className="text-sm" style={{ color: C.ink }}>Genera una copia de seguridad de todos los datos del club (perfiles, mensajes, documentos, temas, etc.) en un archivo descargable. Guárdalo en un sitio seguro.</p><button onClick={generarBackup} disabled={generandoBackup} style={{ background: generandoBackup ? "#B9C6D2" : C.blue }} className="text-white font-semibold py-2.5 px-4 rounded-lg text-sm flex items-center gap-2"><Download size={18} />{generandoBackup ? "Generando..." : "Descargar copia de seguridad"}</button></div>)}{!cargando && tab === "baneos" && (
             <div className="space-y-2">
               {solicitudesBaneo.length === 0 && (
                 <p className="text-sm" style={{ color: C.mute }}>
