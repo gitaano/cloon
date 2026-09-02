@@ -244,7 +244,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
 
             <div>
             <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-              Nick (como te verÃ¡n los demás)
+              Nick (como te verán los demás)
             </label>
             <input
               value={nickname}
