@@ -644,7 +644,8 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
               </button>
             </div>
           </div>
-        )}
+                </div>
+                )}
     </div>
   );
 }
