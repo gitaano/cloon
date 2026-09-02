@@ -6,6 +6,7 @@ import VistaCalendario from "./VistaCalendario.jsx";
 import VistaMensajes from "./VistaMensajes.jsx";
 import VistaBiblioteca from "./VistaBiblioteca.jsx";
 import VistaSugerencias from "./VistaSugerencias.jsx";
+import VistaNotificaciones from "./VistaNotificaciones.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
@@ -4374,7 +4375,7 @@ function EditorDiaViejoNoUsar({ fecha, registro, resumen, categoriaTurnos, indic
     </div>
   );
 }
-function VistaNotificaciones({ sesion, onVolver }) {
+function VistaNotificacionesViejoNoUsar({ sesion, onVolver }) {
   const [notificaciones, setNotificaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
 
