@@ -78,7 +78,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   async function guardar() {
     setMensaje(null);
     if (!nombreReal.trim() || !apellidoReal.trim()) {
-      setMensaje({ tipo: "error", texto: "El nombre y el apellido no pueden quedar vacÃ­os." });
+      setMensaje({ tipo: "error", texto: "El nombre y el apellido no pueden quedar vacíos." });
       return;
     }
     setCargando(true);
@@ -193,14 +193,14 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
               </p>
               <p className="text-xs" style={{ color: C.mute }}>DNE: {perfil.dne}</p>
               <p className="text-xs" style={{ color: C.mute }}>
-                <strong style={{ color: C.ink }}>{numSeguidores}</strong> seguidores Â·{" "}
+                <strong style={{ color: C.ink }}>{numSeguidores}</strong> seguidores ·{" "}
                 <strong style={{ color: C.ink }}>{numSiguiendo}</strong> siguiendo
               </p>
             </div>
           </div>
           <p className="text-xs rounded-lg p-2.5" style={{ background: "#EAF2F9", color: C.blueDark }}>
-            Tu nombre real y tu DNE solo los ve el equipo de administraciÃ³n, salvo que actives
-            aquÃ­ que se muestren.
+            Tu nombre real y tu DNE solo los ve el equipo de administración, salvo que actives
+            aquí que se muestren.
           </p>
 
           {mensaje && (
@@ -244,7 +244,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
 
             <div>
             <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-              Nick (como te verÃ¡n los demÃ¡s)
+              Nick (como te verÃ¡n los demás)
             </label>
             <input
               value={nickname}
@@ -257,7 +257,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
 
           <div className="relative">
             <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-              Puesto / categorÃ­a
+              Puesto / categoría
             </label>
             <select
               value={cargo}
@@ -267,12 +267,12 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
             >
               <option value="">Selecciona...</option>
 <option>Jefe/a de Sector</option>
-<option>Maquinista de TracciÃ³n ElÃ©ctrica</option>
-<option>Mantenimiento de VÃ­a</option>
+<option>Maquinista de Tracción Eléctrica</option>
+<option>Mantenimiento de Vía</option>
 <option>Talleres Centrales</option>
 <option>Instalaciones (Ascensores/Escaleras)</option>
-<option>TÃ©cnico/a administrativo</option>
-<option>Guardias TÃ©cnicos</option>
+<option>Técnico/a administrativo</option>
+<option>Guardias Técnicos</option>
 <option>Otro</option>
             </select>
             <ChevronDown size={19} style={{ color: C.mute }} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
@@ -293,13 +293,13 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
                     </div>
 
           <BloqueDesplegable
-            titulo="QuÃ© ven los demÃ¡s socios de ti"
+            titulo="Qué ven los demás socios de ti"
             abierto={queVenAbierto}
             onToggle={() => setQueVenAbierto((v) => !v)}
           >
             <CasillaPerfil label="Mostrar mi nombre real (en vez de solo el nick)" checked={mostrarNombreReal} onChange={setMostrarNombreReal} />
             <CasillaPerfil label="Mostrar mi DNE" checked={mostrarDne} onChange={setMostrarDne} />
-            <CasillaPerfil label="Mostrar mi puesto / categorÃ­a" checked={mostrarCargo} onChange={setMostrarCargo} />
+            <CasillaPerfil label="Mostrar mi puesto / categoría" checked={mostrarCargo} onChange={setMostrarCargo} />
             <CasillaPerfil label="Mostrar lo que he escrito en 'Sobre ti'" checked={mostrarIntereses} onChange={setMostrarIntereses} />
             <CasillaPerfil label="Mostrar mi lista de seguidores" checked={mostrarSeguidores} onChange={setMostrarSeguidores} />
             <CasillaPerfil label="Permitir que otros socios me sigan" checked={permiteSeguir} onChange={setPermiteSeguir} />
@@ -313,7 +313,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
           </p>
           <div className="relative">
             <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-              LÃ­nea preferente
+              Línea preferente
             </label>
             <select
               value={lineaPreferente}
@@ -333,7 +333,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
           {lineaPreferente && LINEAS_METRO_ESTACIONES[lineaPreferente] && (
             <div className="relative">
               <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-                EstaciÃ³n preferente
+                Estación preferente
               </label>
               <select
                 value={estacionPreferente}
@@ -353,7 +353,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
           )}
 
           <BloqueDesplegable
-                titulo="Mi categorÃ­a"
+                titulo="Mi categoría"
                 abierto={categoriaAbierta}
                 onToggle={() => setCategoriaAbierta((v) => !v)}
               >
@@ -452,7 +452,7 @@ function TarjetaSocioPreview({ perfilPreview }) {
   return (
     <div style={{ background: C.blueDarker }} className="rounded-xl p-4">
       <p className="text-xs font-semibold mb-3" style={{ color: "#BFD9EE" }}>
-        AsÃ­ te ven los demÃ¡s socios:
+        Así te ven los demás socios:
       </p>
       <div style={{ background: C.white }} className="rounded-xl p-4">
         <div className="flex items-center gap-3">
