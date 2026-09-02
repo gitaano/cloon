@@ -198,7 +198,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
           <ArrowLeft size={17} /> Volver
         </button>
-        <p className="text-white font-bold text-sm">Panel de administraciÃ³n</p>
+        <p className="text-white font-bold text-sm">Panel de administración</p>
       </div>
 
       <div className="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row gap-4">
@@ -253,12 +253,12 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                       {u.nombre} {u.apellido}{" "}
                       {u.vip && (
                         <span className="text-xs font-bold" style={{ color: "#B8860B" }}>
-                          â VIP
+                                            ★ VIP
                         </span>
                       )}{" "}
                       {!u.aprobado && (
                 <span className="text-xs font-bold" style={{ color: C.blueDark }}>
-                  {" "}(pendiente de aprobaciÃ³n)
+                  {" "}(pendiente de aprobación)
                 </span>
               )}{" "}
               {baneadosIds.has(u.id) && (
@@ -268,7 +268,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                       )}
                     </p>
                     <p className="text-xs" style={{ color: C.mute }}>
-                      DNE: {u.dne} Â· {u.cargo}
+                      DNE: {u.dne} · {u.cargo}
                     </p>
                   </div>
                   {esDev ? (
@@ -377,7 +377,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
               <div className="space-y-2">
                 {pendientesAlta.length === 0 && (
                   <p className="text-sm" style={{ color: C.mute }}>
-                    No hay altas pendientes de aprobaciÃ³n.
+                    No hay altas pendientes de aprobación.
                   </p>
                 )}
                 {pendientesAlta.map((u) => (
@@ -391,7 +391,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                         {u.nombre} {u.apellido}
                       </p>
                       <p className="text-xs" style={{ color: C.mute }}>
-                        DNE: {u.dne} Â· {u.cargo}
+                        DNE: {u.dne} · {u.cargo}
                       </p>
                       <p className="text-xs" style={{ color: C.mute }}>
                         Solicitado el {new Date(u.creado_en).toLocaleDateString("es-ES")}
@@ -419,10 +419,10 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
             {tab === "ajustes" && (
               <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
                 <p className="text-xs font-semibold" style={{ color: C.ink }}>
-                  CategorÃ­as visibles en "Cambios"
+                  Categorías visibles en "Cambios"
                 </p>
                 <p className="text-xs" style={{ color: C.mute }}>
-                  Elige quÃ© categorÃ­as aparecen al elegir categorÃ­a para ofertar un cambio. Las que
+                  Elige qué Categorías aparecen al elegir categoría para ofertar un cambio. Las que
                   desmarques siguen existiendo, solo se ocultan de ese desplegable.
                 </p>
                 {mensajeAjustes && (
@@ -466,7 +466,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                   Enviar un aviso a todos los socios
                 </p>
                 <p className="text-xs" style={{ color: C.mute }}>
-                  Les llegarÃ¡ como notificaciÃ³n del club (no como mensaje directo).
+                  Les llegará como notificación del club (no como mensaje directo).
                 </p>
                 {mensajeAnuncio && (
                   <p
@@ -502,7 +502,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
               <div className="space-y-2">
                 {sugerencias.length === 0 && (
                   <p className="text-sm" style={{ color: C.mute }}>
-                    TodavÃ­a no hay mensajes en el buzÃ³n.
+                    Todavía no hay mensajes en el buzón.
                   </p>
                 )}
                 {sugerencias.map((s) => (
@@ -514,7 +514,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                     <p className="text-sm font-semibold" style={{ color: C.ink }}>
                       {s.perfiles?.nombre} {s.perfiles?.apellido}{" "}
                       <span className="font-normal" style={{ color: C.mute }}>
-                        Â· DNEà{s.perfiles?.dne} Â· {new Date(s.creado_en).toLocaleString("es-ES")}
+                        · DNE {s.perfiles?.dne} · {new Date(s.creado_en).toLocaleString("es-ES")}
                       </span>
                     </p>
                     <p className="text-sm" style={{ color: C.ink }}>
@@ -577,7 +577,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
               </div>
             )}
 
-            {esDev && tab === "backup" && (<div className="space-y-3"><p className="text-sm" style={{ color: C.ink }}>Genera una copia de seguridad de todos los datos del club (perfiles, mensajes, documentos, temas, etc.) en un archivo descargable. GuÃ¡rdalo en un sitio seguro.</p><button onClick={generarBackup} disabled={generandoBackup} style={{ background: generandoBackup ? "#B9C6D2" : C.blue }} className="text-white font-semibold py-2.5 px-4 rounded-lg text-sm flex items-center gap-2"><Download size={18} />{generandoBackup ? "Generando..." : "Descargar copia de seguridad"}</button></div>)}{!cargando && tab === "baneos" && (
+            {esDev && tab === "backup" && (<div className="space-y-3"><p className="text-sm" style={{ color: C.ink }}>Genera una copia de seguridad de todos los datos del club (perfiles, mensajes, documentos, temas, etc.) en un archivo descargable. Guárdalo en un sitio seguro.</p><button onClick={generarBackup} disabled={generandoBackup} style={{ background: generandoBackup ? "#B9C6D2" : C.blue }} className="text-white font-semibold py-2.5 px-4 rounded-lg text-sm flex items-center gap-2"><Download size={18} />{generandoBackup ? "Generando..." : "Descargar copia de seguridad"}</button></div>)}{!cargando && tab === "baneos" && (
             <div className="space-y-2">
               {solicitudesBaneo.length === 0 && (
                 <p className="text-sm" style={{ color: C.mute }}>
