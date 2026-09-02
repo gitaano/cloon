@@ -3,6 +3,7 @@ import { supabase } from "./supabaseClient";
 import PanelAdmin from "./PanelAdmin.jsx";
 import MiPerfil from "./MiPerfil.jsx";
 import VistaCalendario from "./VistaCalendario.jsx";
+import VistaMensajes from "./VistaMensajes.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
@@ -4453,7 +4454,7 @@ function VistaNotificaciones({ sesion, onVolver }) {
 }
 
 
-function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
+function VistaMensajesViejoNoUsar({ sesion, perfil, conversacionInicial, onVolver }) {
   const [conversaciones, setConversaciones] = useState([]);
   const [perfilesPorId, setPerfilesPorId] = useState({});
   const [conversacionActiva, setConversacionActiva] = useState(conversacionInicial || null);
