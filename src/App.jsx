@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import PanelAdmin from "./PanelAdmin.jsx";
 import MiPerfil from "./MiPerfil.jsx";
+import VistaCalendario from "./VistaCalendario.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
@@ -3801,7 +3802,7 @@ function PanelAdminViejoNoUsar({ sesion, perfil, onVolver }) {
   );
 }
 
-function VistaCalendario({ sesion, perfil, onVolver }) {
+function VistaCalendarioViejoNoUsar({ sesion, perfil, onVolver }) {
   const hoy = new Date();
   const [mesVisto, setMesVisto] = useState(hoy.getMonth());
   const [anoVisto, setAnoVisto] = useState(hoy.getFullYear());
@@ -3886,7 +3887,7 @@ function VistaCalendario({ sesion, perfil, onVolver }) {
   );
 }
 
-function CalendarioTurnos({
+function CalendarioTurnosViejoNoUsar({
   mesVisto,
   anoVisto,
   setMesVisto,
@@ -4143,7 +4144,7 @@ function CalendarioTurnos({
   );
 }
 
-function LeyendaCalendario({ color, borde, texto }) {
+function LeyendaCalendarioViejoNoUsar({ color, borde, texto }) {
   return (
     <div className="flex items-center gap-2">
       <span
@@ -4157,7 +4158,7 @@ function LeyendaCalendario({ color, borde, texto }) {
   );
 }
 
-function EditorDia({ fecha, registro, resumen, categoriaTurnos, indicadoresVisibles, onGuardar, onCerrar }) {
+function EditorDiaViejoNoUsar({ fecha, registro, resumen, categoriaTurnos, indicadoresVisibles, onGuardar, onCerrar }) {
   const turnosDisponibles = TURNOS[categoriaTurnos] || [];
   const [estado, setEstado] = useState(registro?.estado || "");
   const [turno, setTurno] = useState(registro?.turno || "");
