@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
+import PanelAdmin from "./PanelAdmin.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
-const C = {
+export const C = {
   blue: "#0060A9",
   blueDark: "#003D73",
   blueDarker: "#02284D",
@@ -516,7 +517,7 @@ const TURNOS = {
   ],
 };
 
-const CATEGORIAS_TURNO = [
+export const CATEGORIAS_TURNO = [
   { id: "sector", nombre: "Jefe/a de Sector", corta: "J.Sector" },
   { id: "maquinista", nombre: "Maquinista de Tracción Eléctrica", corta: "Maquinista" },
   { id: "mantenimiento", nombre: "Mantenimiento de Vía", corta: "Mant.Vía" },
@@ -3152,7 +3153,7 @@ function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo
   );
 }
 
-function PanelAdmin({ sesion, perfil, onVolver }) {
+function PanelAdminViejoNoUsar({ sesion, perfil, onVolver }) {
   const [tab, setTab] = useState("usuarios");
   const [usuarios, setUsuarios] = useState([]);
   const [reportes, setReportes] = useState([]);
