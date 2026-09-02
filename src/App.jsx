@@ -5,6 +5,7 @@ import MiPerfil from "./MiPerfil.jsx";
 import VistaCalendario from "./VistaCalendario.jsx";
 import VistaMensajes from "./VistaMensajes.jsx";
 import VistaBiblioteca from "./VistaBiblioteca.jsx";
+import VistaSugerencias from "./VistaSugerencias.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
@@ -5123,7 +5124,7 @@ function VistaBibliotecaViejoNoUsar({ sesion, perfil, onVolver }) {
     </div>
   );
 }
-function VistaSugerencias({ sesion, perfil, onVolver }) {
+function VistaSugerenciasViejoNoUsar({ sesion, perfil, onVolver }) {
   const [sugerencias, setSugerencias] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [texto, setTexto] = useState("");
