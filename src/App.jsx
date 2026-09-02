@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import PanelAdmin from "./PanelAdmin.jsx";
+import MiPerfil from "./MiPerfil.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
@@ -32,7 +33,7 @@ function LogoUnderground({ size = 48, className, style }) {
   return <LogoMetroColor size={size} className={className} style={style} />;
 }
 
-function MarcaAguaFondo() {
+export function MarcaAguaFondo() {
   return (
     <div
       aria-hidden="true"
@@ -448,7 +449,7 @@ const AMBITOS = [
   { id: "general", nombre: "General / Café", icon: MessageSquare },
 ];
 
-const LINEAS_METRO_ESTACIONES = {
+export const LINEAS_METRO_ESTACIONES = {
   L1: { nombre: "Línea 1", estaciones: ["Pinar de Chamartín", "Bambú", "Chamartín", "Plaza de Castilla", "Valdeacederas", "Tetuán", "Estrecho", "Alvarado", "Cuatro Caminos", "Ríos Rosas", "Iglesia", "Bilbao", "Tribunal", "Gran Vía", "Sol", "Tirso de Molina", "Antón Martín", "Estación del Arte", "Atocha Renfe", "Menéndez Pelayo", "Pacífico", "Puente de Vallecas", "Nueva Numancia", "Portazgo", "Buenos Aires", "Alto del Arenal", "Miguel Hernández", "Sierra de Guadalupe", "Villa de Vallecas", "Congosto", "La Gavia", "Las Suertes", "Valdecarros"] },
   L2: { nombre: "Línea 2", estaciones: ["Las Rosas", "Avenida de Guadalajara", "Alsacia", "La Almudena", "La Elipa", "Ventas", "Manuel Becerra", "Goya", "Príncipe de Vergara", "Retiro", "Banco de España", "Sevilla", "Sol", "Ópera", "Santo Domingo", "Noviciado", "San Bernardo", "Quevedo", "Canal", "Cuatro Caminos"] },
   L3: { nombre: "Línea 3", estaciones: ["Moncloa", "Argüelles", "Ventura Rodríguez", "Plaza de España", "Callao", "Sol", "Lavapiés", "Embajadores", "Palos de la Frontera", "Delicias", "Legazpi", "Almendrales", "Hospital 12 de Octubre", "San Fermín-Orcasur", "Ciudad de los Ángeles", "Villaverde Bajo-Cruce", "San Cristóbal", "Villaverde Alto", "El Casar"] },
@@ -464,7 +465,7 @@ const LINEAS_METRO_ESTACIONES = {
   R: { nombre: "Ramal", estaciones: ["Ópera", "Príncipe Pío"] },
 };
 
-const TURNOS = {
+export const TURNOS = {
   sector: [
     { id: "M", nombre: "M (06:00-14:00)" },
     { id: "T", nombre: "T (14:00-22:00)" },
@@ -527,7 +528,7 @@ export const CATEGORIAS_TURNO = [
   { id: "guardias", nombre: "Guardias Técnicos", corta: "Guardias" },
 ];
 
-const LINEAS_METRO = [
+export const LINEAS_METRO = [
   { id: "L1", nombre: "Línea 1" },
   { id: "L2", nombre: "Línea 2" },
   { id: "L3", nombre: "Línea 3" },
@@ -543,7 +544,7 @@ const LINEAS_METRO = [
   { id: "R", nombre: "Ramal" },
 ];
 
-const INDICADORES_CALENDARIO = [
+export const INDICADORES_CALENDARIO = [
   { id: "libranza", nombre: "Libranza" },
   { id: "pap", nombre: "PAP remunerado" },
   { id: "pap_no_remunerado", nombre: "PAP no remunerado" },
@@ -558,7 +559,7 @@ const INDICADORES_CALENDARIO = [
   { id: "reconocimientoMedico", nombre: "Reconoc. médico" },
 ];
 
-function nombrePublico(p) {
+export function nombrePublico(p) {
   if (!p) return "";
   if (p.mostrar_nombre_real) return `${p.nombre || ""} ${p.apellido || ""}`.trim() || "Socio";
   if (p.nickname) return p.nickname;
@@ -1625,7 +1626,7 @@ function PendienteAprobacion({ onCerrarSesion }) {
   );
 }
 
-function BloqueDesplegable({ titulo, abierto, onToggle, children }) {
+export function BloqueDesplegable({ titulo, abierto, onToggle, children }) {
   return (
     <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border overflow-hidden">
       <button
@@ -1650,7 +1651,7 @@ function BloqueDesplegable({ titulo, abierto, onToggle, children }) {
   );
 }
 
-function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
+function MiPerfilViejoNoUsar({ sesion, perfil, onVolver, onActualizado }) {
   const [nickname, setNickname] = useState("");
   const [nombreReal, setNombreReal] = useState("");
   const [apellidoReal, setApellidoReal] = useState("");
@@ -2094,7 +2095,7 @@ function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   );
 }
 
-function TarjetaSocioPreview({ perfilPreview }) {
+function TarjetaSocioPreviewViejoNoUsar({ perfilPreview }) {
   const p = perfilPreview;
   return (
     <div style={{ background: C.blueDarker }} className="rounded-xl p-4">
@@ -2143,7 +2144,7 @@ function TarjetaSocioPreview({ perfilPreview }) {
   );
 }
 
-function CasillaPerfil({ label, checked, onChange }) {
+function CasillaPerfilViejoNoUsar({ label, checked, onChange }) {
   return (
     <label className="flex items-center gap-2 text-sm py-1.5" style={{ color: C.ink }}>
       <input
@@ -5736,7 +5737,7 @@ function CampoPass({ verPass, setVerPass, value, onChange }) {
   );
 }
 
-function BotonPrincipal({ onClick, children, cargando }) {
+export function BotonPrincipal({ onClick, children, cargando }) {
   return (
     <button
       onClick={onClick}
