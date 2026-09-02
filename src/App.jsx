@@ -7,6 +7,7 @@ import VistaMensajes from "./VistaMensajes.jsx";
 import VistaBiblioteca from "./VistaBiblioteca.jsx";
 import VistaSugerencias from "./VistaSugerencias.jsx";
 import VistaNotificaciones from "./VistaNotificaciones.jsx";
+import ChatBotFlotante from "./ChatBotFlotante.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
@@ -5318,7 +5319,7 @@ const RESPUESTAS_BOT = [
   },
 ];
 
-function respuestaBot(pregunta) {
+function respuestaBotViejoNoUsar(pregunta) {
   const q = pregunta.toLowerCase();
   const encontrada = RESPUESTAS_BOT.find((r) => r.match.some((k) => q.includes(k)));
   return (
@@ -5327,7 +5328,7 @@ function respuestaBot(pregunta) {
   );
 }
 
-function ChatBotFlotante() {
+function ChatBotFlotanteViejoNoUsar() {
   const [chatAbierto, setChatAbierto] = useState(false);
   const [asistenteOculto, setAsistenteOculto] = useState(false);
   const [mensajes, setMensajes] = useState([
