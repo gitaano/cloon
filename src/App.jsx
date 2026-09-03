@@ -8,6 +8,7 @@ import VistaBiblioteca from "./VistaBiblioteca.jsx";
 import VistaSugerencias from "./VistaSugerencias.jsx";
 import VistaNotificaciones from "./VistaNotificaciones.jsx";
 import ChatBotFlotante from "./ChatBotFlotante.jsx";
+import Landing from "./Landing.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
@@ -22,7 +23,7 @@ export const C = {
   line: "#DCE4EC",
 };
 
-function LogoMetroColor({ size = 48, className, style }) {
+export function LogoMetroColor({ size = 48, className, style }) {
   return (
     <img
       src="/logo_color_mini.png"
@@ -5468,7 +5469,7 @@ function ChatBotFlotanteViejoNoUsar() {
   );
 }
 
-const NORMAS_SECCIONES = [
+const NORMAS_SECCIONES_VIEJO_NO_USAR = [
   {
     titulo: "Qué es Underground",
     parrafos: [
@@ -5526,7 +5527,7 @@ const NORMAS_SECCIONES = [
   },
 ];
 
-function NormasContenido({ normasLeidas, onConfirmar }) {
+function NormasContenidoViejoNoUsar({ normasLeidas, onConfirmar }) {
   const [heLeido, setHeLeido] = useState(normasLeidas);
   return (
     <>
@@ -5590,7 +5591,7 @@ function NormasContenido({ normasLeidas, onConfirmar }) {
   );
 }
 
-function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) {
+function LandingViejoNoUsar({ onAcceder, normasLeidas, onConfirmarNormas }) {
   const PUNTOS = [
     { icon: Repeat, texto: "Oferta y encuentra cambios de turno, día libre o vacaciones con tu misma categoría" },
     { icon: ShoppingBag, texto: "Compra, vende o alquila entre compañeros en el Mercadillo" },
