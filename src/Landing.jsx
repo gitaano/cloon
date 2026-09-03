@@ -60,7 +60,7 @@ const NORMAS_SECCIONES = [
   },
 ];
 
-function NormasContenido({ normasLeidas, onConfirmar }) {
+export function NormasContenido({ normasLeidas, onConfirmar }) {
   const [heLeido, setHeLeido] = useState(normasLeidas);
   return (
     <>
