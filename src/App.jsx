@@ -9,6 +9,7 @@ import VistaSugerencias from "./VistaSugerencias.jsx";
 import VistaNotificaciones from "./VistaNotificaciones.jsx";
 import ChatBotFlotante from "./ChatBotFlotante.jsx";
 import Landing from "./Landing.jsx";
+import Acceso from "./Acceso.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
@@ -36,7 +37,7 @@ export function LogoMetroColor({ size = 48, className, style }) {
   );
 }
 
-function LogoUnderground({ size = 48, className, style }) {
+export function LogoUnderground({ size = 48, className, style }) {
   return <LogoMetroColor size={size} className={className} style={style} />;
 }
 
@@ -126,7 +127,7 @@ export default function App() {
     </>;
 }
 
-function NuevaContrasena({ onListo }) {
+function NuevaContrasenaViejoNoUsar({ onListo }) {
   const [pass, setPass] = useState("");
   const [verPass, setVerPass] = useState(false);
   const [cargando, setCargando] = useState(false);
@@ -196,7 +197,7 @@ function NuevaContrasena({ onListo }) {
   );
 }
 
-function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
+function AccesoViejoNoUsar({ normasLeidas, onConfirmarNormas } = {}) {
   const [normasAbiertas, setNormasAbiertas] = useState(false);
   const [modo, setModo] = useState("login");
   const [verPass, setVerPass] = useState(false);
@@ -5703,7 +5704,7 @@ function LandingViejoNoUsar({ onAcceder, normasLeidas, onConfirmarNormas }) {
   );
 }
 
-function Campo({ label, value, onChange, placeholder, type }) {
+export function Campo({ label, value, onChange, placeholder, type }) {
   return (
     <div>
       <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
@@ -5721,7 +5722,7 @@ function Campo({ label, value, onChange, placeholder, type }) {
   );
 }
 
-function CampoPass({ verPass, setVerPass, value, onChange }) {
+export function CampoPass({ verPass, setVerPass, value, onChange }) {
   return (
     <div>
       <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
