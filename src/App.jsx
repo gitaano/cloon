@@ -2371,7 +2371,7 @@ function RespuestasViejoNoUsar({ hiloId, sesion, onVerSocio, perfil }) {
   );
 }
 
-function BotonReaccion({ icon: Icon, color, activo, cantidad, onClick, label }) {
+function BotonReaccionViejoNoUsar({ icon: Icon, color, activo, cantidad, onClick, label }) {
   return (
     <button
       onClick={onClick}
@@ -2386,7 +2386,7 @@ function BotonReaccion({ icon: Icon, color, activo, cantidad, onClick, label }) 
   );
 }
 
-function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre, descripcion }) {
+function BotonAmbitoViejoNoUsar({ activo, onClick, icon: Icon = MessageSquare, nombre, descripcion }) {
   return (
     <div className="flex items-center gap-1">
       <button
@@ -2404,7 +2404,7 @@ function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre, desc
   );
 }
 
-function InfoAmbito({ texto }) {
+function InfoAmbitoViejoNoUsar({ texto }) {
   const [abierto, setAbierto] = useState(false);
   return (
     <div className="relative shrink-0">
