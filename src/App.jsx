@@ -2432,7 +2432,7 @@ function InfoAmbitoViejoNoUsar({ texto }) {
   );
 }
 
-function SelectorFecha({ value, onChange, min, label }) {
+function SelectorFechaViejoNoUsar({ value, onChange, min, label }) {
   const hoyRef = new Date();
   const fechaValor = value ? new Date(value + "T00:00:00") : null;
   const [abierto, setAbierto] = useState(false);
@@ -2582,7 +2582,7 @@ function SelectorFecha({ value, onChange, min, label }) {
   );
 }
 
-function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
+function ModalOfertaCambioViejoNoUsar({ categoria, tipo, onCerrar, onCrear }) {
   const turnos = TURNOS[categoria] || [];
   const esServicio = tipo === "servicio";
   const esDiaLibre = tipo === "dia_libre";
