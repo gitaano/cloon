@@ -1397,7 +1397,7 @@ useEffect(() => {
   );
 }
 
-function ModalListaUsuarios({ tipo, usuarios, cargando, onCerrar, onVerSocio }) {
+function ModalListaUsuariosViejoNoUsar({ tipo, usuarios, cargando, onCerrar, onVerSocio }) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4" onClick={onCerrar}>
       <div
@@ -1465,7 +1465,7 @@ function ModalListaUsuarios({ tipo, usuarios, cargando, onCerrar, onVerSocio }) 
   );
 }
 
-function TarjetaSocioModal({ usuarioId, sesion, onCerrar, onMensaje }) {
+function TarjetaSocioModalViejoNoUsar({ usuarioId, sesion, onCerrar, onMensaje }) {
   const [perfilVisto, setPerfilVisto] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [siguiendo, setSiguiendo] = useState(false);
@@ -1602,7 +1602,7 @@ function TarjetaSocioModal({ usuarioId, sesion, onCerrar, onMensaje }) {
   );
 }
 
-function PendienteAprobacion({ onCerrarSesion }) {
+function PendienteAprobacionViejoNoUsar({ onCerrarSesion }) {
   return (
     <div
       style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }}
