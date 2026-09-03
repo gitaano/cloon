@@ -10,6 +10,7 @@ import VistaNotificaciones from "./VistaNotificaciones.jsx";
 import ChatBotFlotante from "./ChatBotFlotante.jsx";
 import Landing from "./Landing.jsx";
 import Acceso from "./Acceso.jsx";
+import ClubProvisional from "./ClubProvisional.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
