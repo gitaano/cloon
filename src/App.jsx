@@ -575,7 +575,7 @@ export function nombrePublico(p) {
   return "Socio";
 }
 
-function ClubProvisional({ sesion }) {
+function ClubProvisionalViejoNoUsar({ sesion }) {
   const [perfil, setPerfil] = useState(null);
   const [hilos, setHilos] = useState([]);
   const [cargandoHilos, setCargandoHilos] = useState(true);
