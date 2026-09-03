@@ -3031,7 +3031,7 @@ function ModalOfertaCambioViejoNoUsar({ categoria, tipo, onCerrar, onCrear }) {
   );
 }
 
-function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo, onContinuar, onVerCambios }) {
+function CambiosSelectorViejoNoUsar({ activo, categoria, tipo, onAbrir, onCategoria, onTipo, onContinuar, onVerCambios }) {
   const [abierto, setAbierto] = useState(false);
   const [accion, setAccion] = useState("");
 
