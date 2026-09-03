@@ -2167,7 +2167,7 @@ function CasillaPerfilViejoNoUsar({ label, checked, onChange }) {
   );
 }
 
-function FormularioNuevoTema({ sesion, onCreado }) {
+function FormularioNuevoTemaViejoNoUsar({ sesion, onCreado }) {
   const [ambito, setAmbito] = useState("general");
   const [titulo, setTitulo] = useState("");
   const [texto, setTexto] = useState("");
@@ -2256,7 +2256,7 @@ function FormularioNuevoTema({ sesion, onCreado }) {
   );
 }
 
-function Respuestas({ hiloId, sesion, onVerSocio, perfil }) {
+function RespuestasViejoNoUsar({ hiloId, sesion, onVerSocio, perfil }) {
   const [respuestas, setRespuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [texto, setTexto] = useState("");
