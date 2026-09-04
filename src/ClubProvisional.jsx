@@ -612,7 +612,7 @@ useEffect(() => {
             <p className="text-sm text-center py-8" style={{ color: C.mute }}>
               No se ha encontrado ningún tema con esa búsqueda.
             </p>
-          )}
+        )}
 
         <div className="space-y-2">
                     {hilosFiltrados.map((h) => (
@@ -673,7 +673,7 @@ useEffect(() => {
                     <Mail size={14} />
                   </button>
                 )}
-                                {perfil?.modo_dios && (
+                                { perfil?.modo_dios && (
                   <button
                     onClick={() => alternarDestacado(h.id, h.destacado)}
                     aria-label={h.destacado ? "Quitar destacado" : "Destacar tema"}
@@ -1844,31 +1844,6 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                       className="w-4 h-4"
                     />
                     {t.nombre}
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {esServicio && turnoOfrecido && (
-            <div>
-              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-                Línea(s) de preferencia (opcional)
-              </label>
-              <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                {Object.entries(LINEAS_METRO_ESTACIONES).map(([id, l]) => (
-                  <label
-                    key={id}
-                    className="flex items-center gap-2 text-sm rounded-lg border px-3 py-2"
-                    style={{ borderColor: C.line, color: C.ink }}
-                >
-                    <input
-                      type="checkbox"
-                      checked={lineasPreferidas.includes(id)}
-                      onChange={() => alternarLineaPreferida(id)}
-                      className="w-4 h-4"
-                    />
-                    {l.nombre}
                   </label>
                 ))}
               </div>
