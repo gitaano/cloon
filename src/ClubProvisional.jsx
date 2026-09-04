@@ -1,4 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
+{esServicio && turnoOfrecido && (
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                Línea(s) de preferencia (opcional)
+              </label>
+              <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                {Object.entries(LINEAS_METRO_ESTACIONES).map(([id, l]) => (
+                  <label
+                    key={id}
+                    className="flex items-center gap-2 text-sm rounded-lg border px-3 py-2"
+                    style={{ borderColor: C.line, color: C.ink }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={lineasPreferidas.includes(id)}
+                      onChange={() => alternarLineaPreferida(id)}
+                    />
+                    {l.nombre}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {esServicio && turnoOfrecido && (import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo } from "./App.jsx";
 import MiPerfil from "./MiPerfil.jsx";
