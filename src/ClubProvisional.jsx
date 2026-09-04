@@ -1,28 +1,4 @@
-{esServicio && turnoOfrecido && (
-            <div>
-              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
-                Línea(s) de preferencia (opcional)
-              </label>
-              <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                {Object.entries(LINEAS_METRO_ESTACIONES).map(([id, l]) => (
-                  <label
-                    key={id}
-                    className="flex items-center gap-2 text-sm rounded-lg border px-3 py-2"
-                    style={{ borderColor: C.line, color: C.ink }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={lineasPreferidas.includes(id)}
-                      onChange={() => alternarLineaPreferida(id)}
-                    />
-                    {l.nombre}
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {esServicio && turnoOfrecido && (import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo } from "./App.jsx";
 import MiPerfil from "./MiPerfil.jsx";
@@ -636,7 +612,7 @@ useEffect(() => {
             <p className="text-sm text-center py-8" style={{ color: C.mute }}>
               No se ha encontrado ningún tema con esa búsqueda.
             </p>
-        )}
+          )}
 
         <div className="space-y-2">
                     {hilosFiltrados.map((h) => (
@@ -697,7 +673,7 @@ useEffect(() => {
                     <Mail size={14} />
                   </button>
                 )}
-                                { perfil?.modo_dios && (
+                                {perfil?.modo_dios && (
                   <button
                     onClick={() => alternarDestacado(h.id, h.destacado)}
                     aria-label={h.destacado ? "Quitar destacado" : "Destacar tema"}
@@ -1736,7 +1712,6 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                       <span
                         key={d}
                         style={{ background: "#EAF2F9", color: C.blueDark }}
-                        className="text-xs font-semibold px-2.5 py-1.5 rounded-full flex items-center gap-1.5"
                       >
                         {formatearFecha(d)}
                         <button onClick={() => quitarDiaOfrecido(d)} aria-label="Quitar día">
@@ -1875,6 +1850,31 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
           )}
 
           {esServicio && turnoOfrecido && (
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
+                Línea(s) de preferencia (opcional)
+              </label>
+              <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                {Object.entries(LINEAS_METRO_ESTACIONES).map(([id, l]) => (
+                  <label
+                    key={id}
+                    className="flex items-center gap-2 text-sm rounded-lg border px-3 py-2"
+                    style={{ borderColor: C.line, color: C.ink }}
+                >
+                    <input
+                      type="checkbox"
+                      checked={lineasPreferidas.includes(id)}
+                      onChange={() => alternarLineaPreferida(id)}
+                      className="w-4 h-4"
+                    />
+                    {l.nombre}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {esServicio && turnoOfrecido && (
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-semibold block mb-1" style={{ color: C.ink }}>
@@ -1955,7 +1955,8 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
 
 
 function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo, onContinuar, onVerCambios }) {
-  constt [abierto, setAbierto] = useState(false);
+  constategoria, onTipo, onContinuar, onVerCambios }) {
+  const [abierto, setAbierto] = useState(false);
   const [accion, setAccion] = useState("");
 
   const [categoriasVisibles, setCategoriasVisibles] = useState(["sector", "maquinista"]);
@@ -2056,7 +2057,7 @@ function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo
                     onChange={(e) => onTipo(e.target.value)}
                     className="w-full rounded-lg border px-2.5 py-1.5 text-xs outline-none"
                     style={{ borderColor: C.line, color: C.ink }}
-                >
+                  >
                     <option value="">Selecciona...</option>
                     {TIPOS.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -2085,4 +2086,5 @@ function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo
     </div>
   );
 }
+
 
