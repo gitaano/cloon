@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check, X, ShieldCheck, Repeat, ShoppingBag, FileText, Bot } from "lucide-react";
+import { Check, X, ShieldCheck, Repeat, ShoppingBag, FileText, Bot, Calendar } from "lucide-react";
 import { C, MarcaAguaFondo, LogoMetroColor } from "./App.jsx";
 
 const NORMAS_SECCIONES = [
@@ -126,6 +126,7 @@ export function NormasContenido({ normasLeidas, onConfirmar }) {
 
 export default function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) {
   const PUNTOS = [
+    { icon: Calendar, texto: "Lleva tu día a día: turnos, incidencias, desplazamientos y todo lo tuyo en tu calendario personal" },
     { icon: Repeat, texto: "Oferta y encuentra cambios de turno, día libre o vacaciones con tu misma categoría" },
     { icon: ShoppingBag, texto: "Compra, vende o alquila entre compañeros en el Mercadillo" },
     { icon: FileText, texto: "Consulta el convenio y los manuales internos en la Biblioteca, siempre a mano" },
