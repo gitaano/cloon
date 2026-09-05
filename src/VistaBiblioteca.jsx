@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, Eye, EyeOff, X, FileText, Upload, Check, Megaphone } from "lucide-react";
-import { C, MarcaAguaFondo, EsqueletoLista, ModalConfirmacion } from "./App.jsx";
+import { C, MarcaAguaFondo, EsqueletoLista, ModalConfirmacion, mostrarToast } from "./App.jsx";
 
 export default function VistaBiblioteca({ sesion, perfil, onVolver }) {
   const [documentos, setDocumentos] = useState([]);
@@ -87,6 +87,7 @@ export default function VistaBiblioteca({ sesion, perfil, onVolver }) {
     }
     await supabase.from("documentos").delete().eq("id", doc.id);
     cargarDocumentos();
+    mostrarToast("Documento eliminado");
     setConfirmandoEliminarDoc(null);
   }
 

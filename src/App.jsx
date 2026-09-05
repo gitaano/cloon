@@ -11,7 +11,7 @@ import ChatBotFlotante from "./ChatBotFlotante.jsx";
 import Landing from "./Landing.jsx";
 import Acceso from "./Acceso.jsx";
 import ClubProvisional from "./ClubProvisional.jsx";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download, AlertTriangle } from "lucide-react";
 
 export const C = {
   blue: "var(--color-blue)",
@@ -152,6 +152,56 @@ export function ModalConfirmacion({
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Avisos flotantes ("toasts") para confirmar visualmente que una acción ha
+// funcionado (guardar, publicar, enviar...), sin necesidad de un Context:
+// cualquier componente llama a mostrarToast(mensaje) y aparece solo.
+let _toastListeners = [];
+export function mostrarToast(mensaje, tipo = "exito") {
+  const toast = { mensaje, tipo, id: Date.now() + Math.random() };
+  _toastListeners.forEach((fn) => fn(toast));
+}
+
+export function ContenedorToasts() {
+  const [toasts, setToasts] = useState([]);
+
+  useEffect(() => {
+    function agregar(toast) {
+      setToasts((prev) => [...prev, toast]);
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== toast.id));
+      }, 3200);
+    }
+    _toastListeners.push(agregar);
+    return () => {
+      _toastListeners = _toastListeners.filter((fn) => fn !== agregar);
+    };
+  }, []);
+
+  if (toasts.length === 0) return null;
+
+  return (
+    <div
+      className="fixed bottom-4 right-4 left-4 sm:left-auto z-[100] flex flex-col items-end gap-2"
+      aria-live="polite"
+    >
+      {toasts.map((t) => (
+        <div
+          key={t.id}
+          style={{ background: t.tipo === "error" ? C.red : C.blueDarker }}
+          className="toast-aviso text-white rounded-lg px-4 py-3 text-sm font-semibold shadow-xl flex items-center gap-2 max-w-sm"
+        >
+          {t.tipo === "error" ? (
+            <AlertTriangle size={16} className="shrink-0" />
+          ) : (
+            <Check size={16} className="shrink-0" />
+          )}
+          {t.mensaje}
+        </div>
+      ))}
     </div>
   );
 }

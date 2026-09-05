@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo, alternarTema, temaEsOscuro, EsqueletoLista, EsqueletoPerfil, ModalConfirmacion } from "./App.jsx";
+import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo, alternarTema, temaEsOscuro, EsqueletoLista, EsqueletoPerfil, ModalConfirmacion, mostrarToast } from "./App.jsx";
 import MiPerfil from "./MiPerfil.jsx";
 import PanelAdmin from "./PanelAdmin.jsx";
 import VistaCalendario from "./VistaCalendario.jsx";
@@ -231,7 +231,10 @@ useEffect(() => {
 
   async function eliminarHiloPropio(id) {
     const { error } = await supabase.from("hilos").delete().eq("id", id);
-    if (!error) cargarHilos();
+    if (!error) {
+      cargarHilos();
+      mostrarToast("Tema eliminado");
+    }
     setConfirmandoEliminarHilo(null);
   }
 
@@ -249,6 +252,7 @@ useEffect(() => {
       setModalCambioAbierto(false);
       setAmbitoActivo("cambios");
       cargarHilos();
+      mostrarToast("Oferta de cambio publicada");
     }
   }
 
@@ -961,8 +965,10 @@ function TarjetaSocioModal({ usuarioId, sesion, onCerrar, onMensaje }) {
         .delete()
         .eq("seguidor_id", sesion.user.id)
         .eq("seguido_id", usuarioId);
+      mostrarToast("Has dejado de seguir a este socio");
     } else {
       await supabase.from("seguidores").insert({ seguidor_id: sesion.user.id, seguido_id: usuarioId });
+      mostrarToast("Ahora sigues a este socio");
     }
     await cargar();
     setProcesando(false);
@@ -1123,6 +1129,7 @@ function FormularioNuevoTema({ sesion, onCreado }) {
     }
     setTitulo("");
     setTexto("");
+    mostrarToast("Tema publicado");
     onCreado();
   }
 

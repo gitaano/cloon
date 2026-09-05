@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, Download, Zap, ChevronDown, Settings, Megaphone, Lightbulb, UserPlus, Contact, ShieldCheck, Ban } from "lucide-react";
-import { C, CATEGORIAS_TURNO, EsqueletoLista } from "./App.jsx";
+import { C, CATEGORIAS_TURNO, EsqueletoLista, mostrarToast } from "./App.jsx";
 
 export default function PanelAdmin({ sesion, perfil, onVolver }) {
   const [tab, setTab] = useState("usuarios");
@@ -176,8 +176,10 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
 
   async function aprobarAlta(usuarioId) {
     const { error } = await supabase.from("perfiles").update({ aprobado: true }).eq("id", usuarioId);
-    if (!error) cargarTodo();
-    else setMensaje({ tipo: "error", texto: error.message });
+    if (!error) {
+      cargarTodo();
+      mostrarToast("Alta aprobada");
+    } else setMensaje({ tipo: "error", texto: error.message });
   }
 
   const pendientesAlta = usuarios.filter((u) => !u.aprobado);

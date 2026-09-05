@@ -123,6 +123,54 @@ tener que montar un proceso de compilación de CSS aparte. -->
   .rounded-2xl.border {
     box-shadow: 0 1px 2px rgba(21, 42, 61, 0.04), 0 1px 3px rgba(21, 42, 61, 0.06);
   }
+
+  /* Animaciones de entrada suaves para modales y menús desplegables */
+  @keyframes overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes menu-in {
+    from { opacity: 0; transform: scale(0.97) translateY(-4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .bg-black\/40.fixed.inset-0,
+  .bg-black\/30.fixed.inset-0 {
+    animation: overlay-in 0.15s ease;
+  }
+  .bg-black\/40.fixed.inset-0 > div,
+  .bg-black\/30.fixed.inset-0 > div {
+    animation: modal-in 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .absolute.right-0.top-full {
+    animation: menu-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
+  }
+  .toast-aviso {
+    animation: toast-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Flecha propia para los menús desplegables (<select>), igual en todos
+     los navegadores y a juego con la marca, en vez de la de fábrica */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C7185' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.1em;
+    padding-right: 2.25rem !important;
+  }
+  html.dark select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A6B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  }
 </style>
 </head>
 <body>
