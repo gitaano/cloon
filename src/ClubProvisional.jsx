@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo } from "./App.jsx";
+import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo, alternarTema, temaEsOscuro } from "./App.jsx";
 import MiPerfil from "./MiPerfil.jsx";
 import PanelAdmin from "./PanelAdmin.jsx";
 import VistaCalendario from "./VistaCalendario.jsx";
@@ -10,8 +10,8 @@ import VistaSugerencias from "./VistaSugerencias.jsx";
 import VistaNotificaciones from "./VistaNotificaciones.jsx";
 import {
   Angry, Bell, Calendar, ChevronDown, ChevronLeft, ChevronRight, Contact, Eye,
-  FileText, Info, Lightbulb, LogOut, Mail, Megaphone, Meh, MessageSquare,
-  Repeat, Search, Settings, Star, ThumbsUp, UserPlus, Users, X, Zap,
+  FileText, Info, Lightbulb, LogOut, Mail, Megaphone, Meh, MessageSquare, Moon,
+  Repeat, Search, Settings, Star, Sun, ThumbsUp, UserPlus, Users, X, Zap,
 } from "lucide-react";
 
 export default function ClubProvisional({ sesion }) {
@@ -33,6 +33,7 @@ export default function ClubProvisional({ sesion }) {
   const [mensajeIniciarCon, setMensajeIniciarCon] = useState(null);
   const [ahora, setAhora] = useState(Date.now());
   const [verSocioId, setVerSocioId] = useState(null);
+  const [oscuro, setOscuro] = useState(temaEsOscuro());
     const [usuariosOnlineIds, setUsuariosOnlineIds] = useState([]);
   const [modalListaUsuarios, setModalListaUsuarios] = useState(null);
   const [listaUsuariosModal, setListaUsuariosModal] = useState([]);
@@ -319,7 +320,7 @@ useEffect(() => {
   });
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -367,6 +368,19 @@ useEffect(() => {
                 {notificacionesNoLeidas}
               </span>
             )}
+          </button>
+
+          <button
+            onClick={() => {
+              alternarTema();
+              setOscuro(temaEsOscuro());
+            }}
+            style={{ background: "rgba(255,255,255,0.12)" }}
+            className="text-white rounded-full p-2 flex items-center relative"
+            aria-label={oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+            title={oscuro ? "Modo claro" : "Modo oscuro"}
+          >
+            {oscuro ? <Sun size={17} /> : <Moon size={17} />}
           </button>
 
           <div className="relative">
@@ -529,7 +543,7 @@ useEffect(() => {
           )}
         </aside>
 
-        <div className="flex-1 min-w-0 space-y-4"><div style={{ background: "#F3F6F9", borderColor: C.line }} className="rounded-lg border px-3 py-2 flex items-start gap-2"><Megaphone size={14} style={{ color: C.mute }} className="shrink-0 mt-0.5" /><p className="text-xs" style={{ color: C.mute }}>Este foro se está construyendo para todos. Hay muchas cosas que podemos mejorar, muchas veces por desconocimiento de otras categorías, así que por favor, mándanos tus sugerencias para poder mejorar el club. — La dirección</p></div>
+        <div className="flex-1 min-w-0 space-y-4"><div style={{ background: C.bg, borderColor: C.line }} className="rounded-lg border px-3 py-2 flex items-start gap-2"><Megaphone size={14} style={{ color: C.mute }} className="shrink-0 mt-0.5" /><p className="text-xs" style={{ color: C.mute }}>Este foro se está construyendo para todos. Hay muchas cosas que podemos mejorar, muchas veces por desconocimiento de otras categorías, así que por favor, mándanos tus sugerencias para poder mejorar el club. — La dirección</p></div>
         {perfil && !perfil.bienvenida_vista && (
           <div style={{ background: C.white, borderColor: C.blue }} className="rounded-xl border-2 p-4 space-y-3">
             <div className="flex items-center justify-between">
@@ -619,7 +633,7 @@ useEffect(() => {
             <div
               key={h.id}
               style={{
-                background: h.destacado ? "#FEF3C7" : C.white,
+                background: h.destacado ? C.highlight : C.white,
                 borderColor: h.destacado ? "#F59E0B" : C.line,
                 borderWidth: h.destacado ? 2 : 1,
               }}
@@ -1047,7 +1061,7 @@ function TarjetaSocioModal({ usuarioId, sesion, onCerrar, onMensaje }) {
 function PendienteAprobacion({ onCerrarSesion }) {
   return (
     <div
-      style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }}
+      style={{ background: C.bg, position: "relative", zIndex: 0 }}
       className="min-h-screen flex items-center justify-center p-4"
     >
       <MarcaAguaFondo />
@@ -1237,7 +1251,7 @@ function Respuestas({ hiloId, sesion, onVerSocio, perfil }) {
 
       <div className="space-y-2 mb-2">
         {respuestas.map((r) => (
-          <div key={r.id} style={{ background: "#F3F6F9" }} className="rounded-lg p-2">
+          <div key={r.id} style={{ background: C.bg }} className="rounded-lg p-2">
             <p className="text-xs font-semibold" style={{ color: C.ink }}>
               <button type="button" onClick={() => onVerSocio && onVerSocio(r.autor_id)} className="font-semibold">{nombrePublico(r.perfiles)}</button>{" "}
               <span className="font-normal" style={{ color: C.mute }}>

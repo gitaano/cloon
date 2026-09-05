@@ -145,14 +145,14 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
 
   if (!perfil) {
     return (
-      <div style={{ background: "#F3F6F9" }} className="min-h-screen flex items-center justify-center">
+      <div style={{ background: C.bg }} className="min-h-screen flex items-center justify-center">
         <p className="text-sm" style={{ color: C.mute }}>Cargando perfil...</p>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">

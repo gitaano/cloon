@@ -93,7 +93,7 @@ export default function VistaBiblioteca({ sesion, perfil, onVolver }) {
   const privadosAprobados = documentos.filter((d) => d.aprobado && d.privado);
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">

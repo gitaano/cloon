@@ -180,7 +180,7 @@ export default function VistaMensajes({ sesion, perfil, conversacionInicial, onV
   const conversacionActivaPerfil = conversacionActiva ? perfilesPorId[conversacionActiva] : null;
 
   return (
-    <div style={{ background: "#F3F6F9" }} className="min-h-screen flex flex-col">
+    <div style={{ background: C.bg }} className="min-h-screen flex flex-col">
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3 shrink-0">
         {conversacionActiva || nuevoMensajeAbierto ? (
           <button

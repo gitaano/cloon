@@ -14,16 +14,37 @@ import ClubProvisional from "./ClubProvisional.jsx";
 import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download } from "lucide-react";
 
 export const C = {
-  blue: "#0060A9",
-  blueDark: "#003D73",
-  blueDarker: "#02284D",
-  red: "#E30613",
-  white: "#FFFFFF",
-  bg: "#F3F6F9",
-  ink: "#152A3D",
-  mute: "#5C7185",
-  line: "#DCE4EC",
+  blue: "var(--color-blue)",
+  blueDark: "var(--color-blueDark)",
+  blueDarker: "var(--color-blueDarker)",
+  red: "var(--color-red)",
+  white: "var(--color-surface)",
+  bg: "var(--color-bg)",
+  ink: "var(--color-ink)",
+  mute: "var(--color-mute)",
+  line: "var(--color-line)",
+  highlight: "var(--color-highlight)",
 };
+
+export function alternarTema() {
+  const root = document.documentElement;
+  const oscuroAhora = root.classList.contains("dark");
+  if (oscuroAhora) {
+    root.classList.remove("dark");
+    try {
+      localStorage.setItem("tema", "claro");
+    } catch (e) {}
+  } else {
+    root.classList.add("dark");
+    try {
+      localStorage.setItem("tema", "oscuro");
+    } catch (e) {}
+  }
+}
+
+export function temaEsOscuro() {
+  return document.documentElement.classList.contains("dark");
+}
 
 export function LogoMetroColor({ size = 48, className, style }) {
   return (
@@ -880,7 +901,7 @@ useEffect(() => {
   });
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -1090,7 +1111,7 @@ useEffect(() => {
           )}
         </aside>
 
-        <div className="flex-1 min-w-0 space-y-4"><div style={{ background: "#F3F6F9", borderColor: C.line }} className="rounded-lg border px-3 py-2 flex items-start gap-2"><Megaphone size={14} style={{ color: C.mute }} className="shrink-0 mt-0.5" /><p className="text-xs" style={{ color: C.mute }}>Este foro se está construyendo para todos. Hay muchas cosas que podemos mejorar, muchas veces por desconocimiento de otras categorías, así que por favor, mándanos tus sugerencias para poder mejorar el club. — La dirección</p></div>
+        <div className="flex-1 min-w-0 space-y-4"><div style={{ background: C.bg, borderColor: C.line }} className="rounded-lg border px-3 py-2 flex items-start gap-2"><Megaphone size={14} style={{ color: C.mute }} className="shrink-0 mt-0.5" /><p className="text-xs" style={{ color: C.mute }}>Este foro se está construyendo para todos. Hay muchas cosas que podemos mejorar, muchas veces por desconocimiento de otras categorías, así que por favor, mándanos tus sugerencias para poder mejorar el club. — La dirección</p></div>
         {perfil && !perfil.bienvenida_vista && (
           <div style={{ background: C.white, borderColor: C.blue }} className="rounded-xl border-2 p-4 space-y-3">
             <div className="flex items-center justify-between">
@@ -1605,7 +1626,7 @@ function TarjetaSocioModalViejoNoUsar({ usuarioId, sesion, onCerrar, onMensaje }
 function PendienteAprobacionViejoNoUsar({ onCerrarSesion }) {
   return (
     <div
-      style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }}
+      style={{ background: C.bg, position: "relative", zIndex: 0 }}
       className="min-h-screen flex items-center justify-center p-4"
     >
       <MarcaAguaFondo />
@@ -1802,14 +1823,14 @@ function MiPerfilViejoNoUsar({ sesion, perfil, onVolver, onActualizado }) {
 
   if (!perfil) {
     return (
-      <div style={{ background: "#F3F6F9" }} className="min-h-screen flex items-center justify-center">
+      <div style={{ background: C.bg }} className="min-h-screen flex items-center justify-center">
         <p className="text-sm" style={{ color: C.mute }}>Cargando perfil...</p>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
@@ -2325,7 +2346,7 @@ function RespuestasViejoNoUsar({ hiloId, sesion, onVerSocio, perfil }) {
 
       <div className="space-y-2 mb-2">
         {respuestas.map((r) => (
-          <div key={r.id} style={{ background: "#F3F6F9" }} className="rounded-lg p-2">
+          <div key={r.id} style={{ background: C.bg }} className="rounded-lg p-2">
             <p className="text-xs font-semibold" style={{ color: C.ink }}>
               <button type="button" onClick={() => onVerSocio && onVerSocio(r.autor_id)} className="font-semibold">{nombrePublico(r.perfiles)}</button>{" "}
               <span className="font-normal" style={{ color: C.mute }}>
@@ -3862,7 +3883,7 @@ function VistaCalendarioViejoNoUsar({ sesion, perfil, onVolver }) {
   );
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
@@ -4213,7 +4234,7 @@ function EditorDiaViejoNoUsar({ fecha, registro, resumen, categoriaTurnos, indic
       </p>
 
       {resumen && (
-        <div style={{ background: "#F3F6F9" }} className="rounded-lg p-3">
+        <div style={{ background: C.bg }} className="rounded-lg p-3">
           <p className="text-xs font-semibold mb-1" style={{ color: C.mute }}>
             Lo que tienes registrado ese día
           </p>
@@ -4412,7 +4433,7 @@ function VistaNotificacionesViejoNoUsar({ sesion, onVolver }) {
   }
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
@@ -4638,7 +4659,7 @@ function VistaMensajesViejoNoUsar({ sesion, perfil, conversacionInicial, onVolve
   const conversacionActivaPerfil = conversacionActiva ? perfilesPorId[conversacionActiva] : null;
 
   return (
-    <div style={{ background: "#F3F6F9" }} className="min-h-screen flex flex-col">
+    <div style={{ background: C.bg }} className="min-h-screen flex flex-col">
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3 shrink-0">
         {conversacionActiva || nuevoMensajeAbierto ? (
           <button
@@ -4924,7 +4945,7 @@ function VistaBibliotecaViejoNoUsar({ sesion, perfil, onVolver }) {
   const privadosAprobados = documentos.filter((d) => d.aprobado && d.privado);
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">
@@ -5172,7 +5193,7 @@ function VistaSugerenciasViejoNoUsar({ sesion, perfil, onVolver }) {
   }
 
   return (
-    <div style={{ background: "#F3F6F9", position: "relative", zIndex: 0 }} className="min-h-screen">
+    <div style={{ background: C.bg, position: "relative", zIndex: 0 }} className="min-h-screen">
       <MarcaAguaFondo />
       <div style={{ background: C.blueDarker }} className="px-4 py-3 flex items-center gap-3">
         <button onClick={onVolver} className="text-white text-xs font-semibold flex items-center gap-1">

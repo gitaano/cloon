@@ -6,11 +6,57 @@
 <title>Underground — Club de trabajadores de Metro</title>
 <!-- Tailwind por CDN: así usamos las mismas clases del boceto sin
 tener que montar un proceso de compilación de CSS aparte. -->
+<script>
+  // Se aplica antes de pintar nada, para que no haya un parpadeo del tema claro
+  // al cargar si el usuario tiene activado el modo oscuro.
+  (function () {
+    try {
+      var guardado = localStorage.getItem("tema");
+      var oscuro = guardado
+        ? guardado === "oscuro"
+        : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (oscuro) document.documentElement.classList.add("dark");
+    } catch (e) {}
+  })();
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
+  :root {
+    --color-bg: #F3F6F9;
+    --color-surface: #FFFFFF;
+    --color-ink: #152A3D;
+    --color-mute: #5C7185;
+    --color-line: #DCE4EC;
+    --color-blue: #0060A9;
+    --color-blueDark: #003D73;
+    --color-blueDarker: #02284D;
+    --color-red: #E30613;
+    --color-highlight: #FEF3C7;
+  }
+  html.dark {
+    --color-bg: #0B1420;
+    --color-surface: #16212F;
+    --color-ink: #E7EDF3;
+    --color-mute: #93A6B8;
+    --color-line: #2A3B4E;
+    --color-blue: #3B8FD4;
+    --color-blueDark: #6BAEE0;
+    --color-blueDarker: #02284D;
+    --color-red: #FF6B7A;
+    --color-highlight: #4A3510;
+  }
+  body {
+    background-color: var(--color-bg);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
   html {
     /* Todo el sitio (texto, paddings, radios, iconos con tamaño en rem)
        escala junto con esto: aprox. un 20% más grande que el estándar. */
@@ -39,6 +85,12 @@ tener que montar un proceso de compilación de CSS aparte. -->
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #8FA3B3;
+  }
+  html.dark ::-webkit-scrollbar-thumb {
+    background: #33475C;
+  }
+  html.dark ::-webkit-scrollbar-thumb:hover {
+    background: #45607A;
   }
   /* Anillo de foco consistente con la marca, en vez del azul genérico del navegador */
   button:focus-visible,

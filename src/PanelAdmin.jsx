@@ -312,7 +312,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                   style={{
                     borderColor: u.modo_dios ? "#F59E0B" : C.line,
                     color: u.modo_dios ? "#B45309" : C.ink,
-                    background: u.modo_dios ? "#FEF3C7" : C.white,
+                    background: u.modo_dios ? C.highlight : C.white,
                   }}
                   className="text-xs font-semibold border rounded-lg px-2.5 py-1.5 flex items-center gap-1"
                 >
