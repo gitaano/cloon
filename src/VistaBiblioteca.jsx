@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, Eye, EyeOff, X, FileText, Upload, Check, Megaphone } from "lucide-react";
-import { C, MarcaAguaFondo, EsqueletoLista, ModalConfirmacion, mostrarToast } from "./App.jsx";
+import { C, MarcaAguaFondo, EsqueletoLista, ModalConfirmacion, mostrarToast, BotonTema } from "./App.jsx";
 
 export default function VistaBiblioteca({ sesion, perfil, onVolver }) {
   const [documentos, setDocumentos] = useState([]);
@@ -103,6 +103,7 @@ export default function VistaBiblioteca({ sesion, perfil, onVolver }) {
           <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Biblioteca de documentos</p>
+        <BotonTema />
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">

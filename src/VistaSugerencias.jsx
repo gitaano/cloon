@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft } from "lucide-react";
-import { C, MarcaAguaFondo, EsqueletoLista } from "./App.jsx";
+import { C, MarcaAguaFondo, EsqueletoLista, BotonTema } from "./App.jsx";
 
 export default function VistaSugerencias({ sesion, perfil, onVolver }) {
   const [sugerencias, setSugerencias] = useState([]);
@@ -53,6 +53,7 @@ export default function VistaSugerencias({ sesion, perfil, onVolver }) {
           <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Buzón de sugerencias</p>
+        <BotonTema />
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo, alternarTema, temaEsOscuro, EsqueletoLista, EsqueletoPerfil, ModalConfirmacion, mostrarToast } from "./App.jsx";
+import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo, EsqueletoLista, EsqueletoPerfil, ModalConfirmacion, mostrarToast, BotonTema } from "./App.jsx";
 import MiPerfil from "./MiPerfil.jsx";
 import PanelAdmin from "./PanelAdmin.jsx";
 import VistaCalendario from "./VistaCalendario.jsx";
@@ -10,8 +10,8 @@ import VistaSugerencias from "./VistaSugerencias.jsx";
 import VistaNotificaciones from "./VistaNotificaciones.jsx";
 import {
   Angry, Bell, Calendar, ChevronDown, ChevronLeft, ChevronRight, Contact, Eye,
-  FileText, Info, Lightbulb, LogOut, Mail, Megaphone, Meh, MessageSquare, Moon,
-  Repeat, Search, Settings, Star, Sun, ThumbsUp, UserPlus, Users, X, Zap,
+  FileText, Info, Lightbulb, LogOut, Mail, Megaphone, Meh, MessageSquare,
+  Repeat, Search, Settings, Star, ThumbsUp, UserPlus, Users, X, Zap,
 } from "lucide-react";
 
 export default function ClubProvisional({ sesion }) {
@@ -33,7 +33,6 @@ export default function ClubProvisional({ sesion }) {
   const [mensajeIniciarCon, setMensajeIniciarCon] = useState(null);
   const [ahora, setAhora] = useState(Date.now());
   const [verSocioId, setVerSocioId] = useState(null);
-  const [oscuro, setOscuro] = useState(temaEsOscuro());
     const [usuariosOnlineIds, setUsuariosOnlineIds] = useState([]);
   const [modalListaUsuarios, setModalListaUsuarios] = useState(null);
   const [listaUsuariosModal, setListaUsuariosModal] = useState([]);
@@ -376,18 +375,7 @@ useEffect(() => {
             )}
           </button>
 
-          <button
-            onClick={() => {
-              alternarTema();
-              setOscuro(temaEsOscuro());
-            }}
-            style={{ background: "rgba(255,255,255,0.12)" }}
-            className="text-white rounded-full p-2 flex items-center relative"
-            aria-label={oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-            title={oscuro ? "Modo claro" : "Modo oscuro"}
-          >
-            {oscuro ? <Sun size={17} /> : <Moon size={17} />}
-          </button>
+          <BotonTema className="" />
 
           <div className="relative">
             <button

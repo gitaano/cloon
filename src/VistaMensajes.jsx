@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, Ban, Plus, Send } from "lucide-react";
-import { C, nombrePublico, EsqueletoLista } from "./App.jsx";
+import { C, nombrePublico, EsqueletoLista, BotonTema } from "./App.jsx";
 
 export default function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
   const [conversaciones, setConversaciones] = useState([]);
@@ -219,6 +219,7 @@ export default function VistaMensajes({ sesion, perfil, conversacionInicial, onV
             {bloqueados.has(conversacionActiva) ? "Desbloquear" : "Bloquear"}
           </button>
         )}
+        <BotonTema className={nuevoMensajeAbierto ? "ml-auto" : ""} />
       </div>
 
       {!conversacionActiva && !nuevoMensajeAbierto && (

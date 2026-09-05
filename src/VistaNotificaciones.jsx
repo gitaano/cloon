@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, UserPlus, Megaphone, MessageSquare } from "lucide-react";
-import { C, MarcaAguaFondo, EsqueletoLista } from "./App.jsx";
+import { C, MarcaAguaFondo, EsqueletoLista, BotonTema } from "./App.jsx";
 
 export default function VistaNotificaciones({ sesion, onVolver }) {
   const [notificaciones, setNotificaciones] = useState([]);
@@ -43,6 +43,7 @@ export default function VistaNotificaciones({ sesion, onVolver }) {
           <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Notificaciones del club</p>
+        <BotonTema />
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-2">

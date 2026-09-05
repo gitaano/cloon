@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, Download, Zap, ChevronDown, Settings, Megaphone, Lightbulb, UserPlus, Contact, ShieldCheck, Ban } from "lucide-react";
-import { C, CATEGORIAS_TURNO, EsqueletoLista, mostrarToast } from "./App.jsx";
+import { C, CATEGORIAS_TURNO, EsqueletoLista, mostrarToast, BotonTema } from "./App.jsx";
 
 export default function PanelAdmin({ sesion, perfil, onVolver }) {
   const [tab, setTab] = useState("usuarios");
@@ -201,6 +201,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
           <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Panel de administración</p>
+        <BotonTema />
       </div>
 
       <div className="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row gap-4">

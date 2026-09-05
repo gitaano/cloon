@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, ChevronDown } from "lucide-react";
-import { C, CATEGORIAS_TURNO, LINEAS_METRO, LINEAS_METRO_ESTACIONES, TURNOS, INDICADORES_CALENDARIO, nombrePublico, BloqueDesplegable, BotonPrincipal, MarcaAguaFondo, EsqueletoPerfil } from "./App.jsx";
+import { C, CATEGORIAS_TURNO, LINEAS_METRO, LINEAS_METRO_ESTACIONES, TURNOS, INDICADORES_CALENDARIO, nombrePublico, BloqueDesplegable, BotonPrincipal, MarcaAguaFondo, EsqueletoPerfil, BotonTema } from "./App.jsx";
 
 export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [nickname, setNickname] = useState("");
@@ -161,6 +161,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
           <ArrowLeft size={17} /> Volver
         </button>
         <p className="text-white font-bold text-sm">Mi perfil</p>
+        <BotonTema />
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">

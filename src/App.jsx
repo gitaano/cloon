@@ -11,7 +11,7 @@ import ChatBotFlotante from "./ChatBotFlotante.jsx";
 import Landing from "./Landing.jsx";
 import Acceso from "./Acceso.jsx";
 import ClubProvisional from "./ClubProvisional.jsx";
-import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download, AlertTriangle } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff, ArrowLeft, ShieldCheck, ThumbsUp, Meh, Angry, Users, TrainFront, Wrench, Monitor, Repeat, ShoppingBag, Handshake, MessageSquare, ChevronRight, ChevronLeft, X, Ban, Contact, Settings, Plus, Calendar, Send, Mail, FileText, Upload, Bot, Check, Lightbulb, ChevronDown, Bell, Megaphone, Search, LogOut, Zap, Star, Info, Download, AlertTriangle, Sun, Moon } from "lucide-react";
 
 export const C = {
   blue: "var(--color-blue)",
@@ -115,6 +115,27 @@ export function EsqueletoPerfil() {
 // Modal de confirmación con el estilo de Underground, para usar en vez del
 // cuadro gris nativo del navegador (confirm()) en acciones que no se pueden
 // deshacer, como eliminar un tema o un documento.
+// Botón de sol/luna para alternar el tema, pensado para colocar en la
+// cabecera azul de cualquier vista (no solo en el foro principal), así se
+// puede probar el modo oscuro sin tener que volver atrás primero.
+export function BotonTema({ className = "ml-auto" }) {
+  const [oscuro, setOscuro] = useState(temaEsOscuro());
+  return (
+    <button
+      onClick={() => {
+        alternarTema();
+        setOscuro(temaEsOscuro());
+      }}
+      style={{ background: "rgba(255,255,255,0.12)" }}
+      className={"text-white rounded-full p-2 flex items-center shrink-0 " + className}
+      aria-label={oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      title={oscuro ? "Modo claro" : "Modo oscuro"}
+    >
+      {oscuro ? <Sun size={16} /> : <Moon size={16} />}
+    </button>
+  );
+}
+
 export function ModalConfirmacion({
   titulo = "¿Seguro?",
   mensaje,
