@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
-import { ArrowLeft, ChevronDown } from "lucide-react";
-import { C, CATEGORIAS_TURNO, LINEAS_METRO, LINEAS_METRO_ESTACIONES, TURNOS, INDICADORES_CALENDARIO, nombrePublico, BloqueDesplegable, BotonPrincipal, MarcaAguaFondo, EsqueletoPerfil, BotonTema } from "./App.jsx";
+import { ArrowLeft, ChevronDown, Bell } from "lucide-react";
+import { C, CATEGORIAS_TURNO, LINEAS_METRO, LINEAS_METRO_ESTACIONES, TURNOS, INDICADORES_CALENDARIO, nombrePublico, BloqueDesplegable, BotonPrincipal, MarcaAguaFondo, EsqueletoPerfil, BotonTema, pushSoportado, pushEstaActivado, activarNotificacionesPush, desactivarNotificacionesPush, mostrarToast } from "./App.jsx";
 
 export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [nickname, setNickname] = useState("");
@@ -15,6 +15,31 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [mostrarIntereses, setMostrarIntereses] = useState(true);
   const [permiteSeguir, setPermiteSeguir] = useState(true);
   const [notificarComentarios, setNotificarComentarios] = useState(true);
+  const [pushAbierto, setPushAbierto] = useState(false);
+  const [pushActivo, setPushActivo] = useState(false);
+  const [activandoPush, setActivandoPush] = useState(false);
+
+  useEffect(() => {
+    setPushActivo(pushEstaActivado());
+  }, []);
+
+  async function alternarPush() {
+    setActivandoPush(true);
+    try {
+      if (pushActivo) {
+        await desactivarNotificacionesPush();
+        setPushActivo(false);
+        mostrarToast("Notificaciones push desactivadas");
+      } else {
+        await activarNotificacionesPush(sesion);
+        setPushActivo(true);
+        mostrarToast("Notificaciones push activadas");
+      }
+    } catch (e) {
+      mostrarToast(e.message || "No se pudo cambiar las notificaciones", "error");
+    }
+    setActivandoPush(false);
+  }
   const [mostrarSeguidores, setMostrarSeguidores] = useState(true);
   const [mostrarPreview, setMostrarPreview] = useState(false);
   const [cargando, setCargando] = useState(false);
@@ -308,6 +333,38 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
             <CasillaPerfil label="Permitir que otros socios me sigan" checked={permiteSeguir} onChange={setPermiteSeguir} />
             <CasillaPerfil label="Notificarme cuando respondan a mis temas" checked={notificarComentarios} onChange={setNotificarComentarios} />
           </BloqueDesplegable>
+
+          {pushSoportado() && (
+            <BloqueDesplegable
+              titulo="Notificaciones push"
+              abierto={pushAbierto}
+              onToggle={() => setPushAbierto((v) => !v)}
+            >
+              <div className="flex items-start gap-3">
+                <div style={{ background: C.chipBg }} className="rounded-lg p-2 shrink-0">
+                  <Bell size={18} style={{ color: C.blue }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm" style={{ color: C.ink }}>
+                    Recibe un aviso en este dispositivo cuando te llegue un mensaje, te respondan a un
+                    tema o te sigan, aunque no tengas la web abierta.
+                  </p>
+                  <button
+                    onClick={alternarPush}
+                    disabled={activandoPush}
+                    style={{ background: pushActivo ? C.white : C.blue, borderColor: C.blue, color: pushActivo ? C.blue : "#FFFFFF" }}
+                    className="mt-3 border-2 font-semibold py-2 px-4 rounded-lg text-sm"
+                  >
+                    {activandoPush
+                      ? "Un momento..."
+                      : pushActivo
+                      ? "Desactivar en este dispositivo"
+                      : "Activar en este dispositivo"}
+                  </button>
+                </div>
+              </div>
+            </BloqueDesplegable>
+          )}
         </div>
 
         <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">

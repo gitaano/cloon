@@ -181,6 +181,70 @@ export function ModalConfirmacion({
   );
 }
 
+// Notificaciones push: para avisar de un mensaje o cambio de turno nuevo
+// aunque la web no esté abierta. La clave pública VAPID es pública por
+// diseño (va en el navegador de cada socio); la privada solo vive en el
+// servidor (Supabase), nunca aquí.
+const VAPID_PUBLIC_KEY =
+  "BN4nJ-tykCPxfTrwERC_RALjIB05ebnP2X4ViqbZV35xJESRWTzY0cMyj_jYDwfSaOlFbtvyUOjie4ar_vIMScg";
+
+function base64UrlAUint8Array(base64Url) {
+  const padding = "=".repeat((4 - (base64Url.length % 4)) % 4);
+  const base64 = (base64Url + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  const salida = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) salida[i] = raw.charCodeAt(i);
+  return salida;
+}
+
+export function pushSoportado() {
+  return typeof window !== "undefined" && "serviceWorker" in navigator && "PushManager" in window;
+}
+
+export function pushEstaActivado() {
+  return typeof Notification !== "undefined" && Notification.permission === "granted";
+}
+
+export async function activarNotificacionesPush(sesion) {
+  if (!pushSoportado()) {
+    throw new Error("Este navegador no admite notificaciones push.");
+  }
+  const permiso = await Notification.requestPermission();
+  if (permiso !== "granted") {
+    throw new Error("No has dado permiso para las notificaciones.");
+  }
+  const registro = await navigator.serviceWorker.register("/sw.js");
+  await navigator.serviceWorker.ready;
+  let suscripcion = await registro.pushManager.getSubscription();
+  if (!suscripcion) {
+    suscripcion = await registro.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64UrlAUint8Array(VAPID_PUBLIC_KEY),
+    });
+  }
+  const datos = suscripcion.toJSON();
+  const { error } = await supabase.from("suscripciones_push").upsert(
+    {
+      usuario_id: sesion.user.id,
+      endpoint: datos.endpoint,
+      p256dh: datos.keys.p256dh,
+      auth: datos.keys.auth,
+    },
+    { onConflict: "endpoint" }
+  );
+  if (error) throw error;
+}
+
+export async function desactivarNotificacionesPush() {
+  if (!pushSoportado()) return;
+  const registro = await navigator.serviceWorker.getRegistration("/sw.js");
+  const suscripcion = await registro?.pushManager.getSubscription();
+  if (suscripcion) {
+    await supabase.from("suscripciones_push").delete().eq("endpoint", suscripcion.endpoint);
+    await suscripcion.unsubscribe();
+  }
+}
+
 // Avisos flotantes ("toasts") para confirmar visualmente que una acción ha
 // funcionado (guardar, publicar, enviar...), sin necesidad de un Context:
 // cualquier componente llama a mostrarToast(mensaje) y aparece solo.
