@@ -25,6 +25,8 @@ export const C = {
   line: "var(--color-line)",
   highlight: "var(--color-highlight)",
   chipBg: "var(--color-chip-bg)",
+  diaTrabajado: "var(--color-dia-trabajado)",
+  diaVacio: "var(--color-dia-vacio)",
 };
 
 export function alternarTema() {
@@ -305,7 +307,7 @@ function NuevaContrasenaViejoNoUsar({ onListo }) {
           <div className="mx-auto w-fit drop-shadow-lg">
             <LogoUnderground size={86} />
           </div>
-          <h1 style={{ color: C.white }} className="text-2xl font-bold mt-4">
+          <h1 style={{ color: "#FFFFFF" }} className="text-2xl font-bold mt-4">
             Nueva contraseña
           </h1>
           <p style={{ color: "#BFD9EE" }} className="text-sm mt-1">
@@ -458,7 +460,7 @@ function AccesoViejoNoUsar({ normasLeidas, onConfirmarNormas } = {}) {
           <div className="mx-auto w-fit drop-shadow-lg">
             <LogoUnderground size={106} />
           </div>
-          <h1 style={{ color: C.white }} className="text-2xl font-bold mt-4">
+          <h1 style={{ color: "#FFFFFF" }} className="text-2xl font-bold mt-4">
             Underground
           </h1>
           <p style={{ color: "#BFD9EE" }} className="text-sm mt-1">
@@ -1094,7 +1096,7 @@ useEffect(() => {
               <ChevronDown
                 size={14}
                 style={{
-                  color: C.white,
+                  color: "#FFFFFF",
                   transform: menuAbierto ? "rotate(180deg)" : "rotate(0deg)",
                   transition: "transform 0.15s ease",
                 }}
@@ -5757,7 +5759,7 @@ function LandingViejoNoUsar({ onAcceder, normasLeidas, onConfirmarNormas }) {
         <div className="mx-auto w-fit drop-shadow-lg">
           <LogoMetroColor size={132} />
         </div>
-        <h1 style={{ color: C.white }} className="text-3xl font-bold mt-5">
+        <h1 style={{ color: "#FFFFFF" }} className="text-3xl font-bold mt-5">
           Underground
         </h1>
         <p style={{ color: "#BFD9EE" }} className="text-base mt-3 leading-relaxed">
@@ -5792,13 +5794,13 @@ function LandingViejoNoUsar({ onAcceder, normasLeidas, onConfirmarNormas }) {
             className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
           >
             {normasLeidas ? (
-              <Check size={22} style={{ color: C.white }} />
+              <Check size={22} style={{ color: "#FFFFFF" }} />
             ) : (
               <ShieldCheck size={22} style={{ color: C.blueDark }} />
             )}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-bold" style={{ color: C.white }}>
+            <p className="text-sm font-bold" style={{ color: "#FFFFFF" }}>
               {normasLeidas ? "Normas del club leídas y confirmadas" : "Lee las normas del club antes de entrar"}
             </p>
             <p className="text-xs" style={{ color: "#BFD9EE" }}>

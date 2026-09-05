@@ -176,8 +176,8 @@ function CalendarioTurnos({
 
   function colorFondoDia(fecha, estado, tieneTurnoRegistrado) {
     if (estado && ESTADOS[estado]) return ESTADOS[estado];
-    if (tieneTurnoRegistrado) return "#AEB8C4";
-    return fecha < hoyStr ? "#D9DEE3" : C.white;
+    if (tieneTurnoRegistrado) return C.diaTrabajado;
+    return fecha < hoyStr ? C.diaVacio : C.white;
   }
 
   function resumenDia(r, estadoDia) {

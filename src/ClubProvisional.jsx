@@ -409,7 +409,7 @@ useEffect(() => {
               <ChevronDown
                 size={14}
                 style={{
-                  color: C.white,
+                  color: "#FFFFFF",
                   transform: menuAbierto ? "rotate(180deg)" : "rotate(0deg)",
                   transition: "transform 0.15s ease",
                 }}

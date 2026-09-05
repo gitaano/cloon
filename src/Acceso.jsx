@@ -37,7 +37,7 @@ export function NuevaContrasena({ onListo }) {
           <div className="mx-auto w-fit drop-shadow-lg">
             <LogoUnderground size={86} />
           </div>
-          <h1 style={{ color: C.white }} className="text-2xl font-bold mt-4">
+          <h1 style={{ color: "#FFFFFF" }} className="text-2xl font-bold mt-4">
             Nueva contraseña
           </h1>
           <p style={{ color: "#BFD9EE" }} className="text-sm mt-1">
@@ -190,7 +190,7 @@ export default function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
           <div className="mx-auto w-fit drop-shadow-lg">
             <LogoUnderground size={106} />
           </div>
-          <h1 style={{ color: C.white }} className="text-2xl font-bold mt-4">
+          <h1 style={{ color: "#FFFFFF" }} className="text-2xl font-bold mt-4">
             Underground
           </h1>
           <p style={{ color: "#BFD9EE" }} className="text-sm mt-1">
