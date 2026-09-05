@@ -24,6 +24,7 @@ export const C = {
   mute: "var(--color-mute)",
   line: "var(--color-line)",
   highlight: "var(--color-highlight)",
+  chipBg: "var(--color-chip-bg)",
 };
 
 export function alternarTema() {

@@ -58,7 +58,7 @@ export default function VistaNotificaciones({ sesion, onVolver }) {
             <button
               key={n.id}
               onClick={() => !n.leida && marcarLeida(n.id)}
-              style={{ background: n.leida ? C.white : "#EAF2F9", borderColor: C.line }}
+              style={{ background: n.leida ? C.white : C.chipBg, borderColor: C.line }}
               className="w-full text-left rounded-xl border p-3 flex items-start gap-3"
             >
               <div style={{ background: n.leida ? C.line : C.blue }} className="rounded-full p-2 shrink-0">

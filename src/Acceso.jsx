@@ -271,7 +271,7 @@ export default function Acceso({ normasLeidas, onConfirmarNormas } = {}) {
               </div>
               <Campo label="Correo electrónico" type="email" value={regEmail} onChange={setRegEmail} placeholder="tucorreo@ejemplo.com" />
               <CampoPass verPass={verPass} setVerPass={setVerPass} value={regPass} onChange={setRegPass} />
-              <p className="text-xs rounded-lg p-2.5 flex gap-2" style={{ background: "#EAF2F9", color: C.blueDark }}>
+              <p className="text-xs rounded-lg p-2.5 flex gap-2" style={{ background: C.chipBg, color: C.blueDark }}>
                 <ShieldCheck size={29} className="shrink-0" />
                 Tus datos solo los ve el equipo de administración — nunca se muestran en el foro.
               </p>

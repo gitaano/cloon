@@ -156,7 +156,7 @@ export default function Landing({ onAcceder, normasLeidas, onConfirmarNormas }) 
         <div style={{ background: C.white }} className="rounded-2xl shadow-2xl p-6 mt-8 text-left space-y-4">
           {PUNTOS.map((p, i) => (
             <div key={i} className="flex items-start gap-3">
-              <div style={{ background: "#EAF2F9" }} className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
+              <div style={{ background: C.chipBg }} className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
                 <p.icon size={22} style={{ color: C.blue }} />
               </div>
               <p className="text-sm pt-1.5" style={{ color: C.ink }}>

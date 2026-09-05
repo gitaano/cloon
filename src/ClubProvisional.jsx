@@ -764,7 +764,7 @@ useEffect(() => {
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2 shrink-0">
+                  <div style={{ background: C.chipBg }} className="rounded-lg p-2 shrink-0">
                     <MessageSquare size={18} style={{ color: C.blue }} />
                   </div>
                   <div>
@@ -777,7 +777,7 @@ useEffect(() => {
                   </div>
                 </div>
                                 <div className="flex items-center gap-3">
-                  <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2 shrink-0">
+                  <div style={{ background: C.chipBg }} className="rounded-lg p-2 shrink-0">
                     <Users size={18} style={{ color: C.blue }} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1327,7 +1327,7 @@ function BotonAmbito({ activo, onClick, icon: Icon = MessageSquare, nombre, desc
       <button
         onClick={onClick}
         className="flex-1 min-w-0 text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
-        style={{ background: activo ? "#EAF2F9" : "transparent" }}
+        style={{ background: activo ? C.chipBg : "transparent" }}
       >
         <Icon size={20} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
         <p className="text-sm font-semibold truncate" style={{ color: activo ? C.blueDark : C.ink }}>
@@ -1732,7 +1732,7 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                     {diasLibreOfrezco.map((d) => (
                       <span
                         key={d}
-                        style={{ background: "#EAF2F9", color: C.blueDark }}
+                        style={{ background: C.chipBg, color: C.blueDark }}
                         className="text-xs font-semibold px-2.5 py-1.5 rounded-full flex items-center gap-1.5"
                       >
                         {formatearFecha(d)}
@@ -2010,7 +2010,7 @@ function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo
           onAbrir();
         }}
         className="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
-        style={{ background: activo ? "#EAF2F9" : "transparent" }}
+        style={{ background: activo ? C.chipBg : "transparent" }}
       >
         <Repeat size={20} className="shrink-0" style={{ color: activo ? C.blue : C.mute }} />
         <div className="min-w-0 flex-1">

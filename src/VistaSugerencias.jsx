@@ -110,7 +110,7 @@ export default function VistaSugerencias({ sesion, perfil, onVolver }) {
                 {s.resuelto ? " · Resuelto" : " · Pendiente de respuesta"}
               </p>
               {s.respuesta && (
-                <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2.5">
+                <div style={{ background: C.chipBg }} className="rounded-lg p-2.5">
                   <p className="text-xs font-semibold mb-1" style={{ color: C.blueDark }}>
                     Respuesta de admin/dev
                   </p>

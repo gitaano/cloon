@@ -200,7 +200,7 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
               </p>
             </div>
           </div>
-          <p className="text-xs rounded-lg p-2.5" style={{ background: "#EAF2F9", color: C.blueDark }}>
+          <p className="text-xs rounded-lg p-2.5" style={{ background: C.chipBg, color: C.blueDark }}>
             Tu nombre real y tu DNE solo los ve el equipo de administración, salvo que actives
             aquí que se muestren.
           </p>

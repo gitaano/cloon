@@ -212,7 +212,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
               <button
                 key={tb.id}
                 onClick={() => setTab(tb.id)}
-                style={{ background: activo ? "#EAF2F9" : "transparent" }}
+                style={{ background: activo ? C.chipBg : "transparent" }}
                 className="shrink-0 text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5"
               >
                 <Icono size={20} style={{ color: activo ? C.blue : C.mute }} />
@@ -519,7 +519,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                       {s.texto}
                     </p>
                     {s.respuesta ? (
-                      <div style={{ background: "#EAF2F9" }} className="rounded-lg p-2.5">
+                      <div style={{ background: C.chipBg }} className="rounded-lg p-2.5">
                         <p className="text-xs font-semibold mb-1" style={{ color: C.blueDark }}>
                           Ya respondida
                         </p>

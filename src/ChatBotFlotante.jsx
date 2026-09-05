@@ -188,7 +188,7 @@ export default function ChatBotFlotante() {
                   key={i}
                   className={"text-sm px-3.5 py-2.5 rounded-2xl " + (m.de === "bot" ? "self-start rounded-tl-sm" : "self-end rounded-tr-sm ml-auto")}
                   style={{
-                    background: m.de === "bot" ? "#EAF2F9" : C.blue,
+                    background: m.de === "bot" ? C.chipBg : C.blue,
                     color: m.de === "bot" ? C.ink : C.white,
                     maxWidth: "85%",
                   }}
