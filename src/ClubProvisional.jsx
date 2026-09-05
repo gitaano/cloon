@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
-import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo, alternarTema, temaEsOscuro } from "./App.jsx";
+import { C, AMBITOS, CATEGORIAS_TURNO, TURNOS, LINEAS_METRO_ESTACIONES, nombrePublico, LogoMetroColor, LogoUnderground, MarcaAguaFondo, alternarTema, temaEsOscuro, EsqueletoLista, EsqueletoPerfil, ModalConfirmacion } from "./App.jsx";
 import MiPerfil from "./MiPerfil.jsx";
 import PanelAdmin from "./PanelAdmin.jsx";
 import VistaCalendario from "./VistaCalendario.jsx";
@@ -227,10 +227,12 @@ useEffect(() => {
     cargarHilos();
   }
 
+  const [confirmandoEliminarHilo, setConfirmandoEliminarHilo] = useState(null);
+
   async function eliminarHiloPropio(id) {
-    if (!confirm("¿Seguro que quieres eliminar este tema? No se puede deshacer.")) return;
     const { error } = await supabase.from("hilos").delete().eq("id", id);
     if (!error) cargarHilos();
+    setConfirmandoEliminarHilo(null);
   }
 
   async function crearCambio({ ambito, titulo, texto, categoria, tipo, etiquetaCambio }) {
@@ -614,7 +616,7 @@ useEffect(() => {
           />
         )}
 
-        {cargandoHilos && <p className="text-sm text-center" style={{ color: C.mute }}>Cargando temas...</p>}
+        {cargandoHilos && <EsqueletoLista filas={4} alto="h-24" />}
 
         {!cargandoHilos && hilos.length === 0 && (
           <p className="text-sm text-center py-8" style={{ color: C.mute }}>
@@ -701,7 +703,7 @@ useEffect(() => {
                 {((h.autor_id === sesion.user.id && ahora - new Date(h.creado_en).getTime() < 5 * 60 * 1000) ||
               perfil?.modo_dios) && (
               <button
-                onClick={() => eliminarHiloPropio(h.id)}
+                onClick={() => setConfirmandoEliminarHilo(h.id)}
                 aria-label="Eliminar tema"
                 className="text-xs font-semibold ml-auto flex items-center gap-1"
                 style={{ color: C.red }}
@@ -846,6 +848,14 @@ useEffect(() => {
         }}
       />
     )}
+    {confirmandoEliminarHilo && (
+      <ModalConfirmacion
+        titulo="Eliminar tema"
+        mensaje="¿Seguro que quieres eliminar este tema? No se puede deshacer."
+        onCancelar={() => setConfirmandoEliminarHilo(null)}
+        onConfirmar={() => eliminarHiloPropio(confirmandoEliminarHilo)}
+      />
+    )}
     </div>
   );
 }
@@ -868,11 +878,7 @@ function ModalListaUsuarios({ tipo, usuarios, cargando, onCerrar, onVerSocio }) 
           </button>
         </div>
         <div className="overflow-y-auto space-y-1 -mx-1 px-1">
-          {cargando && (
-            <p className="text-sm text-center py-4" style={{ color: C.mute }}>
-              Cargando...
-            </p>
-          )}
+          {cargando && <EsqueletoLista filas={4} alto="h-10" />}
           {!cargando && usuarios.length === 0 && (
             <p className="text-sm text-center py-4" style={{ color: C.mute }}>
               {tipo === "registrados" ? "No hay socios registrados." : "No hay nadie en línea ahora mismo."}
@@ -972,9 +978,7 @@ function TarjetaSocioModal({ usuarioId, sesion, onCerrar, onMensaje }) {
         onClick={(e) => e.stopPropagation()}
       >
         {(cargando || !perfilVisto) ? (
-          <p className="text-sm text-center py-4" style={{ color: C.mute }}>
-            Cargando...
-          </p>
+          <EsqueletoPerfil />
         ) : (
           <>
             <div className="flex items-center justify-between">
@@ -1237,11 +1241,7 @@ function Respuestas({ hiloId, sesion, onVerSocio, perfil }) {
         </p>
       )}
 
-      {cargando && (
-        <p className="text-xs" style={{ color: C.mute }}>
-          Cargando respuestas...
-        </p>
-      )}
+      {cargando && <EsqueletoLista filas={2} alto="h-10" />}
 
       {!cargando && respuestas.length === 0 && (
         <p className="text-xs" style={{ color: C.mute }}>

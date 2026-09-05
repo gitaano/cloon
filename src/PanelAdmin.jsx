@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, Download, Zap, ChevronDown, Settings, Megaphone, Lightbulb, UserPlus, Contact, ShieldCheck, Ban } from "lucide-react";
-import { C, CATEGORIAS_TURNO } from "./App.jsx";
+import { C, CATEGORIAS_TURNO, EsqueletoLista } from "./App.jsx";
 
 export default function PanelAdmin({ sesion, perfil, onVolver }) {
   const [tab, setTab] = useState("usuarios");
@@ -234,11 +234,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
             </p>
           )}
 
-          {cargando && (
-            <p className="text-sm" style={{ color: C.mute }}>
-              Cargando...
-            </p>
-          )}
+          {cargando && <EsqueletoLista filas={3} />}
 
           {!cargando && tab === "usuarios" && (
             <div className="space-y-2">

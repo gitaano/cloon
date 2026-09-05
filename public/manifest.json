@@ -1,0 +1,24 @@
+{
+  "name": "Underground — Club de trabajadores de Metro",
+  "short_name": "Underground",
+  "description": "El espacio privado hecho por y para trabajadores de Metro.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#02284D",
+  "theme_color": "#02284D",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

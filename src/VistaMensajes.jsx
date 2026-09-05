@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, Ban, Plus, Send } from "lucide-react";
-import { C, nombrePublico } from "./App.jsx";
+import { C, nombrePublico, EsqueletoLista } from "./App.jsx";
 
 export default function VistaMensajes({ sesion, perfil, conversacionInicial, onVolver }) {
   const [conversaciones, setConversaciones] = useState([]);
@@ -223,11 +223,7 @@ export default function VistaMensajes({ sesion, perfil, conversacionInicial, onV
 
       {!conversacionActiva && !nuevoMensajeAbierto && (
         <div className="flex-1 overflow-y-auto max-w-2xl mx-auto w-full p-4 space-y-2">
-          {cargando && (
-            <p className="text-sm" style={{ color: C.mute }}>
-              Cargando...
-            </p>
-          )}
+          {cargando && <EsqueletoLista filas={4} />}
           {!cargando && conversaciones.length === 0 && (
             <p className="text-sm text-center py-8" style={{ color: C.mute }}>
               Todavía no tienes ningún mensaje. Pincha en + para escribir a un socio.

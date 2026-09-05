@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, ChevronRight, ChevronLeft, X, Plus, ChevronDown } from "lucide-react";
-import { C, CATEGORIAS_TURNO, TURNOS, INDICADORES_CALENDARIO, BloqueDesplegable, MarcaAguaFondo } from "./App.jsx";
+import { C, CATEGORIAS_TURNO, TURNOS, INDICADORES_CALENDARIO, BloqueDesplegable, MarcaAguaFondo, EsqueletoLista } from "./App.jsx";
 
 export default function VistaCalendario({ sesion, perfil, onVolver }) {
   const hoy = new Date();
@@ -65,9 +65,7 @@ export default function VistaCalendario({ sesion, perfil, onVolver }) {
       </div>
       <div className="max-w-2xl mx-auto p-4">
         {cargando ? (
-          <p className="text-sm" style={{ color: C.mute }}>
-            Cargando...
-          </p>
+          <EsqueletoLista filas={2} alto="h-40" />
         ) : (
           <CalendarioTurnos
             mesVisto={mesVisto}

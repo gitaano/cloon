@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft } from "lucide-react";
-import { C, MarcaAguaFondo } from "./App.jsx";
+import { C, MarcaAguaFondo, EsqueletoLista } from "./App.jsx";
 
 export default function VistaSugerencias({ sesion, perfil, onVolver }) {
   const [sugerencias, setSugerencias] = useState([]);
@@ -94,11 +94,7 @@ export default function VistaSugerencias({ sesion, perfil, onVolver }) {
           <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
             Tus mensajes anteriores
           </p>
-          {cargando && (
-            <p className="text-sm" style={{ color: C.mute }}>
-              Cargando...
-            </p>
-          )}
+          {cargando && <EsqueletoLista filas={2} />}
           {!cargando && sugerencias.length === 0 && (
             <p className="text-sm" style={{ color: C.mute }}>
               Todavía no has enviado nada al buzón.

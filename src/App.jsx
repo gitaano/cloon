@@ -84,6 +84,78 @@ export function MarcaAguaFondo() {
   );
 }
 
+// Esqueletos de carga: en vez de un simple "Cargando...", se muestran cajas
+// grises con un pulso suave que imitan la forma del contenido real mientras
+// llega. Se percibe como una espera más corta y cuidada.
+export function EsqueletoLista({ filas = 3, alto = "h-16" }) {
+  return (
+    <div className="space-y-3 animate-pulse" aria-label="Cargando" role="status">
+      {Array.from({ length: filas }).map((_, i) => (
+        <div key={i} style={{ background: C.line }} className={`rounded-lg ${alto} w-full`} />
+      ))}
+    </div>
+  );
+}
+
+export function EsqueletoPerfil() {
+  return (
+    <div className="flex items-center gap-3 animate-pulse py-2" aria-label="Cargando" role="status">
+      <div style={{ background: C.line }} className="w-14 h-14 rounded-full shrink-0" />
+      <div className="flex-1 space-y-2">
+        <div style={{ background: C.line }} className="h-4 rounded w-2/3" />
+        <div style={{ background: C.line }} className="h-3 rounded w-1/3" />
+      </div>
+    </div>
+  );
+}
+
+// Modal de confirmación con el estilo de Underground, para usar en vez del
+// cuadro gris nativo del navegador (confirm()) en acciones que no se pueden
+// deshacer, como eliminar un tema o un documento.
+export function ModalConfirmacion({
+  titulo = "¿Seguro?",
+  mensaje,
+  textoConfirmar = "Eliminar",
+  onConfirmar,
+  onCancelar,
+}) {
+  return (
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+      onClick={onCancelar}
+    >
+      <div
+        style={{ background: C.white }}
+        className="rounded-2xl shadow-2xl p-5 max-w-sm w-full space-y-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <p className="text-sm font-bold" style={{ color: C.ink }}>
+          {titulo}
+        </p>
+        <p className="text-sm" style={{ color: C.mute }}>
+          {mensaje}
+        </p>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={onCancelar}
+            style={{ borderColor: C.line, color: C.ink }}
+            className="border rounded-lg px-4 py-2 text-sm font-semibold"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirmar}
+            style={{ background: C.red }}
+            className="text-white rounded-lg px-4 py-2 text-sm font-semibold"
+          >
+            {textoConfirmar}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LogoMetroPlata({ size = 480, className, style }) {
   return (
     <img

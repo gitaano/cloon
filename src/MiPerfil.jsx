@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, ChevronDown } from "lucide-react";
-import { C, CATEGORIAS_TURNO, LINEAS_METRO, LINEAS_METRO_ESTACIONES, TURNOS, INDICADORES_CALENDARIO, nombrePublico, BloqueDesplegable, BotonPrincipal, MarcaAguaFondo } from "./App.jsx";
+import { C, CATEGORIAS_TURNO, LINEAS_METRO, LINEAS_METRO_ESTACIONES, TURNOS, INDICADORES_CALENDARIO, nombrePublico, BloqueDesplegable, BotonPrincipal, MarcaAguaFondo, EsqueletoPerfil } from "./App.jsx";
 
 export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
   const [nickname, setNickname] = useState("");
@@ -145,8 +145,10 @@ export default function MiPerfil({ sesion, perfil, onVolver, onActualizado }) {
 
   if (!perfil) {
     return (
-      <div style={{ background: C.bg }} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm" style={{ color: C.mute }}>Cargando perfil...</p>
+      <div style={{ background: C.bg }} className="min-h-screen flex items-center justify-center p-4">
+        <div style={{ background: C.white }} className="rounded-2xl p-5 max-w-sm w-full">
+          <EsqueletoPerfil />
+        </div>
       </div>
     );
   }

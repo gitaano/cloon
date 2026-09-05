@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { ArrowLeft, UserPlus, Megaphone, MessageSquare } from "lucide-react";
-import { C, MarcaAguaFondo } from "./App.jsx";
+import { C, MarcaAguaFondo, EsqueletoLista } from "./App.jsx";
 
 export default function VistaNotificaciones({ sesion, onVolver }) {
   const [notificaciones, setNotificaciones] = useState([]);
@@ -46,11 +46,7 @@ export default function VistaNotificaciones({ sesion, onVolver }) {
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-2">
-        {cargando && (
-          <p className="text-sm text-center" style={{ color: C.mute }}>
-            Cargando...
-          </p>
-        )}
+        {cargando && <EsqueletoLista filas={3} alto="h-14" />}
         {!cargando && notificaciones.length === 0 && (
           <p className="text-sm text-center py-8" style={{ color: C.mute }}>
             Todavía no tienes notificaciones.
