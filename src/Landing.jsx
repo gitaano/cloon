@@ -7,6 +7,7 @@ const NORMAS_SECCIONES = [
     titulo: "Qué es Underground",
     parrafos: [
       "Underground es un espacio creado por y para trabajadores del Metro de Madrid. No es un canal oficial de la empresa: aquí podemos debatir, contarnos cosas, pedir y ofrecer cambios de turno, día libre o vacaciones, y ayudarnos entre compañeros.",
+      "De todo lo que ofrece el club, tu calendario personal —donde vas registrando tu día a día: turnos, incidencias, desplazamientos y todo lo tuyo— es probablemente lo más útil que vas a usar, así que tómate un momento para configurarlo bien desde el principio.",
       "Nada de lo que se publique en este club tiene validez oficial. Cualquier cambio, incidencia o gestión debe comprobarse y formalizarse siempre a través de los canales y herramientas de la empresa. Underground es un apoyo entre compañeros, no un sustituto de esos canales.",
     ],
   },
