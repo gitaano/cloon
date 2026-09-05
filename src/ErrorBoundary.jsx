@@ -38,7 +38,7 @@ export default class ErrorBoundary extends React.Component {
             <LogoUnderground size={64} />
           </div>
           <div
-            style={{ background: "#FCEBEA" }}
+            style={{ background: C.errorBg }}
             className="mx-auto w-fit rounded-full p-3"
           >
             <AlertTriangle size={28} style={{ color: C.red }} />

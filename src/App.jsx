@@ -27,6 +27,7 @@ export const C = {
   chipBg: "var(--color-chip-bg)",
   diaTrabajado: "var(--color-dia-trabajado)",
   diaVacio: "var(--color-dia-vacio)",
+  errorBg: "var(--color-error-bg)",
 };
 
 export function alternarTema() {

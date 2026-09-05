@@ -283,13 +283,13 @@ function CalendarioTurnos({
                   </span>
                 )}
                 {estadoDia && ABREV_ESTADO[estadoDia] && (
-                  <span style={{ fontSize: 12, fontWeight: 800, color: seleccionado ? C.white : "rgba(255,255,255,0.9)" }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: seleccionado ? "#FFFFFF" : "rgba(255,255,255,0.9)" }}>
                     {ABREV_ESTADO[estadoDia]}
                   </span>
                 )}
                 {visible("reconocimientoMedico") && r?.reconocimiento_medico && (
                   <span
-                    style={{ background: C.white, borderColor: "#B91C1C" }}
+                    style={{ background: "#FFFFFF", borderColor: "#B91C1C" }}
                     className="absolute bottom-0.5 left-0.5 w-3.5 h-3.5 rounded-sm border flex items-center justify-center"
                   >
                     <Plus size={11} strokeWidth={3.5} style={{ color: "#B91C1C" }} />

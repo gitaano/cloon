@@ -1124,7 +1124,7 @@ function FormularioNuevoTema({ sesion, onCreado }) {
   return (
     <div style={{ background: C.white, borderColor: C.line }} className="rounded-xl border p-4 space-y-3">
       {error && (
-        <p className="text-xs rounded-lg p-2" style={{ background: "#FCEBEA", color: C.red }}>
+        <p className="text-xs rounded-lg p-2" style={{ background: C.errorBg, color: C.red }}>
           {error}
         </p>
       )}
@@ -1231,7 +1231,7 @@ function Respuestas({ hiloId, sesion, onVerSocio, perfil }) {
   return (
     <div className="mt-3 pt-3 border-t" style={{ borderColor: C.line }}>
       {error && (
-        <p className="text-xs rounded-lg p-2 mb-2" style={{ background: "#FCEBEA", color: C.red }}>
+        <p className="text-xs rounded-lg p-2 mb-2" style={{ background: C.errorBg, color: C.red }}>
           {error}
         </p>
       )}

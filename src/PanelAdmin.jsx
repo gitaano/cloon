@@ -232,7 +232,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
 
         <div className="flex-1 min-w-0 space-y-3">
           {mensaje && (
-            <p className="text-xs rounded-lg p-2.5" style={{ background: "#FCEBEA", color: C.red }}>
+            <p className="text-xs rounded-lg p-2.5" style={{ background: C.errorBg, color: C.red }}>
               {mensaje.texto}
             </p>
           )}
@@ -428,7 +428,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                   <p
                     className="text-xs rounded-lg p-2.5"
                     style={{
-                      background: mensajeAjustes.tipo === "error" ? "#FCEBEA" : "#E7F7EE",
+                      background: mensajeAjustes.tipo === "error" ? C.errorBg : "#E7F7EE",
                       color: mensajeAjustes.tipo === "error" ? C.red : "#15803D",
                     }}
                   >
@@ -471,7 +471,7 @@ export default function PanelAdmin({ sesion, perfil, onVolver }) {
                   <p
                     className="text-xs rounded-lg p-2.5"
                     style={{
-                      background: mensajeAnuncio.tipo === "error" ? "#FCEBEA" : "#E7F7EE",
+                      background: mensajeAnuncio.tipo === "error" ? C.errorBg : "#E7F7EE",
                       color: mensajeAnuncio.tipo === "error" ? C.red : "#15803D",
                     }}
                   >
