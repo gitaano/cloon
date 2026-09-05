@@ -181,6 +181,20 @@ tener que montar un proceso de compilación de CSS aparte. -->
     background-color: var(--color-surface);
     color: var(--color-ink);
   }
+
+  /* Misma causa que los <select>: sin esto, los campos de texto usan el
+     blanco de fábrica del navegador y el texto (que se aclara en modo
+     oscuro) se vuelve ilegible. Se aplica a toda la web de una vez. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  textarea {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-mute);
+    opacity: 1;
+  }
 </style>
 </head>
 <body>
