@@ -205,7 +205,7 @@ export default function VistaMensajes({ sesion, perfil, conversacionInicial, onV
             : "Mensajes"}
         </p>
         {!conversacionActiva && !nuevoMensajeAbierto && (
-          <button onClick={abrirNuevoMensaje} className="ml-auto text-white">
+          <button onClick={abrirNuevoMensaje} className="ml-auto text-white" aria-label="Nuevo mensaje">
             <Plus size={24} />
           </button>
         )}
@@ -364,6 +364,7 @@ export default function VistaMensajes({ sesion, perfil, conversacionInicial, onV
                 disabled={!texto.trim() || enviando}
                 style={{ background: texto.trim() ? C.blue : "#B9C6D2" }}
                 className="w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0"
+                aria-label="Enviar mensaje"
               >
                 <Send size={19} />
               </button>

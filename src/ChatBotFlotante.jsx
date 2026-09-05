@@ -206,7 +206,7 @@ export default function ChatBotFlotante() {
                 className="flex-1 rounded-full border px-4 py-2 text-sm outline-none"
                 style={{ borderColor: C.line }}
               />
-              <button onClick={enviarPregunta} style={{ background: C.blue }} className="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+              <button onClick={enviarPregunta} style={{ background: C.blue }} className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" aria-label="Enviar pregunta">
                 <Send size={19} className="text-white" />
               </button>
             </div>

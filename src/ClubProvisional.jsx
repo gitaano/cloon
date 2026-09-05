@@ -863,7 +863,7 @@ function ModalListaUsuarios({ tipo, usuarios, cargando, onCerrar, onVerSocio }) 
           <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
             {tipo === "registrados" ? "Socios registrados" : "Socios en línea ahora"}
           </p>
-          <button onClick={onCerrar} style={{ color: C.mute }}>
+          <button onClick={onCerrar} style={{ color: C.mute }} aria-label="Cerrar lista de socios">
             <X size={20} />
           </button>
         </div>
@@ -981,7 +981,7 @@ function TarjetaSocioModal({ usuarioId, sesion, onCerrar, onMensaje }) {
               <p className="text-xs font-bold uppercase tracking-wide" style={{ color: C.mute }}>
                 Tarjeta de socio
               </p>
-              <button onClick={onCerrar} style={{ color: C.mute }}>
+              <button onClick={onCerrar} style={{ color: C.mute }} aria-label="Cerrar tarjeta de socio">
                 <X size={20} />
               </button>
             </div>
@@ -1670,7 +1670,7 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
             <p className="font-bold text-sm">Ofertar cambio de {tituloTipo}</p>
             <p className="text-xs opacity-80">{nombreCategoria}</p>
           </div>
-          <button onClick={onCerrar} className="text-white">
+          <button onClick={onCerrar} className="text-white" aria-label="Cerrar">
             <X size={24} />
           </button>
         </div>
