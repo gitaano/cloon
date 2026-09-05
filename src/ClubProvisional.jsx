@@ -679,7 +679,7 @@ useEffect(() => {
                     aria-label={h.destacado ? "Quitar destacado" : "Destacar tema"}
                     className={((h.autor_id === sesion.user.id && ahora - new Date(h.creado_en).getTime() < 5 * 60 * 1000) ? "" : "ml-auto ") + "text-xs font-semibold flex items-center gap-1"}
                     style={{ color: h.destacado ? "#B45309" : C.mute }}
-          >
+                  >
                     <Star size={12} fill={h.destacado ? "#F59E0B" : "none"} />
                     {h.destacado ? "Quitar" : "Destacar"}
                   </button>
@@ -1712,6 +1712,7 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                       <span
                         key={d}
                         style={{ background: "#EAF2F9", color: C.blueDark }}
+                        className="text-xs font-semibold px-2.5 py-1.5 rounded-full flex items-center gap-1.5"
                       >
                         {formatearFecha(d)}
                         <button onClick={() => quitarDiaOfrecido(d)} aria-label="Quitar día">
@@ -1860,7 +1861,7 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
                     key={id}
                     className="flex items-center gap-2 text-sm rounded-lg border px-3 py-2"
                     style={{ borderColor: C.line, color: C.ink }}
-                >
+                  >
                     <input
                       type="checkbox"
                       checked={lineasPreferidas.includes(id)}
@@ -1955,7 +1956,6 @@ function ModalOfertaCambio({ categoria, tipo, onCerrar, onCrear }) {
 
 
 function CambiosSelector({ activo, categoria, tipo, onAbrir, onCategoria, onTipo, onContinuar, onVerCambios }) {
-  constategoria, onTipo, onContinuar, onVerCambios }) {
   const [abierto, setAbierto] = useState(false);
   const [accion, setAccion] = useState("");
 
